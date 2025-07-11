@@ -4,14 +4,14 @@
 export const CENTRAL_OAUTH_CONFIG = {
 	// Replace this with your actual centralized Kick application Client ID
 	// This should be a single application that all streamers will use
-	CLIENT_ID: process.env.CENTRAL_CLIENT_ID || 'YOUR_CENTRAL_CLIENT_ID_HERE',
+	CLIENT_ID: import.meta.env.VITE_CENTRAL_CLIENT_ID || 'YOUR_CENTRAL_CLIENT_ID_HERE',
 	
 	// OAuth settings
 	OAUTH_SETTINGS: {
 		response_type: 'token', // Using implicit flow for client-side simplicity
 		scope: 'chat:read chat:write',
-		authorize_url: process.env.KICK_OAUTH_BASE_URL || 'https://kick.com/oauth2/authorize',
-		api_base: process.env.KICK_API_BASE_URL || 'https://kick.com/api/v2'
+		authorize_url: import.meta.env.VITE_KICK_OAUTH_BASE_URL || 'https://kick.com/oauth2/authorize',
+		api_base: import.meta.env.VITE_KICK_API_BASE_URL || 'https://kick.com/api/v2'
 	},
 	
 	// Default game settings that streamers can override
