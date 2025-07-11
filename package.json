@@ -40,11 +40,13 @@
 	},
 	"private": true,
 	"scripts": {
-		"build": "vite build src --sourcemap --emptyOutDir --outDir dist",
-		"start": "tsx src/server.ts"
+		"build": "vite build src --sourcemap --emptyOutDir --outDir ../dist",
+		"start": "tsx src/server.ts",
+		"oauth-proxy": "tsx src/oauth-proxy-server.ts"
 	},
 	"version": "2.9.0",
 	"dependencies": {
+		"dotenv": "^17.2.0",
 		"pusher-js": "^8.4.0-rc2",
 		"webfontloader": "^1.6.28"
 	}

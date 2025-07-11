@@ -142,9 +142,9 @@ class KickClient {
 				return;
 			}
 
-			// Send message via Kick API
-			const apiBase = process.env.KICK_API_BASE_URL || 'https://kick.com/api/v1';
-			const response = await fetch(`${apiBase}/chat/${this.config.chatroomId}`, {
+			// Send message via Kick API (using v2 endpoint)
+			const apiBase = process.env.KICK_API_BASE_URL || 'https://kick.com/api/v2';
+			const response = await fetch(`${apiBase}/messages`, {
 				method: 'POST',
 				headers: {
 					'Authorization': `Bearer ${this.config.accessToken}`,
@@ -153,7 +153,8 @@ class KickClient {
 				},
 				body: JSON.stringify({
 					content: message,
-					type: 'message'
+					type: 'message',
+					chatroom_id: this.config.chatroomId
 				})
 			});
 

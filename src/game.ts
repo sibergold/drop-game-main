@@ -185,6 +185,11 @@ export default class Game extends Phaser.Scene {
 
 		if (hs.debug) this.rect?.setVisible(true);
 
+		// Send welcome message to chat
+		if (kick && !this.queue) {
+			kick.say(hs.channel, "🪂 Parachute Drop Game is now active! Type !drop to join the fun! 🎯");
+		}
+
 		console.debug(`Pad X Position: ${this.pad.x}`);
 	}
 
@@ -209,7 +214,7 @@ export default class Game extends Phaser.Scene {
 	async resolveQueue() {
 		this.start();
 		if (kick) {
-			kick.say(hs.channel, "Let's goooooooooooo! PogChamp");
+			kick.say(hs.channel, `🚀 Let's go! Releasing ${this.droppersQueue.size} parachuters! 🪂`);
 		}
 		const enumKeys = this.droppersQueue.keys();
 		let next: IteratorResult<string, undefined>;
@@ -299,6 +304,14 @@ export default class Game extends Phaser.Scene {
 		this.winner = avatar;
 		avatar.scoreLabel!.text = avatar.score.toFixed(2);
 		avatar.scoreLabel!.setVisible(true);
+
+		// Send winner message to chat
+		if (kick) {
+			kick.say(
+				hs.channel,
+				`🎉 @${avatar.username} landed on the pad with a score of ${avatar.score.toFixed(2)}! 🏆 Type !drop to join the next round!`,
+			);
+		}
 	}
 
 	// events
@@ -470,15 +483,18 @@ export default class Game extends Phaser.Scene {
 
 	async onQueueDrop(delay = null) {
 		if (this.queue) {
-			if (kick) kick.say(hs.channel, "NotLikeThis A queue is already forming!");
+			if (kick) kick.say(hs.channel, "⚠️ A queue is already forming! Type !drop to join!");
 			return;
 		}
 
 		this.queue = true;
 
-		if (delay !== null) setTimeout(this.resolveQueue.bind(this), delay * 1000);
-
-		if (kick) kick.say(hs.channel, "SeemsGood Queue started!");
+		if (delay !== null) {
+			setTimeout(this.resolveQueue.bind(this), delay * 1000);
+			if (kick) kick.say(hs.channel, `🎯 Queue started! Type !drop to join. Auto-release in ${delay} seconds!`);
+		} else {
+			if (kick) kick.say(hs.channel, "🎯 Queue started! Type !drop to join. Moderators use !startdrop to release!");
+		}
 	}
 
 	onResetDrop() {

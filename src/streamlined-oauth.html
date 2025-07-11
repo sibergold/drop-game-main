@@ -9,13 +9,15 @@
 		
 		<!-- Preload critical resources -->
 		<link rel="preload" href="oauth.css" as="style" />
-		<link rel="preload" href="streamlined-oauth.ts" as="script" />
-		
+
 		<!-- Favicon -->
 		<link rel="icon" href="favicon.gif" />
-		
+
 		<!-- Styles -->
 		<link rel="stylesheet" href="oauth.css" />
+
+		<!-- Scripts -->
+		<script type="module" src="./streamlined-oauth-loader.ts"></script>
 		
 		<!-- Critical inline CSS -->
 		<style>
@@ -108,29 +110,38 @@
 				<div id="overlay-url" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; word-break: break-all; margin: 1rem 0;"></div>
 				<button type="button" id="copy-url-btn" class="big-button">📋 Copy URL</button>
 				<button type="button" id="open-obs-btn" class="big-button">🎥 Open in OBS</button>
+
+				<div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 10px; text-align: left;">
+					<h4>🎮 How to Use Parachute Drop Game</h4>
+					<div style="margin: 1rem 0;">
+						<h5>👥 Viewer Commands:</h5>
+						<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+							<li><code>!drop</code> - Join the parachute drop game</li>
+							<li><code>!drop emote_name</code> - Drop with a custom emote</li>
+							<li><code>!droptop</code> - Show top scores</li>
+							<li><code>!droplow</code> - Show lowest scores</li>
+							<li><code>!droprecent</code> - Show recent drops</li>
+							<li><code>!help</code> or <code>!commands</code> - Show all commands</li>
+						</ul>
+					</div>
+					<div style="margin: 1rem 0;">
+						<h5>🛡️ Moderator Commands:</h5>
+						<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+							<li><code>!queuedrop</code> - Start a queue for group drops</li>
+							<li><code>!queuedrop 30</code> - Start queue with 30 second delay</li>
+							<li><code>!startdrop</code> - Release all queued players</li>
+							<li><code>!resetdrop</code> - Reset the current game</li>
+							<li><code>!clearscores</code> - Clear all scores</li>
+							<li><code>!clearscores username</code> - Clear specific user's scores</li>
+						</ul>
+					</div>
+					<div style="margin: 1rem 0; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 5px;">
+						<strong>💡 Pro Tip:</strong> Use queue mode for exciting group competitions! Start a queue, let viewers join with <code>!drop</code>, then release everyone at once with <code>!startdrop</code>.
+					</div>
+				</div>
 			</div>
 		</div>
 		
-		<script>
-			// Lazy load the streamlined OAuth module
-			let moduleLoaded = false;
-			
-			function loadModule() {
-				if (!moduleLoaded) {
-					moduleLoaded = true;
-					import('./streamlined-oauth.ts').catch(err => {
-						console.error('Failed to load streamlined OAuth module:', err);
-					});
-				}
-			}
-			
-			// Load module on first interaction
-			['click', 'keydown', 'touchstart'].forEach(event => {
-				document.addEventListener(event, loadModule, { once: true, passive: true });
-			});
-			
-			// Preload on button hover
-			document.getElementById('quick-authorize-btn').addEventListener('mouseenter', loadModule, { once: true });
-		</script>
+
 	</body>
 </html>

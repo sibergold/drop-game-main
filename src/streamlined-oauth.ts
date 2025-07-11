@@ -1,5 +1,5 @@
-import { hs } from "./util";
-import { CENTRAL_OAUTH_CONFIG, isCentralConfigValid, buildCentralOAuthUrl, fetchKickUserInfo } from "./central-config";
+import { hsWithQuery as hs } from "./util";
+import { CENTRAL_OAUTH_CONFIG, isCentralConfigValid, buildCentralOAuthUrl, fetchKickUserInfo, exchangeCodeForToken } from "./central-config";
 
 // Streamlined OAuth system with centralized Client ID
 class StreamlinedKickOAuth {
@@ -45,8 +45,8 @@ class StreamlinedKickOAuth {
 		console.log('isCentralConfigValid():', isCentralConfigValid());
 		
 		// Check if we're returning from OAuth
-		if (hs.code || hs.access_token) {
-			console.log('OAuth return detected:', { code: hs.code, access_token: hs.access_token });
+		if (hs.code) {
+			console.log('OAuth return detected:', { code: hs.code, state: hs.state });
 			this.handleOAuthReturn();
 			return;
 		}
@@ -72,15 +72,31 @@ class StreamlinedKickOAuth {
 
 	private async handleOAuthReturn() {
 		try {
-			let accessToken = hs.access_token;
-			
-			// If we have a code, exchange it for access token
-			if (hs.code && !accessToken) {
-				accessToken = await this.exchangeCodeForToken(hs.code);
+			console.log('🔄 Handling OAuth return...');
+			console.log('URL params:', hs);
+
+			// Verify state parameter for security
+			const storedState = sessionStorage.getItem('kick_oauth_state');
+			console.log('Stored state:', storedState);
+			console.log('Received state:', hs.state);
+
+			if (hs.state && storedState && hs.state !== storedState) {
+				throw new Error('Invalid state parameter - possible CSRF attack');
 			}
 
+			// Exchange authorization code for access token via proxy
+			const code = hs.code;
+			console.log('Authorization code:', code ? 'YES' : 'NO');
+
+			if (!code) {
+				throw new Error('No authorization code received');
+			}
+
+			const accessToken = await exchangeCodeForToken(code, window.location.href.split('?')[0]);
+			console.log('Access token received:', accessToken ? 'YES' : 'NO');
+
 			if (!accessToken) {
-				throw new Error('No access token received');
+				throw new Error('Failed to exchange code for access token');
 			}
 
 			// Get user info and channel details
@@ -98,43 +114,31 @@ class StreamlinedKickOAuth {
 
 			// Build overlay URL
 			const overlayUrl = this.buildOverlayUrl(accessToken, channel, chatroomId.toString());
-			
+
 			// Show success
 			this.showSuccess(overlayUrl);
-			
+
+			// Clean up URL parameters and redirect back to clean page
+			setTimeout(() => {
+				console.log('🔄 Cleaning up URL and redirecting...');
+				const cleanUrl = window.location.href.split('?')[0];
+				window.history.replaceState({}, document.title, cleanUrl);
+			}, 2000); // Give user time to see the success message
+
 		} catch (error) {
 			console.error('OAuth error:', error);
 			this.showError(`Authorization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+
+			// Clean up URL parameters on error too
+			setTimeout(() => {
+				console.log('🔄 Cleaning up URL after error...');
+				const cleanUrl = window.location.href.split('?')[0];
+				window.history.replaceState({}, document.title, cleanUrl);
+			}, 3000);
 		}
 	}
 
-	private async exchangeCodeForToken(code: string): Promise<string | null> {
-		try {
-			// Note: This requires a backend service to handle the token exchange
-			// For client-side only, we use implicit flow (response_type=token)
-			const response = await fetch('/api/oauth/token', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					code,
-					client_id: CENTRAL_OAUTH_CONFIG.CLIENT_ID,
-					redirect_uri: window.location.href
-				})
-			});
 
-			if (!response.ok) {
-				throw new Error('Token exchange failed');
-			}
-
-			const data = await response.json();
-			return data.access_token;
-		} catch (error) {
-			console.error('Token exchange error:', error);
-			return null;
-		}
-	}
 
 
 
@@ -153,9 +157,9 @@ class StreamlinedKickOAuth {
 		return url;
 	}
 
-	private startStreamlinedOAuth() {
+	private async startStreamlinedOAuth() {
 		console.log('startStreamlinedOAuth() called');
-		
+
 		if (!isCentralConfigValid()) {
 			console.log('Central config invalid in startStreamlinedOAuth');
 			this.showError(CENTRAL_OAUTH_CONFIG.UI_CONFIG.messages.error_no_client_id);
@@ -164,8 +168,8 @@ class StreamlinedKickOAuth {
 
 		try {
 			console.log('Building OAuth URL...');
-			// Build OAuth URL using central config
-			const oauthUrl = buildCentralOAuthUrl(window.location.href);
+			// Build OAuth URL using central config (with PKCE)
+			const oauthUrl = await buildCentralOAuthUrl(window.location.href.split('?')[0]);
 			console.log('OAuth URL built:', oauthUrl);
 
 			// Show loading state
