@@ -15,14 +15,20 @@ export default defineConfig(({ mode }) => {
 			'import.meta.env.VITE_KICK_OAUTH_BASE_URL': JSON.stringify(env.VITE_KICK_OAUTH_BASE_URL || 'https://id.kick.com/oauth/authorize'),
 			'import.meta.env.VITE_KICK_TOKEN_URL': JSON.stringify(env.VITE_KICK_TOKEN_URL || 'https://id.kick.com/oauth/token'),
 			'import.meta.env.VITE_KICK_API_BASE_URL': JSON.stringify(env.VITE_KICK_API_BASE_URL || 'https://kick.com/api/v2'),
+			'import.meta.env.VITE_OAUTH_PROXY_URL_DEV': JSON.stringify(env.VITE_OAUTH_PROXY_URL_DEV || 'http://localhost:3001'),
+			'import.meta.env.VITE_OAUTH_PROXY_URL_PROD': JSON.stringify(env.VITE_OAUTH_PROXY_URL_PROD || 'https://parachutegame.netlify.app/.netlify/functions'),
 		},
 		build: {
 			rollupOptions: {
 				input: {
 					main: resolve(currentDir, "index.html"),
-					oauth: resolve(currentDir, "oauth.html"),
 					streamlined: resolve(currentDir, "streamlined-oauth.html"),
 					debug: resolve(currentDir, "debug.html"),
+				},
+				output: {
+					entryFileNames: 'assets/[name]-[hash].js',
+					chunkFileNames: 'assets/[name]-[hash].js',
+					assetFileNames: 'assets/[name]-[hash].[ext]'
 				}
 			},
 			target: "esnext",

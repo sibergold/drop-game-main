@@ -2,6 +2,7 @@ import compression from "compression";
 import cors from "cors";
 import express from "express";
 import { createHttpTerminator } from "http-terminator";
+import { join } from "path";
 
 const host = process.env.SERVER_HOST ?? process.env.host ?? "localhost";
 const port = parseInt(process.env.SERVER_PORT ?? process.env.port ?? "3000");
@@ -13,6 +14,13 @@ if (process.env.NODE_ENV !== "production") {
 
 app.use(compression());
 app.use(express.json({ limit: "10mb" }));
+
+// Configure MIME types for static files
+express.static.mime.define({
+	'application/javascript': ['ts'],
+	'text/javascript': ['ts']
+});
+
 app.use(express.static("dist"));
 
 app.disable("x-powered-by");

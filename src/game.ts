@@ -2,15 +2,11 @@ import Phaser, { Tilemaps } from "phaser";
 import Avatar from "./avatar";
 import constants from "./constants";
 import emitter from "./emitter";
+import kick from "./kick";
 import Score from "./score";
 
 import { hs, sleep } from "./util";
 import WebFontFile from "./webfontfile";
-
-// Global kick client reference
-declare global {
-	var kick: any;
-}
 
 /** main game scene */
 export default class Game extends Phaser.Scene {
@@ -47,6 +43,7 @@ export default class Game extends Phaser.Scene {
 		emitter.on("queuedrop", this.onQueueDrop, this);
 		emitter.on("resetdrop", this.onResetDrop, this);
 		emitter.on("startdrop", this.onStartDrop, this);
+		emitter.on("storeEmoteId", this.storeEmoteId, this);
 
 		setInterval(this.tidyScores.bind(this), constants.TIDY_SCHEDULE);
 		this.tidyScores();
@@ -185,10 +182,10 @@ export default class Game extends Phaser.Scene {
 
 		if (hs.debug) this.rect?.setVisible(true);
 
-		// Send welcome message to chat
-		if (kick && !this.queue) {
-			kick.say(hs.channel, "🪂 Parachute Drop Game is now active! Type !drop to join the fun! 🎯");
-		}
+		// Send welcome message to chat (disabled for now due to API issues)
+		// if (kick && !this.queue) {
+		// 	kick.say(hs.channel, "🪂 Parachute Drop Game is now active! Type !drop to join the fun! 🎯");
+		// }
 
 		console.debug(`Pad X Position: ${this.pad.x}`);
 	}
@@ -288,8 +285,12 @@ export default class Game extends Phaser.Scene {
 		localStorage.setItem("scores", JSON.stringify(scores));
 
 		if (this.winner && avatar.score < this.winner.score) {
-			this.sound.stopByKey("land");
-			this.sound.play("land");
+			try {
+				this.sound.stopByKey("land");
+				this.sound.play("land");
+			} catch (error) {
+				console.log('🔇 Audio autoplay blocked by browser');
+			}
 			return emitter.emit("lose", avatar);
 		}
 
@@ -298,8 +299,12 @@ export default class Game extends Phaser.Scene {
 			this.winner.container.setDepth(0);
 		}
 
-		this.sound.stopByKey("win");
-		this.sound.play("win");
+		try {
+			this.sound.stopByKey("win");
+			this.sound.play("win");
+		} catch (error) {
+			console.log('🔇 Audio autoplay blocked by browser');
+		}
 		avatar.container.setDepth(1);
 		this.winner = avatar;
 		avatar.scoreLabel!.text = avatar.score.toFixed(2);
@@ -336,25 +341,155 @@ export default class Game extends Phaser.Scene {
 			this.droppers.set(username, avatar);
 			this.droppersArray.push(avatar);
 			this.dropGroup!.add(avatar.container);
-			this.sound.stopByKey("drop");
-			this.sound.play("drop");
+			try {
+				this.sound.stopByKey("drop");
+				this.sound.play("drop");
+			} catch (error) {
+				console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
+			}
 		};
 
 		if (emote) {
-			// For Kick emotes, use a simple placeholder or default image
-			// Kick emote system is different from Twitch
-			const emoteUrl = `./default/drop${Math.floor(Math.random() * 5) + 1}.png`;
+			console.log(`🎭 Loading emote for ${username}: ${emote}`);
 
-			this.load.setBaseURL();
-			this.load
-				.image(emote, emoteUrl)
-				.on(`filecomplete-image-${emote}`, () => finish())
-				.start();
-
+			// For now, use enhanced default avatar mapping due to CORS restrictions
+			// In the future, this could be replaced with a proper proxy server
+			this.loadDefaultEmoteAvatar(username, emote);
 			return;
 		}
 
 		finish();
+	}
+
+	// Helper method to extract emote ID from recent chat messages
+	private getEmoteIdFromMessage(username: string, emoteName: string): string | null {
+		// Store recent chat messages with emote IDs for lookup
+		// This is a simple implementation - in a real app you'd want a more robust system
+		const recentEmotes = (this as any).recentEmotes || new Map();
+		const key = `${username}_${emoteName}`;
+		return recentEmotes.get(key) || null;
+	}
+
+	// Store emote ID when processing chat messages (called from index.ts)
+	public storeEmoteId(username: string, emoteName: string, emoteId: string): void {
+		if (!(this as any).recentEmotes) {
+			(this as any).recentEmotes = new Map();
+		}
+		const key = `${username}_${emoteName}`;
+		(this as any).recentEmotes.set(key, emoteId);
+
+		// Clean up old entries (keep only last 50)
+		if ((this as any).recentEmotes.size > 50) {
+			const firstKey = (this as any).recentEmotes.keys().next().value;
+			(this as any).recentEmotes.delete(firstKey);
+		}
+	}
+
+	// Enhanced default avatar mapping for Kick emotes
+	private loadDefaultEmoteAvatar(username: string, emote: string): void {
+		const emoteAvatarMap: { [key: string]: string } = {
+			// Standard emoji-style emotes
+			'emojiBlowKiss': 'drop1.png',
+			'emojiCrave': 'drop2.png',
+			'emojiLove': 'drop3.png',
+			'emojiHeart': 'drop4.png',
+			'emojiSmile': 'drop5.png',
+			'emojiWink': 'drop1.png',
+			'emojiKiss': 'drop2.png',
+			'emojiHappy': 'drop3.png',
+			'emojiCool': 'drop4.png',
+			'emojiLaugh': 'drop5.png',
+			'emojiAngel': 'drop1.png',
+			'emojiSad': 'drop2.png',
+			'emojiCry': 'drop3.png',
+			'emojiMad': 'drop4.png',
+			'emojiShock': 'drop5.png',
+
+			// Custom Kick emotes (common patterns)
+			'seliinndino': 'drop1.png',
+			'seliinnkalp': 'drop2.png',
+			'seliinnlove': 'drop3.png',
+			'seliinnhappy': 'drop4.png',
+			'seliinncool': 'drop5.png',
+
+			// Pattern-based mapping for unknown emotes
+			// Heart/Love related
+			'kalp': 'drop4.png',
+			'love': 'drop3.png',
+			'heart': 'drop4.png',
+			'aşk': 'drop3.png',
+
+			// Happy/Smile related
+			'happy': 'drop5.png',
+			'smile': 'drop5.png',
+			'gülüş': 'drop5.png',
+			'mutlu': 'drop5.png',
+
+			// Cool/Awesome related
+			'cool': 'drop1.png',
+			'awesome': 'drop1.png',
+			'harika': 'drop1.png',
+
+			// Sad/Cry related
+			'sad': 'drop2.png',
+			'cry': 'drop2.png',
+			'üzgün': 'drop2.png',
+
+			// Add more mappings as needed
+		};
+
+		// Smart emote matching
+		let avatarImage = emoteAvatarMap[emote];
+
+		if (!avatarImage) {
+			// Try pattern matching for unknown emotes
+			const emoteLower = emote.toLowerCase();
+
+			if (emoteLower.includes('kalp') || emoteLower.includes('heart') || emoteLower.includes('love') || emoteLower.includes('aşk')) {
+				avatarImage = 'drop4.png'; // Heart-related
+			} else if (emoteLower.includes('happy') || emoteLower.includes('smile') || emoteLower.includes('gül') || emoteLower.includes('mutlu')) {
+				avatarImage = 'drop5.png'; // Happy-related
+			} else if (emoteLower.includes('cool') || emoteLower.includes('awesome') || emoteLower.includes('harika')) {
+				avatarImage = 'drop1.png'; // Cool-related
+			} else if (emoteLower.includes('sad') || emoteLower.includes('cry') || emoteLower.includes('üzgün')) {
+				avatarImage = 'drop2.png'; // Sad-related
+			} else if (emoteLower.includes('kiss') || emoteLower.includes('öp')) {
+				avatarImage = 'drop3.png'; // Kiss-related
+			} else {
+				// Random assignment for completely unknown emotes
+				avatarImage = `drop${Math.floor(Math.random() * 5) + 1}.png`;
+			}
+		}
+
+		const emoteUrl = `./default/${avatarImage}`;
+		const textureKey = `emote_${emote}_${avatarImage.replace('.png', '')}`;
+
+		console.log(`🎭 Using smart avatar mapping: ${avatarImage} for emote: ${emote} (${emote in emoteAvatarMap ? 'exact match' : 'pattern match'})`);
+
+		this.load.setBaseURL();
+		this.load
+			.image(textureKey, emoteUrl)
+			.on(`filecomplete-image-${textureKey}`, () => {
+				console.log(`✅ Default emote avatar loaded: ${textureKey}`);
+				const avatar = new Avatar(username, this, textureKey);
+				this.droppers.set(username, avatar);
+				this.droppersArray.push(avatar);
+				this.dropGroup!.add(avatar.container);
+				try {
+					this.sound.stopByKey("drop");
+					this.sound.play("drop");
+				} catch (error) {
+					console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
+				}
+			})
+			.on(`loaderror-image-${textureKey}`, () => {
+				console.log(`⚠️ Failed to load default avatar, using finish()`);
+				const avatar = new Avatar(username, this);
+				this.droppers.set(username, avatar);
+				this.droppersArray.push(avatar);
+				this.dropGroup!.add(avatar.container);
+			})
+			.start();
 	}
 
 	onDropLow() {

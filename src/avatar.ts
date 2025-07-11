@@ -25,13 +25,16 @@ export default class Avatar {
 		this.chuteGravity = parseInt(hs.gravity_chute || constants.GRAVITY_CHUTE);
 
 		if (emote) {
+			console.log(`🎭 Creating avatar with emote: ${emote} for user: ${username}`);
 			this.customImage = true;
 			this.sprite = game.add.image(0, 0, emote);
 			this.sprite.setDisplaySize(64, 64);
 			this.chute.setOrigin(0.5, 0.75);
+			console.log(`🎭 Avatar sprite created with texture key: ${emote}`);
 		} else {
 			const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
 			this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
+			console.log(`🎭 Avatar created with default sprite: drop${spriteNumber}`);
 		}
 
 		this.sprite.setOrigin(0.5, 0.5).setVisible(false);

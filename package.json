@@ -40,7 +40,7 @@
 	},
 	"private": true,
 	"scripts": {
-		"build": "vite build src --sourcemap --emptyOutDir --outDir ../dist",
+		"build": "vite build src --sourcemap --emptyOutDir --outDir ../dist && node fix-extensions.js",
 		"start": "tsx src/server.ts",
 		"oauth-proxy": "tsx src/oauth-proxy-server.ts"
 	},

@@ -13,11 +13,18 @@ export const CENTRAL_OAUTH_CONFIG = {
 		authorize_url: import.meta.env.VITE_KICK_OAUTH_BASE_URL || 'https://id.kick.com/oauth/authorize',
 		token_url: import.meta.env.VITE_KICK_TOKEN_URL || 'https://id.kick.com/oauth/token',
 		api_base: import.meta.env.VITE_KICK_API_BASE_URL || 'https://kick.com/api/v2',
-		proxy_url: import.meta.env.VITE_OAUTH_PROXY_URL || (
-			window.location.hostname === 'localhost'
-				? 'http://localhost:3001'
-				: `${window.location.origin}/.netlify/functions`
-		)
+		proxy_url: (() => {
+			// Check if we're running on localhost (development environment)
+			const isLocalhost = window.location.hostname === 'localhost';
+
+			if (isLocalhost) {
+				// Use local proxy server for localhost development
+				return import.meta.env.VITE_OAUTH_PROXY_URL_DEV || 'http://localhost:3001';
+			} else {
+				// Use Netlify functions for deployed environment
+				return import.meta.env.VITE_OAUTH_PROXY_URL_PROD || `${window.location.origin}/.netlify/functions`;
+			}
+		})()
 	},
 	
 	// Default game settings that streamers can override

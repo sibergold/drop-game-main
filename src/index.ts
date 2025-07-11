@@ -6,12 +6,21 @@ import kick, { isBroadcaster, isModerator, KickUser } from "./kick";
 import { hs } from "./util";
 
 
-if (!Object.hasOwnProperty.call(hs, "oauth"))
-	window.location.href = '/oauth.html';
+// Check if we have access_token (overlay mode) or oauth (legacy mode)
+if (!Object.hasOwnProperty.call(hs, "oauth") && !Object.hasOwnProperty.call(hs, "access_token"))
+	window.location.href = '/streamlined-oauth.html';
 
 if (hs.demo) document.body.classList.add("demo");
 
-new PhaserGame({
+// Hide loading message when game starts
+const hideLoadingMessage = () => {
+	const gameContainer = document.getElementById('game-container');
+	if (gameContainer) {
+		gameContainer.style.display = 'none';
+	}
+};
+
+const game = new PhaserGame({
 	audio: {
 		disableWebAudio: true,
 	},
@@ -37,6 +46,9 @@ new PhaserGame({
 	type: Phaser.AUTO,
 	width: constants.SCREEN_WIDTH,
 });
+
+// Hide loading message when Phaser is ready
+game.events.once('ready', hideLoadingMessage);
 
 const commandRgx = /^(![-_.a-z0-9]+)(?:\s+(.+))?$/i;
 
@@ -92,14 +104,27 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 			break;
 		case "drop":
 		case "join": {
-			// Enhanced emote detection for Kick
+			// Enhanced Kick emote detection
 			let emote: string | undefined = undefined;
 
-			// Look for common Kick emotes or custom emote patterns
 			if (args) {
-				const emoteMatch = args.match(/\b\w+\b/);
-				if (emoteMatch) {
-					emote = emoteMatch[0];
+				// Kick emote format: [emote:ID:name]
+				const kickEmoteMatch = args.match(/\[emote:(\d+):(\w+)\]/);
+				if (kickEmoteMatch) {
+					const emoteId = kickEmoteMatch[1];
+					const emoteName = kickEmoteMatch[2];
+					emote = emoteName; // Use emote name as identifier
+					console.log(`🎭 Detected Kick emote: ${emoteName} (ID: ${emoteId})`);
+
+					// Store emote ID for the game to use real emote images
+					emitter.emit("storeEmoteId", user.username, emoteName, emoteId);
+				} else {
+					// Fallback: look for any word (could be text emote)
+					const textEmoteMatch = args.match(/\b\w+\b/);
+					if (textEmoteMatch) {
+						emote = textEmoteMatch[0];
+						console.log(`🎭 Detected text emote: ${emote}`);
+					}
 				}
 			}
 

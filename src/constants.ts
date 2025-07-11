@@ -45,7 +45,7 @@ const constants = {
 	WAIT_FOR_RESET: 60,
 	/** OAuth URL builder function for multi-user support */
 	buildOAuthURL: (clientId: string, redirectUri?: string) => {
-		const redirect = redirectUri || window.location.href.replace(/[^/]\.html|$/i, "oauth.html");
+		const redirect = redirectUri || window.location.href.replace(/[^/]\.html|$/i, "streamlined-oauth.html");
 		const oauthBaseUrl = process.env.KICK_OAUTH_BASE_URL || "https://kick.com/oauth2/authorize";
 		return (
 			`${oauthBaseUrl}` +

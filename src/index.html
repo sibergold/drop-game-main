@@ -40,15 +40,15 @@
 			}
 		</style>
 		
-		<!-- Lazy load main script -->
-		<script>
+		<!-- Loading indicator and main script -->
+		<script type="module">
 			// Show loading indicator
 			document.addEventListener('DOMContentLoaded', function() {
 				if (!document.body.innerHTML.trim()) {
 					document.body.innerHTML = '<div id="game-container"><div class="loading">🎮 Loading Kick Drop Game...</div></div>';
 				}
-				
-				// Lazy load main module
+
+				// Import main module
 				import('./index.ts').catch(err => {
 					console.error('Failed to load game:', err);
 					document.body.innerHTML = '<div id="game-container"><div class="loading" style="color: #e53e3e;">❌ Failed to load game. Please refresh the page.</div></div>';
