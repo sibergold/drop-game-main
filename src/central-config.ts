@@ -13,7 +13,11 @@ export const CENTRAL_OAUTH_CONFIG = {
 		authorize_url: import.meta.env.VITE_KICK_OAUTH_BASE_URL || 'https://id.kick.com/oauth/authorize',
 		token_url: import.meta.env.VITE_KICK_TOKEN_URL || 'https://id.kick.com/oauth/token',
 		api_base: import.meta.env.VITE_KICK_API_BASE_URL || 'https://kick.com/api/v2',
-		proxy_url: import.meta.env.VITE_OAUTH_PROXY_URL || 'http://localhost:3001'
+		proxy_url: import.meta.env.VITE_OAUTH_PROXY_URL || (
+			window.location.hostname === 'localhost'
+				? 'http://localhost:3001'
+				: `${window.location.origin}/.netlify/functions`
+		)
 	},
 	
 	// Default game settings that streamers can override
@@ -140,9 +144,13 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 	};
 
 	console.log('Proxy request body:', requestBody);
-	console.log('Proxy endpoint:', `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth/exchange`);
+	console.log('Proxy endpoint:', proxyEndpoint);
 
-	const response = await fetch(`${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth/exchange`, {
+	const proxyEndpoint = window.location.hostname === 'localhost'
+		? `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth/exchange`
+		: `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth-exchange`;
+
+	const response = await fetch(proxyEndpoint, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
