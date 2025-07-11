@@ -32,7 +32,13 @@ export default defineConfig({
 				// Optimize chunk size
 				chunkFileNames: 'assets/[name]-[hash].js',
 				entryFileNames: 'assets/[name]-[hash].js',
-				assetFileNames: 'assets/[name]-[hash].[ext]'
+				assetFileNames: (assetInfo) => {
+					// Ensure TypeScript files are output as JavaScript
+					if (assetInfo.name && assetInfo.name.endsWith('.ts')) {
+						return 'assets/[name]-[hash].js';
+					}
+					return 'assets/[name]-[hash].[ext]';
+				}
 			}
 		},
 		target: "esnext",
