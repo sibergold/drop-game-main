@@ -4,7 +4,7 @@
 export const CENTRAL_OAUTH_CONFIG = {
 	// Replace this with your actual centralized Kick application Client ID
 	// This should be a single application that all streamers will use
-	CLIENT_ID: import.meta.env.VITE_CENTRAL_CLIENT_ID || 'YOUR_CENTRAL_CLIENT_ID_HERE',
+	CLIENT_ID: import.meta.env.VITE_CENTRAL_CLIENT_ID || import.meta.env.CENTRAL_CLIENT_ID || 'YOUR_CENTRAL_CLIENT_ID_HERE',
 	
 	// OAuth settings
 	OAUTH_SETTINGS: {
