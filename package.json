@@ -40,7 +40,7 @@
 	},
 	"private": true,
 	"scripts": {
-		"build": "vite build src --sourcemap --emptyOutDir --outDir ../dist",
+		"build": "vite build src --sourcemap --emptyOutDir --outDir dist",
 		"start": "tsx src/server.ts"
 	},
 	"version": "2.9.0",
