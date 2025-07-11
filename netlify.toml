@@ -1,6 +1,6 @@
 [build]
   # Build command
-  command = "npm ci && npm run build"
+  command = "npm install && npm run build"
   
   # Directory to publish (relative to root of your repo)
   publish = "dist"
