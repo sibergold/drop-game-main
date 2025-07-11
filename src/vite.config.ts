@@ -9,6 +9,7 @@ export default defineConfig({
 				main: resolve(fileURLToPath(new URL('.', import.meta.url)), "index.html"),
 				oauth: resolve(fileURLToPath(new URL('.', import.meta.url)), "oauth.html"),
 				streamlined: resolve(fileURLToPath(new URL('.', import.meta.url)), "streamlined-oauth.html"),
+				debug: resolve(fileURLToPath(new URL('.', import.meta.url)), "debug.html"),
 			},
 			output: {
 				// Manual chunks for better code splitting
