@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Kick Drop Game - Streamlined Setup</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="One-click Kick Drop Game setup for streamers" />
+		<meta name="theme-color" content="#9146ff" />
+		
+		<!-- Preload critical resources -->
+		<link rel="preload" href="oauth.css" as="style" />
+		<link rel="preload" href="streamlined-oauth.ts" as="script" />
+		
+		<!-- Favicon -->
+		<link rel="icon" href="favicon.gif" />
+		
+		<!-- Styles -->
+		<link rel="stylesheet" href="oauth.css" />
+		
+		<!-- Critical inline CSS -->
+		<style>
+			body { margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+			.streamlined-container {
+				max-width: 600px;
+				margin: 2rem auto;
+				padding: 2rem;
+				text-align: center;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				border-radius: 20px;
+				color: white;
+				box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+			}
+			.big-button {
+				background: #00ff88;
+				color: #000;
+				border: none;
+				padding: 1rem 2rem;
+				font-size: 1.2rem;
+				font-weight: bold;
+				border-radius: 50px;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				margin: 1rem;
+			}
+			.big-button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 10px 20px rgba(0,255,136,0.3);
+			}
+			.feature-list {
+				text-align: left;
+				margin: 2rem 0;
+			}
+			.feature-item {
+				margin: 0.5rem 0;
+				padding: 0.5rem;
+				background: rgba(255,255,255,0.1);
+				border-radius: 8px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="streamlined-container">
+			<h1>🎮 Kick Drop Game</h1>
+			<h2>✨ Streamlined Setup for Streamers</h2>
+			
+			<div class="feature-list">
+				<div class="feature-item">🚀 <strong>One-Click Setup</strong> - No Client ID needed!</div>
+				<div class="feature-item">🔐 <strong>Secure Authorization</strong> - Direct Kick integration</div>
+				<div class="feature-item">⚡ <strong>Instant Start</strong> - Get your overlay URL immediately</div>
+				<div class="feature-item">🎯 <strong>Auto-Detection</strong> - Finds your channel automatically</div>
+			</div>
+			
+			<div id="error-message" class="error" style="display: none;"></div>
+			<div id="success-message" class="success" style="display: none;"></div>
+			
+			<div id="setup-section">
+				<p>Ready to start streaming with Kick Drop Game?</p>
+				<button type="button" id="quick-authorize-btn" class="big-button">
+					🚀 Start with Kick Authorization
+				</button>
+				
+				<div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.2);">
+					<h3>⚙️ Game Settings (Optional)</h3>
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+						<div>
+							<label for="gravity">Gravity:</label>
+							<input type="number" id="gravity" placeholder="400" style="width: 100%; padding: 0.5rem; border-radius: 5px; border: none;" />
+						</div>
+						<div>
+							<label for="gravity_chute">Parachute Gravity:</label>
+							<input type="number" id="gravity_chute" placeholder="60" style="width: 100%; padding: 0.5rem; border-radius: 5px; border: none;" />
+						</div>
+						<div>
+							<label for="max_velocity">Max Velocity:</label>
+							<input type="number" id="max_velocity" placeholder="600" style="width: 100%; padding: 0.5rem; border-radius: 5px; border: none;" />
+						</div>
+						<div>
+							<label for="wait">Reset Wait (sec):</label>
+							<input type="number" id="wait" placeholder="60" style="width: 100%; padding: 0.5rem; border-radius: 5px; border: none;" />
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div id="result-section" style="display: none;">
+				<h3>🎉 Setup Complete!</h3>
+				<p>Your overlay URL is ready:</p>
+				<div id="overlay-url" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; word-break: break-all; margin: 1rem 0;"></div>
+				<button type="button" id="copy-url-btn" class="big-button">📋 Copy URL</button>
+				<button type="button" id="open-obs-btn" class="big-button">🎥 Open in OBS</button>
+			</div>
+		</div>
+		
+		<script>
+			// Lazy load the streamlined OAuth module
+			let moduleLoaded = false;
+			
+			function loadModule() {
+				if (!moduleLoaded) {
+					moduleLoaded = true;
+					import('./streamlined-oauth.ts').catch(err => {
+						console.error('Failed to load streamlined OAuth module:', err);
+					});
+				}
+			}
+			
+			// Load module on first interaction
+			['click', 'keydown', 'touchstart'].forEach(event => {
+				document.addEventListener(event, loadModule, { once: true, passive: true });
+			});
+			
+			// Preload on button hover
+			document.getElementById('quick-authorize-btn').addEventListener('mouseenter', loadModule, { once: true });
+		</script>
+	</body>
+</html>

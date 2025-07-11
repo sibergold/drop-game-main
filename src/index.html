@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Kick Drop Game - Interactive Multiplayer Experience</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="Interactive drop game with Kick.com integration and real-time multiplayer features" />
+		<meta name="theme-color" content="#9146ff" />
+		
+		<!-- Preload critical resources -->
+		<link rel="preload" href="styles.css" as="style" />
+		<link rel="preload" href="index.ts" as="script" />
+		
+		<!-- Favicon -->
+		<link rel="icon" href="favicon.gif" />
+		
+		<!-- Styles -->
+		<link rel="stylesheet" href="styles.css" />
+		
+		<!-- Critical inline CSS for game container -->
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background: #000;
+				overflow: hidden;
+				font-family: system-ui, -apple-system, sans-serif;
+			}
+			#game-container {
+				width: 100vw;
+				height: 100vh;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.loading {
+				color: #9146ff;
+				font-size: 18px;
+				text-align: center;
+			}
+		</style>
+		
+		<!-- Lazy load main script -->
+		<script>
+			// Show loading indicator
+			document.addEventListener('DOMContentLoaded', function() {
+				if (!document.body.innerHTML.trim()) {
+					document.body.innerHTML = '<div id="game-container"><div class="loading">🎮 Loading Kick Drop Game...</div></div>';
+				}
+				
+				// Lazy load main module
+				import('./index.ts').catch(err => {
+					console.error('Failed to load game:', err);
+					document.body.innerHTML = '<div id="game-container"><div class="loading" style="color: #e53e3e;">❌ Failed to load game. Please refresh the page.</div></div>';
+				});
+			});
+		</script>
+	</head>
+	<body></body>
+</html>
