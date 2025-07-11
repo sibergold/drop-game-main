@@ -27,10 +27,7 @@ connected. Some require that the user be either a moderator or the broadcaster.
 
 ### URL
 
-Visit https://haliphax.github.io/drop-game/ and authorize the application via
-your Kick account. Fill out and submit the _Overlay URL builder_ form. Copy
-the URL from your browser and add it as a browser source in your streaming
-software of choice.
+
 
 ### Configuration
 
