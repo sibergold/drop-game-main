@@ -313,7 +313,7 @@ disconnect() {
 			}
 
 			// Send message via Kick API (correct endpoint from docs)
-			const response = await fetch(`https://kick.com/api/v2/channels/${channel}/chat`, {
+			const response = await fetch(`https://kick.com/api/v2/messages/send/${this.config.chatroomId}`, {
 				method: 'POST',
 				headers: {
 					'Authorization': `Bearer ${this.config.accessToken}`,

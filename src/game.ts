@@ -352,10 +352,19 @@ export default class Game extends Phaser.Scene {
 		if (emote) {
 			console.log(`🎭 Loading emote for ${username}: ${emote}`);
 
-			// For now, use enhanced default avatar mapping due to CORS restrictions
-			// In the future, this could be replaced with a proper proxy server
-			this.loadDefaultEmoteAvatar(username, emote);
-			return;
+			// Try to get emote ID from recent messages
+			const emoteId = this.getEmoteIdFromMessage(username, emote);
+			if (emoteId) {
+				console.log(`🎭 Found emote ID for ${emote}: ${emoteId}`);
+				// Try to load real Kick emote with CORS proxy
+				this.loadKickEmoteWithUniqueTexture(username, emote, emoteId);
+				return;
+			} else {
+				console.log(`🎭 No emote ID found for ${emote}, using default avatar mapping`);
+				// Fallback to enhanced default avatar mapping
+				this.loadDefaultEmoteAvatar(username, emote);
+				return;
+			}
 		}
 
 		finish();
@@ -383,6 +392,81 @@ export default class Game extends Phaser.Scene {
 			const firstKey = (this as any).recentEmotes.keys().next().value;
 			(this as any).recentEmotes.delete(firstKey);
 		}
+	}
+
+	// Load Kick emote with multiple CORS proxy fallbacks
+	private loadKickEmoteWithUniqueTexture(username: string, emoteName: string, emoteId: string): void {
+		const kickEmoteUrl = `https://files.kick.com/emotes/${emoteId}/fullsize`;
+		const uniqueTextureKey = `kickemote_${emoteName}_${emoteId}`;
+
+		console.log(`🎭 Attempting to load real Kick emote: ${emoteName} (ID: ${emoteId})`);
+		console.log(`🎭 Unique texture key: ${uniqueTextureKey}`);
+		console.log(`🎭 Original URL: ${kickEmoteUrl}`);
+
+		// Try our own proxy server first, then fallback to public proxies
+		const isLocalhost = window.location.hostname === 'localhost';
+		const ownProxyUrl = isLocalhost
+			? `http://localhost:3001/proxy/emote/${emoteId}`
+			: `${window.location.origin}/.netlify/functions/emote-proxy?emoteId=${emoteId}`;
+
+		// List of proxy services to try (our own proxy first, then public ones)
+		const corsProxies = [
+			ownProxyUrl, // Our own proxy (most reliable)
+			'https://corsproxy.io/?',
+			'https://api.allorigins.win/raw?url=',
+			'https://cors-anywhere.herokuapp.com/',
+			'https://thingproxy.freeboard.io/fetch/',
+			'https://api.codetabs.com/v1/proxy?quest=',
+		];
+
+		this.tryLoadEmoteWithProxies(username, emoteName, emoteId, kickEmoteUrl, uniqueTextureKey, corsProxies, 0);
+	}
+
+	// Try loading emote with different CORS proxies
+	private tryLoadEmoteWithProxies(username: string, emoteName: string, emoteId: string, originalUrl: string, textureKey: string, proxies: string[], proxyIndex: number): void {
+		if (proxyIndex >= proxies.length) {
+			console.log(`⚠️ All CORS proxies failed, falling back to default avatar`);
+			this.loadDefaultEmoteAvatar(username, emoteName);
+			return;
+		}
+
+		const currentProxy = proxies[proxyIndex];
+
+		// Check if this is our own proxy (doesn't need URL encoding)
+		let proxiedUrl: string;
+		if (currentProxy.includes('/proxy/emote/') || currentProxy.includes('emote-proxy')) {
+			// Our own proxy - use as is
+			proxiedUrl = currentProxy;
+		} else {
+			// External proxy - encode the original URL
+			proxiedUrl = currentProxy + encodeURIComponent(originalUrl);
+		}
+
+		console.log(`🔄 Trying CORS proxy ${proxyIndex + 1}/${proxies.length}: ${currentProxy}`);
+		console.log(`🔗 Proxied URL: ${proxiedUrl}`);
+
+		// Use Phaser's built-in image loader with proxy
+		this.load.setBaseURL();
+		this.load
+			.image(textureKey, proxiedUrl)
+			.on(`filecomplete-image-${textureKey}`, () => {
+				console.log(`✅ Kick emote loaded via proxy: ${emoteName}`);
+				const avatar = new Avatar(username, this, textureKey);
+				this.droppers.set(username, avatar);
+				this.droppersArray.push(avatar);
+				this.dropGroup!.add(avatar.container);
+				try {
+					this.sound.stopByKey("drop");
+					this.sound.play("drop");
+				} catch (error) {
+					console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
+				}
+			})
+			.on(`loaderror-image-${textureKey}`, () => {
+				console.log(`⚠️ Failed to load emote with proxy ${currentProxy}, trying next proxy`);
+				this.tryLoadEmoteWithProxies(username, emoteName, emoteId, originalUrl, textureKey, proxies, proxyIndex + 1);
+			})
+			.start();
 	}
 
 	// Enhanced default avatar mapping for Kick emotes

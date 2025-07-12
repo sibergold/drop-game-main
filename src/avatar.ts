@@ -26,11 +26,23 @@ export default class Avatar {
 
 		if (emote) {
 			console.log(`🎭 Creating avatar with emote: ${emote} for user: ${username}`);
+			console.log(`🔍 Texture exists in game: ${game.textures.exists(emote)}`);
+			console.log(`🔍 Available textures in avatar:`, Object.keys(game.textures.list));
+
 			this.customImage = true;
-			this.sprite = game.add.image(0, 0, emote);
-			this.sprite.setDisplaySize(64, 64);
-			this.chute.setOrigin(0.5, 0.75);
-			console.log(`🎭 Avatar sprite created with texture key: ${emote}`);
+
+			try {
+				this.sprite = game.add.image(0, 0, emote);
+				this.sprite.setDisplaySize(64, 64);
+				this.chute.setOrigin(0.5, 0.75);
+				console.log(`✅ Avatar sprite created successfully with texture key: ${emote}`);
+			} catch (error) {
+				console.log(`❌ Failed to create sprite with texture ${emote}:`, error);
+				// Fallback to default
+				const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
+				this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
+				console.log(`🔄 Fallback to default sprite: drop${spriteNumber}`);
+			}
 		} else {
 			const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
 			this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
