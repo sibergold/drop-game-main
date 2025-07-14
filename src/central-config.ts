@@ -191,6 +191,28 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 		console.log('🔄 Fetching user info from Kick API...');
 		console.log('Access token:', accessToken ? 'YES' : 'NO');
 
+		const isLocalhost = window.location.hostname === 'localhost';
+
+		if (!isLocalhost) {
+			// Production: Netlify fonksiyonu üzerinden fetch
+			const response = await fetch(`${window.location.origin}/.netlify/functions/get-kick-user`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ access_token: accessToken })
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('Netlify get-kick-user error:', errorText);
+				throw new Error(`get-kick-user failed: ${response.status} - ${errorText}`);
+			}
+
+			const userData = await response.json();
+			console.log('User data received from Netlify function:', userData);
+			return userData;
+		}
+
+		// Local: Doğrudan Kick API'ye fetch (eski davranış)
 		// Try multiple API endpoints as Kick API structure might vary
 		const endpoints = [
 			'https://api.kick.com/public/v1/users', // New official API
