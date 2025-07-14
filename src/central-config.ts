@@ -192,8 +192,8 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 		const isLocalhost = window.location.hostname === 'localhost';
 
 		if (!isLocalhost) {
-			// Production: Netlify fonksiyonu üzerinden fetch
-			const response = await fetch(`${window.location.origin}/.netlify/functions/get-kick-user`, {
+			// Production: Render proxy fonksiyonu üzerinden fetch
+			const response = await fetch('https://drop-game-proxy.onrender.com/get-kick-user', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ access_token: accessToken })
@@ -201,12 +201,12 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 
 			if (!response.ok) {
 				const errorText = await response.text();
-				console.error('Netlify get-kick-user error:', errorText);
+				console.error('Render get-kick-user error:', errorText);
 				throw new Error(`get-kick-user failed: ${response.status} - ${errorText}`);
 			}
 
 			const userData = await response.json();
-			console.log('User data received from Netlify function:', userData);
+			console.log('User data received from Render function:', userData);
 			return userData;
 		}
 
