@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelPlush Asset Test - All Themes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .theme-section {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #00ff88;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .asset-category {
+            margin-bottom: 2rem;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #ffeb3b;
+            border-bottom: 2px solid rgba(255,235,59,0.3);
+            padding-bottom: 0.5rem;
+        }
+        
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .asset-item {
+            background: rgba(0,0,0,0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .asset-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,255,136,0.2);
+        }
+        
+        .asset-image {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            margin: 0 auto 1rem;
+            display: block;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+        }
+        
+        .asset-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        
+        .asset-type {
+            font-size: 0.9rem;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #00ff88;
+            margin: 2rem 0;
+        }
+        
+        .error {
+            color: #ff6b6b;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .stats {
+            background: rgba(0,255,136,0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #ccc;
+            text-transform: uppercase;
+        }
+        
+        .theme-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .theme-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .theme-btn:hover {
+            background: rgba(0,255,136,0.2);
+            border-color: #00ff88;
+            transform: translateY(-2px);
+        }
+        
+        .theme-btn.active {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 PixelPlush Asset Test</h1>
+        
+        <div class="stats" id="stats">
+            <h2>📊 Asset Statistics</h2>
+            <div class="loading">Loading statistics...</div>
+        </div>
+        
+        <div class="theme-selector" id="themeSelector">
+            <!-- Tema butonları dinamik olarak oluşturulacak -->
+        </div>
+        
+        <div id="content">
+            <div class="loading">🔄 Loading PixelPlush assets...</div>
+        </div>
+    </div>
+
+    <script>
+        let allAssets = [];
+        let currentFilter = 'all';
+        
+        const themes = [
+            'Base', 'Multi', 'Pool', 'Night', 'Light', 'Retro', 'Spring', 'Easter', 'Summer', 'Autumn', 'Winter',
+            'Christmas', 'Valentine', 'Halloween', 'Pride', 'Magic', 'PixelPlush'
+        ];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createThemeButtons();
+            loadAssets();
+        });
+        
+        async function loadAssets() {
+            try {
+                const response = await fetch('./pixelplush/catalog.json');
+                const catalog = await response.json();
+
+                // Paraşüt ve havuz asset'larını manuel ekle
+                const gameAssets = createGameAssets();
+                allAssets = [...catalog, ...gameAssets];
+
+                updateStats();
+                // İlk tema ile başla
+                currentFilter = themes[0].toLowerCase();
+                updateActiveButton(themes[0]);
+                displayAssets();
+            } catch (error) {
+                console.error('Error loading assets:', error);
+                document.getElementById('content').innerHTML =
+                    '<div class="error">❌ Failed to load assets. Please check if the server is running.</div>';
+            }
+        }
+
+        function createGameAssets() {
+            const parachutes = [
+                // Base theme
+                { id: 'chute_black', name: 'Black Parachute', theme: 'Base', type: 'parachute', path: 'chute_black.png' },
+                { id: 'chute_blue', name: 'Blue Parachute', theme: 'Base', type: 'parachute', path: 'chute_blue.png' },
+                { id: 'chute_green', name: 'Green Parachute', theme: 'Base', type: 'parachute', path: 'chute_green.png' },
+                { id: 'chute_pink', name: 'Pink Parachute', theme: 'Base', type: 'parachute', path: 'chute_pink.png' },
+                { id: 'chute_purple', name: 'Purple Parachute', theme: 'Base', type: 'parachute', path: 'chute_purple.png' },
+                { id: 'chute_yellow', name: 'Yellow Parachute', theme: 'Base', type: 'parachute', path: 'chute_yellow.png' },
+
+                // Multi theme
+                { id: 'chute_black_blue', name: 'Black Blue Parachute', theme: 'Multi', type: 'parachute', path: 'chute_black_blue.png' },
+                { id: 'chute_black_green', name: 'Black Green Parachute', theme: 'Multi', type: 'parachute', path: 'chute_black_green.png' },
+                { id: 'chute_blue_green', name: 'Blue Green Parachute', theme: 'Multi', type: 'parachute', path: 'chute_blue_green.png' },
+                { id: 'chute_white_blue', name: 'White Blue Parachute', theme: 'Multi', type: 'parachute', path: 'chute_white_blue.png' },
+
+                // Winter theme
+                { id: 'chute_snowflake', name: 'Snowflake Parachute', theme: 'Winter', type: 'parachute', path: 'winter_theme/chute_snowflake.png' },
+                { id: 'parachute_snow', name: 'Snow Parachute', theme: 'Winter', type: 'parachute', path: 'winter_theme/parachute_snow.png' },
+                { id: 'chute_snowflake1', name: 'Snowflake 1', theme: 'Winter', type: 'parachute', path: 'winter_theme/chute_snowflake1.png' },
+                { id: 'chute_snowflake2', name: 'Snowflake 2', theme: 'Winter', type: 'parachute', path: 'winter_theme/chute_snowflake2.png' },
+
+                // Spring theme
+                { id: 'hot_air_balloon_pink', name: 'Pink Hot Air Balloon', theme: 'Spring', type: 'parachute', path: 'spring_theme/hot_air_balloon_pink.png' },
+                { id: 'para_balloon_peach', name: 'Peach Balloon', theme: 'Spring', type: 'parachute', path: 'spring_theme/para_balloon_peach.png' },
+                { id: 'hot_air_balloon_orange', name: 'Orange Hot Air Balloon', theme: 'Spring', type: 'parachute', path: 'spring_theme/hot_air_balloon_orange.png' },
+                { id: 'hot_air_balloon_purple', name: 'Purple Hot Air Balloon', theme: 'Spring', type: 'parachute', path: 'spring_theme/hot_air_balloon_purple.png' },
+
+                // Autumn theme
+                { id: 'chute_brown1', name: 'Brown Parachute 1', theme: 'Autumn', type: 'parachute', path: 'autumn_theme/chute_brown1.png' },
+                { id: 'chute_orange1', name: 'Orange Parachute 1', theme: 'Autumn', type: 'parachute', path: 'autumn_theme/chute_orange1.png' },
+                { id: 'chute_red1', name: 'Red Parachute 1', theme: 'Autumn', type: 'parachute', path: 'autumn_theme/chute_red1.png' },
+                { id: 'chute_yellow1', name: 'Yellow Parachute 1', theme: 'Autumn', type: 'parachute', path: 'autumn_theme/chute_yellow1.png' },
+
+                // Christmas theme
+                { id: 'chute_ribbon_red', name: 'Red Ribbon Parachute', theme: 'Christmas', type: 'parachute', path: 'christmas_eve/chute_ribbon_red.png' },
+                { id: 'chute_ribbon_green', name: 'Green Ribbon Parachute', theme: 'Christmas', type: 'parachute', path: 'christmas_eve/chute_ribbon_green.png' },
+                { id: 'chute_ribbon_blue', name: 'Blue Ribbon Parachute', theme: 'Christmas', type: 'parachute', path: 'christmas_eve/chute_ribbon_blue.png' },
+                { id: 'chute_ribbon_pink', name: 'Pink Ribbon Parachute', theme: 'Christmas', type: 'parachute', path: 'christmas_eve/chute_ribbon_pink.png' },
+
+                // Valentine theme
+                { id: 'balloon_heart_red', name: 'Red Heart Balloon', theme: 'Valentine', type: 'parachute', path: 'valentines/balloon_heart_red.png' },
+                { id: 'balloon_heart_pink', name: 'Pink Heart Balloon', theme: 'Valentine', type: 'parachute', path: 'valentines/balloon_heart_pink.png' },
+                { id: 'balloon_heart_gold', name: 'Gold Heart Balloon', theme: 'Valentine', type: 'parachute', path: 'valentines/balloon_heart_gold.png' },
+                { id: 'balloon_heart_brown', name: 'Brown Heart Balloon', theme: 'Valentine', type: 'parachute', path: 'valentines/balloon_heart_brown.png' },
+
+                // Pride theme
+                { id: 'chute_rainbow', name: 'Rainbow Parachute', theme: 'Pride', type: 'parachute', path: 'pride_theme/chute_rainbow.png' },
+                { id: 'chute_plane_gay', name: 'Gay Pride Plane', theme: 'Pride', type: 'parachute', path: 'pride_theme/chute_plane_gay.png' },
+                { id: 'chute_plane_lesbian', name: 'Lesbian Pride Plane', theme: 'Pride', type: 'parachute', path: 'pride_theme/chute_plane_lesbian.png' },
+                { id: 'chute_plane_bisexual', name: 'Bisexual Pride Plane', theme: 'Pride', type: 'parachute', path: 'pride_theme/chute_plane_bisexual.png' },
+
+                // Halloween theme
+                { id: 'cauldron_base', name: 'Cauldron Parachute', theme: 'Halloween', type: 'parachute', path: 'cauldron/cauldron_base.png' },
+
+                // Retro theme
+                { id: 'chute_retro', name: 'Retro Parachute', theme: 'Retro', type: 'parachute', path: 'chute_retro.png' }
+            ];
+
+            const targets = [
+                // Base theme
+                { id: 'target', name: 'Basic Target', theme: 'Base', type: 'target', path: 'target.png' },
+                { id: 'target_big', name: 'Big Target', theme: 'Base', type: 'target', path: 'target_big.png' },
+                { id: 'target_flat', name: 'Flat Target', theme: 'Base', type: 'target', path: 'target_flat.png' },
+
+                // Pool theme
+                { id: 'target_pool_blue', name: 'Blue Pool', theme: 'Pool', type: 'target', path: 'target_pool_blue.png' },
+                { id: 'target_pool_red', name: 'Red Pool', theme: 'Pool', type: 'target', path: 'target_pool_red.png' },
+
+                // Night theme
+                { id: 'target_night', name: 'Night Target', theme: 'Night', type: 'target', path: 'target_night.png' },
+                { id: 'target_night_flat', name: 'Night Target Flat', theme: 'Night', type: 'target', path: 'target_night_flat.png' },
+
+                // Light theme
+                { id: 'target_light1', name: 'Light Target 1', theme: 'Light', type: 'target', path: 'target_light-export.png' },
+                { id: 'target_light2', name: 'Light Target 2', theme: 'Light', type: 'target', path: 'target_light-export2.png' },
+                { id: 'target_light3', name: 'Light Target 3', theme: 'Light', type: 'target', path: 'target_light-export3.png' },
+                { id: 'target_light4', name: 'Light Target 4', theme: 'Light', type: 'target', path: 'target_light-export4.png' },
+
+                // Retro theme
+                { id: 'target_retro1', name: 'Retro Target 1', theme: 'Retro', type: 'target', path: 'target_retro1.png' },
+                { id: 'target_retro2', name: 'Retro Target 2', theme: 'Retro', type: 'target', path: 'target_retro2.png' },
+                { id: 'target_retro3', name: 'Retro Target 3', theme: 'Retro', type: 'target', path: 'target_retro3.png' },
+
+                // Winter theme
+                { id: 'target_winter', name: 'Winter Target', theme: 'Winter', type: 'target', path: 'winter_theme/target_winter.png' },
+                { id: 'target_winter_front', name: 'Winter Target Front', theme: 'Winter', type: 'target', path: 'winter_theme/target_winter_front.png' },
+
+                // Spring theme
+                { id: 'target_spring', name: 'Spring Target', theme: 'Spring', type: 'target', path: 'spring_theme/target.png' },
+                { id: 'target_spring_front', name: 'Spring Target Front', theme: 'Spring', type: 'target', path: 'spring_theme/target_spring_front.png' },
+
+                // Autumn theme
+                { id: 'target_leaves', name: 'Autumn Leaves Target', theme: 'Autumn', type: 'target', path: 'autumn_theme/target_leaves.png' },
+                { id: 'target_leaves2', name: 'Autumn Leaves Target 2', theme: 'Autumn', type: 'target', path: 'autumn_theme/target_leaves2.png' },
+
+                // Christmas theme
+                { id: 'target_christmas', name: 'Christmas Target', theme: 'Christmas', type: 'target', path: 'christmas_theme/target_christmas.png' },
+                { id: 'target_christmas_front', name: 'Christmas Target Front', theme: 'Christmas', type: 'target', path: 'christmas_theme/target_christmas_front.png' },
+
+                // Easter theme
+                { id: 'target_easter1', name: 'Easter Target 1', theme: 'Easter', type: 'target', path: 'easter_theme/target_easter1.png' },
+                { id: 'target_easter2', name: 'Easter Target 2', theme: 'Easter', type: 'target', path: 'easter_theme/target_easter2.png' },
+                { id: 'target_easter3', name: 'Easter Target 3', theme: 'Easter', type: 'target', path: 'easter_theme/target_easter3.png' },
+                { id: 'target_easter4', name: 'Easter Target 4', theme: 'Easter', type: 'target', path: 'easter_theme/target_easter4.png' },
+                { id: 'target_easter5', name: 'Easter Target 5', theme: 'Easter', type: 'target', path: 'easter_theme/target_easter5.png' },
+
+                // Valentine theme
+                { id: 'valentines_target_brown_red', name: 'Valentine Target Brown/Red', theme: 'Valentine', type: 'target', path: 'valentines/valentines_target_brown_red_nocredit.png' },
+                { id: 'valentines_target_white_pink', name: 'Valentine Target White/Pink', theme: 'Valentine', type: 'target', path: 'valentines/valentines_target_white_pink_nocredit.png' },
+                { id: 'valentines_target_brown_gold', name: 'Valentine Target Brown/Gold', theme: 'Valentine', type: 'target', path: 'valentines/valentines_target_brown_gold_nocredit.png' },
+                { id: 'valentines_target_white_gold', name: 'Valentine Target White/Gold', theme: 'Valentine', type: 'target', path: 'valentines/valentines_target_white_gold_nocredit.png' },
+
+                // Halloween theme
+                { id: 'cauldron_target', name: 'Cauldron Target', theme: 'Halloween', type: 'target', path: 'cauldron/cauldron_base.png' }
+            ];
+
+            return [...parachutes, ...targets];
+        }
+        
+        function createThemeButtons() {
+            const selector = document.getElementById('themeSelector');
+
+            themes.forEach((theme, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'theme-btn';
+                if (index === 0) btn.classList.add('active'); // İlk tema aktif
+                btn.textContent = theme;
+                btn.onclick = () => filterByTheme(theme.toLowerCase());
+                selector.appendChild(btn);
+            });
+        }
+        
+        function updateStats() {
+            const characters = allAssets.filter(asset => asset.type === 'character');
+            const pets = allAssets.filter(asset => asset.type === 'pet');
+            const parachutes = allAssets.filter(asset => asset.type === 'parachute');
+            const targets = allAssets.filter(asset => asset.type === 'target');
+            const outfits = allAssets.filter(asset => asset.type === 'outfit');
+            const addons = allAssets.filter(asset => asset.type === 'add-on');
+            const bundles = allAssets.filter(asset => asset.type === 'bundle');
+
+            const themeCount = new Set(allAssets.map(asset => asset.theme)).size;
+
+            document.getElementById('stats').innerHTML = `
+                <h2>📊 Asset Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">${allAssets.length}</div>
+                        <div class="stat-label">Total Assets</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${characters.length}</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${pets.length}</div>
+                        <div class="stat-label">Pets</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${parachutes.length}</div>
+                        <div class="stat-label">Parachutes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${targets.length}</div>
+                        <div class="stat-label">Targets</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${outfits.length}</div>
+                        <div class="stat-label">Outfits</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${themeCount}</div>
+                        <div class="stat-label">Themes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${bundles.length}</div>
+                        <div class="stat-label">Bundles</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function filterByTheme(theme) {
+            currentFilter = theme;
+            updateActiveButton(theme.charAt(0).toUpperCase() + theme.slice(1));
+            displayAssets();
+        }
+        
+        function updateActiveButton(activeText) {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent === activeText) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        function displayAssets() {
+            const content = document.getElementById('content');
+            displaySingleTheme(currentFilter);
+        }
+
+        function displayByCategory() {
+            const content = document.getElementById('content');
+            let html = '';
+
+            // Kategorilere göre grupla
+            const categories = [
+                { name: 'Characters', type: 'character', icon: '👤' },
+                { name: 'Pets', type: 'pet', icon: '🐾' },
+                { name: 'Parachutes', type: 'parachute', icon: '🪂' },
+                { name: 'Targets', type: 'target', icon: '🎯' },
+                { name: 'Outfits', type: 'outfit', icon: '👕' },
+                { name: 'Add-ons', type: 'add-on', icon: '🎁' },
+                { name: 'Bundles', type: 'bundle', icon: '📦' }
+            ];
+
+            categories.forEach(category => {
+                const categoryAssets = allAssets.filter(asset => asset.type === category.type);
+                if (categoryAssets.length > 0) {
+                    html += createCategorySection(category, categoryAssets);
+                }
+            });
+
+            content.innerHTML = html;
+        }
+
+        function displaySingleTheme(theme) {
+            const content = document.getElementById('content');
+            const themeAssets = allAssets.filter(asset =>
+                asset.theme && asset.theme.toLowerCase() === theme.toLowerCase()
+            );
+
+            content.innerHTML = createThemeSection(theme, themeAssets);
+        }
+        
+        function createCategorySection(category, assets) {
+            // Tema bazında grupla
+            const themeGroups = {};
+            assets.forEach(asset => {
+                const theme = asset.theme || 'Unknown';
+                if (!themeGroups[theme]) {
+                    themeGroups[theme] = [];
+                }
+                themeGroups[theme].push(asset);
+            });
+
+            let html = `
+                <div class="theme-section">
+                    <div class="theme-title">${category.icon} ${category.name} (${assets.length} total)</div>
+            `;
+
+            // Her tema için alt bölüm oluştur
+            Object.keys(themeGroups).sort().forEach(theme => {
+                const themeAssets = themeGroups[theme];
+                html += `
+                    <div class="asset-category">
+                        <div class="category-title">🎨 ${theme} (${themeAssets.length})</div>
+                        <div class="asset-grid">
+                `;
+
+                themeAssets.forEach(asset => {
+                    const imagePath = getAssetImagePath(asset);
+                    html += `
+                        <div class="asset-item">
+                            <img class="asset-image"
+                                 src="${imagePath}"
+                                 alt="${asset.name}"
+                                 onerror="this.src='./default/drop1.png'">
+                            <div class="asset-name">${asset.name}</div>
+                            <div class="asset-type">${asset.group || asset.type}</div>
+                        </div>
+                    `;
+                });
+
+                html += '</div></div>';
+            });
+
+            html += '</div>';
+            return html;
+        }
+
+        function createThemeSection(theme, assets) {
+            const characters = assets.filter(asset => asset.type === 'character');
+            const pets = assets.filter(asset => asset.type === 'pet');
+            const parachutes = assets.filter(asset => asset.type === 'parachute');
+            const targets = assets.filter(asset => asset.type === 'target');
+            const outfits = assets.filter(asset => asset.type === 'outfit');
+            const addons = assets.filter(asset => asset.type === 'add-on');
+            const bundles = assets.filter(asset => asset.type === 'bundle');
+
+            let html = `
+                <div class="theme-section">
+                    <div class="theme-title">🎨 ${theme.charAt(0).toUpperCase() + theme.slice(1)} Theme (${assets.length} assets)</div>
+            `;
+
+            if (characters.length > 0) {
+                html += createAssetCategory('👤 Characters', characters);
+            }
+
+            if (pets.length > 0) {
+                html += createAssetCategory('🐾 Pets', pets);
+            }
+
+            if (parachutes.length > 0) {
+                html += createAssetCategory('🪂 Parachutes', parachutes);
+            }
+
+            if (targets.length > 0) {
+                html += createAssetCategory('🎯 Targets', targets);
+            }
+
+            if (outfits.length > 0) {
+                html += createAssetCategory('👕 Outfits', outfits);
+            }
+
+            if (addons.length > 0) {
+                html += createAssetCategory('🎁 Add-ons', addons);
+            }
+
+            if (bundles.length > 0) {
+                html += createAssetCategory('📦 Bundles', bundles);
+            }
+
+            html += '</div>';
+            return html;
+        }
+        
+        function createAssetCategory(title, assets) {
+            let html = `
+                <div class="asset-category">
+                    <div class="category-title">${title} (${assets.length})</div>
+                    <div class="asset-grid">
+            `;
+            
+            assets.forEach(asset => {
+                const imagePath = getAssetImagePath(asset);
+                html += `
+                    <div class="asset-item">
+                        <img class="asset-image" 
+                             src="${imagePath}" 
+                             alt="${asset.name}"
+                             onerror="this.src='./default/drop1.png'">
+                        <div class="asset-name">${asset.name}</div>
+                        <div class="asset-type">${asset.type}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div></div>';
+            return html;
+        }
+        
+        function getAssetImagePath(asset) {
+            if (asset.type === 'character') {
+                // Path düzeltmesi: bazı karakterlerde klasör adı ile dosya adı farklı
+                let folderName = asset.path;
+                let fileName = asset.path;
+
+                // Özel durumlar için düzeltme (klasör adı ile dosya adı farklı olanlar)
+                if (asset.id === 'girlbear') {
+                    folderName = 'girlbear';
+                    fileName = 'beargirl';
+                } else if (asset.id === 'evilbear') {
+                    folderName = 'evilbear';
+                    fileName = 'evil_bear';
+                } else if (asset.id === 'boybear') {
+                    folderName = 'boybear';
+                    fileName = 'bear';
+                } else if (asset.id === 'instafluff') {
+                    folderName = 'instafluff';
+                    fileName = 'insta';
+                } else if (asset.id === 'kiro') {
+                    folderName = 'kiro';
+                    fileName = 'fairy_boy';
+                } else if (asset.id === 'koral') {
+                    folderName = 'koral';
+                    fileName = 'fairy_girl';
+                } else if (asset.id === 'lotus') {
+                    folderName = 'lotus';
+                    fileName = 'mushroom_man_pink';
+                } else if (asset.id === 'nova') {
+                    folderName = 'nova';
+                    fileName = 'mushroom_man_purple';
+                } else if (asset.id === 'tori') {
+                    folderName = 'tori';
+                    fileName = 'mushroom_man_green';
+                } else if (asset.id === 'avellana') {
+                    folderName = 'avellana';
+                    fileName = 'avelana';
+                }
+
+                return `./pixelplush/characters/${folderName}/${fileName}_front/${fileName}_front1.png`;
+            } else if (asset.type === 'pet') {
+                return `./pixelplush/pets/${asset.path}/${asset.path}_front/${asset.path}_front1.png`;
+            } else if (asset.type === 'outfit') {
+                // Outfit category'sine göre path belirle
+                const category = asset.category || 'onesies';
+                return `./pixelplush/skins/outfits/${category}/${asset.path}/${asset.path}_front/${asset.path}_front1.png`;
+            } else if (asset.type === 'add-on') {
+                return `./pixelplush/add-ons/${asset.path}`;
+            } else if (asset.type === 'parachute') {
+                return `./pixelplush/game-parachute/${asset.path}`;
+            } else if (asset.type === 'target') {
+                return `./pixelplush/game-parachute/${asset.path}`;
+            } else if (asset.type === 'bundle') {
+                return `./pixelplush/bundles/${asset.path}`;
+            }
+            return './default/drop1.png';
+        }
+    </script>
+</body>
+</html>

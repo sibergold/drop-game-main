@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 PixelPlush Theme Selector - Drop Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .current-selection {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .theme-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+        }
+
+        .theme-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: #00ff88;
+        }
+
+        .theme-card.selected {
+            border-color: #00ff88;
+            background: rgba(0,255,136,0.2);
+        }
+
+        .theme-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .theme-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .theme-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 15px;
+        }
+
+        .character-count {
+            background: rgba(0,255,136,0.3);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .action-buttons {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,255,136,0.3);
+        }
+
+        .btn.secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .overlay-url {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .url-input {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 500px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #ff5252;
+        }
+
+        .instructions {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            margin-bottom: 15px;
+            color: #00ff88;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .themes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎭 PixelPlush Theme Selector</h1>
+            <p>Choose your theme for the Drop Game overlay</p>
+            
+            <div class="current-selection">
+                <strong>Current Theme:</strong> <span id="currentTheme">All Characters</span>
+            </div>
+        </div>
+
+        <div class="themes-grid" id="themesGrid">
+            <!-- Themes will be loaded here -->
+        </div>
+
+        <div class="overlay-url">
+            <h3>🔗 Your Overlay URL</h3>
+            <p>Copy this URL and add it as a Browser Source in OBS:</p>
+            <div style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px;">
+                <input type="text" id="overlayUrl" class="url-input" readonly>
+                <button class="copy-btn" onclick="copyUrl()">📋 Copy</button>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="./streamlined-oauth.html" class="btn secondary">⬅️ Back to Setup</a>
+            <button class="btn" onclick="openOverlay()">🎮 Open Overlay</button>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How to Use</h3>
+            <ol>
+                <li>Select your preferred theme above</li>
+                <li>Copy the overlay URL</li>
+                <li>In OBS, add a new Browser Source</li>
+                <li>Paste the URL and set size to 1920x1080</li>
+                <li>Your viewers can now drop with themed characters!</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Theme definitions
+        const themes = [
+            {
+                id: 'all',
+                name: 'All Characters',
+                icon: '🎭',
+                description: 'Mix of all available characters',
+                characters: 50
+            },
+            {
+                id: 'halloween',
+                name: 'Halloween',
+                icon: '🎃',
+                description: 'Spooky characters: witches, vampires, ghosts',
+                characters: 12
+            },
+            {
+                id: 'christmas',
+                name: 'Christmas',
+                icon: '🎄',
+                description: 'Festive characters: Santa, elves, snowmen',
+                characters: 8
+            },
+            {
+                id: 'easter',
+                name: 'Easter',
+                icon: '🐰',
+                description: 'Spring characters: bunnies, chicks, eggs',
+                characters: 15
+            },
+            {
+                id: 'valentine',
+                name: 'Valentine',
+                icon: '💝',
+                description: 'Love-themed characters: cute bears',
+                characters: 6
+            },
+            {
+                id: 'spring',
+                name: 'Spring',
+                icon: '🌸',
+                description: 'Nature characters: flowers, butterflies',
+                characters: 9
+            },
+            {
+                id: 'summer',
+                name: 'Summer',
+                icon: '☀️',
+                description: 'Beach and pool themed characters',
+                characters: 7
+            },
+            {
+                id: 'fairy',
+                name: 'Fairy',
+                icon: '🧚',
+                description: 'Magical fairy characters',
+                characters: 5
+            },
+            {
+                id: 'magic',
+                name: 'Magic',
+                icon: '🪄',
+                description: 'Wizards and magical characters',
+                characters: 6
+            },
+            {
+                id: 'cute',
+                name: 'Cute Animals',
+                icon: '🐾',
+                description: 'Adorable animal characters',
+                characters: 10
+            },
+            {
+                id: 'streamer',
+                name: 'Streamer',
+                icon: '📺',
+                description: 'Special streamer characters',
+                characters: 4
+            },
+            {
+                id: 'base',
+                name: 'Classic',
+                icon: '👤',
+                description: 'Original basic characters',
+                characters: 2
+            }
+        ];
+
+        let selectedTheme = localStorage.getItem('selectedTheme') || 'all';
+
+        function initializeThemes() {
+            const grid = document.getElementById('themesGrid');
+            const currentThemeSpan = document.getElementById('currentTheme');
+            
+            // Update current theme display
+            const currentThemeObj = themes.find(t => t.id === selectedTheme);
+            currentThemeSpan.textContent = currentThemeObj ? currentThemeObj.name : 'All Characters';
+            
+            // Create theme cards
+            grid.innerHTML = themes.map(theme => `
+                <div class="theme-card ${theme.id === selectedTheme ? 'selected' : ''}" 
+                     onclick="selectTheme('${theme.id}')">
+                    <div class="theme-icon">${theme.icon}</div>
+                    <div class="theme-name">${theme.name}</div>
+                    <div class="theme-description">${theme.description}</div>
+                    <div class="character-count">${theme.characters} characters</div>
+                </div>
+            `).join('');
+            
+            updateOverlayUrl();
+        }
+
+        function selectTheme(themeId) {
+            selectedTheme = themeId;
+            localStorage.setItem('selectedTheme', themeId);
+            
+            // Update UI
+            document.querySelectorAll('.theme-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.theme-card').classList.add('selected');
+            
+            // Update current theme display
+            const themeObj = themes.find(t => t.id === themeId);
+            document.getElementById('currentTheme').textContent = themeObj.name;
+            
+            updateOverlayUrl();
+            
+            console.log('🎨 Theme selected:', themeObj.name);
+        }
+
+        function updateOverlayUrl() {
+            // OAuth sisteminde tema parametresi hash'e eklenir
+            // Bu sayfa sadece tema seçimi için, gerçek URL OAuth'dan gelir
+            const infoText = `Theme "${selectedTheme}" selected! Use the OAuth setup page to get your overlay URL.`;
+            document.getElementById('overlayUrl').value = infoText;
+
+            // OAuth sayfasına yönlendirme butonu ekle
+            const container = document.querySelector('.url-section');
+            let oauthButton = document.getElementById('oauth-redirect-btn');
+
+            if (!oauthButton) {
+                oauthButton = document.createElement('button');
+                oauthButton.id = 'oauth-redirect-btn';
+                oauthButton.className = 'copy-btn';
+                oauthButton.style.background = '#00ff88';
+                oauthButton.style.marginLeft = '10px';
+                oauthButton.textContent = '🔗 Go to OAuth Setup';
+                oauthButton.onclick = () => {
+                    window.location.href = './streamlined-oauth.html';
+                };
+                container.appendChild(oauthButton);
+            }
+        }
+
+        function copyUrl() {
+            const urlInput = document.getElementById('overlayUrl');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✅ Copied!';
+            btn.style.background = '#51cf66';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#ff6b6b';
+            }, 2000);
+        }
+
+        function openOverlay() {
+            const url = document.getElementById('overlayUrl').value;
+            window.open(url, '_blank');
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeThemes);
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+[build]
+  # Build command
+  command = "npm install --include=dev && npm run build"
+  
+  # Directory to publish (relative to root of your repo)
+  publish = "dist"
+  
+  # Directory with the serverless functions
+  functions = "netlify/functions"
+
+[build.environment]
+  # Node.js version
+  NODE_VERSION = "18.16.0"
+  
+  # Environment for production
+  NODE_ENV = "production"
+
+# Handle OAuth redirects
+[[redirects]]
+  from = "/oauth"
+  to = "/oauth.html"
+  status = 200
+
+[[redirects]]
+  from = "/streamlined-oauth"
+  to = "/streamlined-oauth.html"
+  status = 200
+
+# Default SPA fallback (should be last)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Headers for security and performance
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ws-us2.pusher.com https://sockjs-us2.pusher.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://ws-us2.pusher.com https://sockjs-us2.pusher.com wss://ws-us2.pusher.com https://kick.com; img-src 'self' data: https:; media-src 'self';"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

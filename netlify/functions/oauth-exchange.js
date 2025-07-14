@@ -19,20 +19,7 @@ exports.handler = async (event, context) => {
     };
   }
 
-  // Handle GET requests for testing
-  if (event.httpMethod === 'GET') {
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        message: 'OAuth exchange endpoint is working',
-        hasClientId: !!process.env.CENTRAL_CLIENT_ID,
-        hasClientSecret: !!process.env.CENTRAL_CLIENT_SECRET
-      })
-    };
-  }
-
-  // Only allow POST requests for actual OAuth exchange
+  // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
@@ -43,11 +30,18 @@ exports.handler = async (event, context) => {
 
   try {
     console.log('OAuth exchange request received');
-    
+    console.log('Event method:', event.httpMethod);
+    console.log('Event body:', event.body);
+
     // Get environment variables
     const CLIENT_ID = process.env.CENTRAL_CLIENT_ID;
     const CLIENT_SECRET = process.env.CENTRAL_CLIENT_SECRET;
-    
+
+    console.log('Environment check:', {
+      CLIENT_ID: CLIENT_ID ? 'SET' : 'MISSING',
+      CLIENT_SECRET: CLIENT_SECRET ? 'SET' : 'MISSING'
+    });
+
     if (!CLIENT_ID || !CLIENT_SECRET) {
       console.error('Missing environment variables');
       return {
@@ -58,6 +52,15 @@ exports.handler = async (event, context) => {
     }
 
     // Parse request body
+    if (!event.body) {
+      console.error('No request body provided');
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: 'No request body provided' })
+      };
+    }
+
     const { code, redirect_uri, code_verifier } = JSON.parse(event.body);
     
     console.log('Exchange request:', {
@@ -92,19 +95,23 @@ exports.handler = async (event, context) => {
     });
 
     console.log('Kick token response status:', tokenResponse.status);
+    console.log('Kick token response headers:', Object.fromEntries(tokenResponse.headers.entries()));
 
     if (!tokenResponse.ok) {
-      const errorData = await tokenResponse.json().catch(() => ({ error: 'Unknown error' }));
-      console.error('Kick token exchange error:', errorData);
+      const errorText = await tokenResponse.text();
+      console.error('Kick token exchange error:', errorText);
       return {
         statusCode: tokenResponse.status,
         headers,
-        body: JSON.stringify({ error: errorData.error || 'Token exchange failed' })
+        body: JSON.stringify({ error: `Token exchange failed: ${errorText}` })
       };
     }
 
     const tokenData = await tokenResponse.json();
-    console.log('Token exchange successful');
+    console.log('Token exchange successful:', {
+      has_access_token: !!tokenData.access_token,
+      token_type: tokenData.token_type
+    });
 
     return {
       statusCode: 200,
@@ -118,10 +125,14 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('OAuth exchange error:', error);
+    console.error('Error stack:', error.stack);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({
+        error: 'Internal server error',
+        details: error.message
+      })
     };
   }
 };

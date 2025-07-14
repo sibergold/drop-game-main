@@ -1,0 +1,496 @@
+[
+	{
+		"id": "coin_remove",
+		"group": "none",
+		"name": "Coin Subtract",
+		"description": "Plush Coin Remove",
+		"theme": "None",
+		"type": "character",
+		"cost": 0,
+		"hidden": true
+	},
+	{
+		"id": "pumpkin_man",
+		"group": "Jack Lantern",
+		"name": "Jack Lantern",
+		"theme": "Halloween",
+		"type": "character",
+		"path": "pumpkin_man",
+		"cost": 20
+	},
+	{
+		"id": "harry",
+		"group": "Wizard",
+		"name": "Geeky Wizard",
+		"theme": "Magic",
+		"type": "character",
+		"path": "harry",
+		"cost": 20
+	},
+	{
+		"id": "hermione",
+		"group": "Wizard",
+		"name": "Smart Girl Wizard",
+		"theme": "Magic",
+		"type": "character",
+		"path": "hermione",
+		"cost": 20
+	},
+	{
+		"id": "ron",
+		"group": "Wizard",
+		"name": "Red-Hair Wizard",
+		"theme": "Magic",
+		"type": "character",
+		"path": "ron",
+		"cost": 20
+	},
+	{
+		"id": "dobby",
+		"group": "Wizard",
+		"name": "Magical Elf",
+		"theme": "Magic",
+		"type": "character",
+		"path": "dobby",
+		"cost": 20
+	},
+	{
+		"id": "voldemort",
+		"group": "Wizard",
+		"name": "Evil Wizard",
+		"theme": "Magic",
+		"type": "character",
+		"path": "voldemort",
+		"cost": 20
+	},
+	{
+		"id": "monster",
+		"group": "Monster",
+		"name": "Sluggs",
+		"theme": "Halloween",
+		"type": "character",
+		"path": "monster",
+		"cost": 20
+	},
+	{
+		"id": "vampire",
+		"group": "Vampire",
+		"name": "Vampire Steven",
+		"theme": "Halloween",
+		"type": "character",
+		"path": "vampire",
+		"cost": 20
+	},
+	{
+		"id": "witch",
+		"group": "Witch",
+		"name": "Potion Queen",
+		"theme": "Halloween",
+		"type": "character",
+		"path": "witch",
+		"cost": 20
+	},
+	{
+		"id": "zombie",
+		"group": "Zombie",
+		"name": "Zomb",
+		"theme": "Halloween",
+		"type": "character",
+		"path": "zombie",
+		"cost": 20
+	},
+	{
+		"id": "onesie_unicorn",
+		"group": "Onesie",
+		"name": "Unicorn Outfit",
+		"theme": "Pride",
+		"type": "character",
+		"path": "onesie_unicorn",
+		"cost": 20
+	},
+	{
+		"id": "chick",
+		"group": "Chick",
+		"name": "Chick Outfit",
+		"theme": "Easter",
+		"type": "character",
+		"path": "chick",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "rabbit",
+		"group": "Rabbit",
+		"name": "Rabbit Outfit",
+		"theme": "Easter",
+		"type": "character",
+		"path": "rabbit",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "bellflower",
+		"group": "Flower",
+		"name": "Bellflower",
+		"theme": "Spring",
+		"type": "character",
+		"path": "bellflower",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "calendula",
+		"group": "Flower",
+		"name": "Calendula",
+		"theme": "Spring",
+		"type": "character",
+		"path": "calendula",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "poppy",
+		"group": "Flower",
+		"name": "Poppy",
+		"theme": "Spring",
+		"type": "character",
+		"path": "poppy",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "boybear",
+		"group": "Bear",
+		"name": "Jimmy",
+		"theme": "Valentine",
+		"type": "character",
+		"path": "bear",
+		"cost": 20
+	},
+	{
+		"id": "girlbear",
+		"group": "Bear",
+		"name": "Pammy",
+		"theme": "Valentine",
+		"type": "character",
+		"path": "beargirl",
+		"cost": 20
+	},
+	{
+		"id": "evilbear",
+		"group": "Bear",
+		"name": "Grizzly",
+		"theme": "Valentine",
+		"type": "character",
+		"path": "evil_bear",
+		"cost": 20
+	},
+	{
+		"id": "yeti_blue",
+		"group": "Yeti",
+		"name": "The Blue Yeti",
+		"theme": "Winter",
+		"type": "character",
+		"path": "yeti_blue",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "yeti_green",
+		"group": "Yeti",
+		"name": "The Green Yeti",
+		"theme": "Winter",
+		"type": "character",
+		"path": "yeti_green",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "yeti_orange",
+		"group": "Yeti",
+		"name": "The Orange Yeti",
+		"theme": "Winter",
+		"type": "character",
+		"path": "yeti_orange",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "yeti_pink",
+		"group": "Yeti",
+		"name": "The Pink Yeti",
+		"theme": "Winter",
+		"type": "character",
+		"path": "yeti_pink",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "amanita",
+		"group": "Mushroom",
+		"name": "Amanita",
+		"theme": "Autumn",
+		"type": "character",
+		"path": "amanita",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "twiglet",
+		"group": "Mushroom",
+		"name": "Twiglet",
+		"theme": "Autumn",
+		"type": "character",
+		"path": "twiglet",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "lotus",
+		"group": "Fairy",
+		"name": "Lotus",
+		"theme": "Fairy",
+		"type": "character",
+		"path": "mushroom_man_pink",
+		"cost": 20
+	},
+	{
+		"id": "tori",
+		"group": "Fairy",
+		"name": "Tori",
+		"theme": "Fairy",
+		"type": "character",
+		"path": "mushroom_man_green",
+		"cost": 20
+	},
+	{
+		"id": "koral",
+		"group": "Fairy",
+		"name": "Koral",
+		"theme": "Fairy",
+		"type": "character",
+		"path": "fairy_girl",
+		"cost": 20
+	},
+	{
+		"id": "kiro",
+		"group": "Fairy",
+		"name": "Kiro",
+		"theme": "Fairy",
+		"type": "character",
+		"path": "fairy_boy",
+		"cost": 20
+	},
+	{
+		"id": "nova",
+		"group": "Fairy",
+		"name": "Nova",
+		"theme": "Fairy",
+		"type": "character",
+		"path": "mushroom_man_purple",
+		"cost": 20
+	},
+	{
+		"id": "instafluff",
+		"group": "Instafluff",
+		"name": "Instafluff",
+		"theme": "Streamer",
+		"type": "character",
+		"path": "insta",
+		"cost": 0
+	},
+	{
+		"id": "maaya",
+		"group": "Maaya",
+		"name": "Maaya",
+		"theme": "Streamer",
+		"type": "character",
+		"path": "maaya",
+		"cost": 0
+	},
+	{
+		"id": "avellana",
+		"group": "Avellana",
+		"name": "Avellana",
+		"theme": "Streamer",
+		"type": "character",
+		"path": "avelana",
+		"cost": 0,
+		"hidden": true
+	},
+	{
+		"id": "jimmy",
+		"group": "Jimmy",
+		"name": "Jimmy",
+		"theme": "Streamer",
+		"type": "character",
+		"path": "jimmy",
+		"cost": 0,
+		"hidden": true
+	},
+	{
+		"id": "sammie",
+		"group": "Sammie",
+		"name": "Sammie",
+		"theme": "Streamer",
+		"type": "character",
+		"path": "sammie",
+		"cost": 0,
+		"hidden": true
+	},
+	{
+		"id": "boy",
+		"group": "Normal",
+		"name": "Boy",
+		"theme": "Base",
+		"type": "character",
+		"path": "boy",
+		"cost": 0
+	},
+	{
+		"id": "girl",
+		"group": "Normal",
+		"name": "Girl",
+		"theme": "Base",
+		"type": "character",
+		"path": "girl",
+		"cost": 0
+	},
+	{
+		"id": "boyhunter",
+		"group": "Hunter",
+		"name": "Hunter (M)",
+		"theme": "Adventure",
+		"type": "character",
+		"path": "boyhunter",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "girlhunter",
+		"group": "Hunter",
+		"name": "Hunter (F)",
+		"theme": "Adventure",
+		"type": "character",
+		"path": "girlhunter",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "santa",
+		"group": "Santa Claus",
+		"name": "Santa Claus",
+		"theme": "Christmas",
+		"type": "character",
+		"path": "santa",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "claus",
+		"group": "Mrs. Claus",
+		"name": "Mrs. Claus",
+		"theme": "Christmas",
+		"type": "character",
+		"path": "claus",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "elf",
+		"group": "Christmas Helper",
+		"name": "Christmas Helper (M)",
+		"theme": "Christmas",
+		"type": "character",
+		"path": "elf",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "elfgirl",
+		"group": "Christmas Helper",
+		"name": "Christmas Helper (F)",
+		"theme": "Christmas",
+		"type": "character",
+		"path": "elfgirl",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "grinch",
+		"group": "Grump",
+		"name": "Grump",
+		"theme": "Christmas",
+		"type": "character",
+		"path": "grinch",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "snowman",
+		"group": "Snowman",
+		"name": "Snowman",
+		"theme": "Winter",
+		"type": "character",
+		"path": "snowman",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "rabbit_onesie_black",
+		"group": "Onesie",
+		"name": "Black Rabbit Outfit",
+		"theme": "Spring",
+		"type": "character",
+		"path": "rabbit_onesie_black",
+		"cost": 20
+	},
+	{
+		"id": "rabbit_onesie_grey",
+		"group": "Onesie",
+		"name": "Gray Rabbit Outfit",
+		"theme": "Spring",
+		"type": "character",
+		"path": "rabbit_onesie_grey",
+		"cost": 20
+	},
+	{
+		"id": "rabbit_onesie_white",
+		"group": "Onesie",
+		"name": "White Rabbit Outfit",
+		"theme": "Spring",
+		"type": "character",
+		"path": "rabbit_onesie_white",
+		"cost": 20
+	},
+	{
+		"id": "blurple",
+		"group": "Special",
+		"name": "Blurple",
+		"theme": "Special",
+		"type": "character",
+		"path": "blurple",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "gwape",
+		"group": "Special",
+		"name": "Gwape",
+		"theme": "Special",
+		"type": "character",
+		"path": "gwape",
+		"cost": 20,
+		"hidden": true
+	},
+	{
+		"id": "jelly",
+		"group": "Special",
+		"name": "Jelly",
+		"theme": "Special",
+		"type": "character",
+		"path": "jelly",
+		"cost": 20,
+		"hidden": true
+	}
+]

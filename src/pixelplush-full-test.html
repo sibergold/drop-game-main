@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 PixelPlush Full Asset Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: rgba(0,255,136,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(0,255,136,0.3);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .category-section {
+            margin: 30px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(0,255,136,0.3);
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            color: #00ff88;
+        }
+
+        .category-count {
+            background: rgba(0,255,136,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .theme-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .theme-tab {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .theme-tab:hover {
+            background: rgba(0,255,136,0.2);
+            border-color: #00ff88;
+        }
+
+        .theme-tab.active {
+            background: #00ff88;
+            color: #000;
+            border-color: #00ff88;
+        }
+
+        .assets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .asset-card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,255,136,0.2);
+            border-color: #00ff88;
+        }
+
+        .asset-image {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .asset-image img {
+            max-width: 100%;
+            max-height: 100%;
+            image-rendering: pixelated;
+            transition: all 0.3s ease;
+        }
+
+        .asset-image img:hover {
+            transform: scale(1.1);
+        }
+
+        .asset-image .error {
+            color: #ff6b6b;
+            font-size: 24px;
+        }
+
+        .asset-image .loading {
+            color: #ffd43b;
+            font-size: 12px;
+        }
+
+        .asset-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .asset-info {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .asset-status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: rgba(81, 207, 102, 0.3);
+            color: #51cf66;
+        }
+
+        .status-error {
+            background: rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+        }
+
+        .status-loading {
+            background: rgba(255, 212, 59, 0.3);
+            color: #ffd43b;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: #00cc6a;
+            transform: translateY(-1px);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #00ff88;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .assets-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>Loading PixelPlush Assets...</h2>
+            <p id="loadingStatus">Initializing...</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="refreshAll()">🔄 Refresh All</button>
+        <button class="control-btn" onclick="showOnlyErrors()">❌ Show Errors</button>
+        <button class="control-btn" onclick="showAll()">👁️ Show All</button>
+        <button class="control-btn" onclick="exportReport()">📊 Export Report</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎮 PixelPlush Full Asset Test</h1>
+            <p>Comprehensive testing of all characters, parachutes, and pools</p>
+            
+            <div class="stats" id="globalStats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAssets">0</div>
+                    <div class="stat-label">Total Assets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="loadedAssets">0</div>
+                    <div class="stat-label">Loaded</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="errorAssets">0</div>
+                    <div class="stat-label">Errors</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successRate">0%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Characters Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">🎭 Characters</h2>
+                <span class="category-count" id="charactersCount">0 items</span>
+            </div>
+            <div class="theme-tabs" id="characterThemes"></div>
+            <div class="assets-grid" id="charactersGrid"></div>
+        </div>
+
+        <!-- Parachutes Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">🪂 Parachutes</h2>
+                <span class="category-count" id="parachutesCount">0 items</span>
+            </div>
+            <div class="theme-tabs" id="parachuteThemes"></div>
+            <div class="assets-grid" id="parachutesGrid"></div>
+        </div>
+
+        <!-- Pools/Targets Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">🎯 Pools & Targets</h2>
+                <span class="category-count" id="poolsCount">0 items</span>
+            </div>
+            <div class="theme-tabs" id="poolThemes"></div>
+            <div class="assets-grid" id="poolsGrid"></div>
+        </div>
+
+        <!-- Pets Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">🐾 Pets</h2>
+                <span class="category-count" id="petsCount">0 items</span>
+            </div>
+            <div class="theme-tabs" id="petThemes"></div>
+            <div class="assets-grid" id="petsGrid"></div>
+        </div>
+
+        <!-- Effects Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2 class="category-title">✨ Effects</h2>
+                <span class="category-count" id="effectsCount">0 items</span>
+            </div>
+            <div class="assets-grid" id="effectsGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let catalog = [];
+        let assetStats = {
+            total: 0,
+            loaded: 0,
+            errors: 0
+        };
+        let currentFilters = {
+            characters: 'All',
+            parachutes: 'All',
+            pools: 'All',
+            pets: 'All'
+        };
+
+        // Initialize the test
+        async function init() {
+            updateLoadingStatus('Loading catalog...');
+            await loadCatalog();
+            
+            updateLoadingStatus('Processing assets...');
+            await processAssets();
+            
+            updateLoadingStatus('Rendering interface...');
+            renderInterface();
+            
+            updateLoadingStatus('Testing assets...');
+            await testAllAssets();
+            
+            hideLoading();
+        }
+
+        function updateLoadingStatus(status) {
+            document.getElementById('loadingStatus').textContent = status;
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        async function loadCatalog() {
+            try {
+                const response = await fetch('./pixelplush/catalog.json');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                catalog = await response.json();
+                console.log(`📦 Loaded catalog with ${catalog.length} items`);
+            } catch (error) {
+                console.error('❌ Failed to load catalog:', error);
+                catalog = [];
+            }
+        }
+
+        function processAssets() {
+            // Process different asset types - TÜM karakterleri dahil et (hidden olanlar da)
+            // Sadece path'i olan karakterleri al
+            window.characters = catalog.filter(item => item.type === 'character' && item.path);
+            window.parachutes = findParachuteAssets();
+            window.pools = findPoolAssets();
+            // Sadece path'i olan pet'leri al
+            window.pets = catalog.filter(item => item.type === 'pet' && item.path);
+            window.effects = findEffectAssets();
+
+            assetStats.total = window.characters.length + window.parachutes.length +
+                              window.pools.length + window.pets.length + window.effects.length;
+
+            console.log('📊 Asset breakdown:', {
+                characters: window.characters.length,
+                parachutes: window.parachutes.length,
+                pools: window.pools.length,
+                pets: window.pets.length,
+                effects: window.effects.length,
+                total: assetStats.total
+            });
+
+            // Karakterlerin detaylarını logla
+            console.log('🎭 Characters found:', window.characters.map(c => `${c.name} (${c.path || 'NO_PATH'})`));
+
+            // Path'i olmayan karakterleri logla
+            const charactersWithoutPath = catalog.filter(item => item.type === 'character' && !item.path);
+            if (charactersWithoutPath.length > 0) {
+                console.warn('⚠️ Characters without path:', charactersWithoutPath.map(c => `${c.name} (${c.id})`));
+            }
+
+            // Path'i olmayan pet'leri logla
+            const petsWithoutPath = catalog.filter(item => item.type === 'pet' && !item.path);
+            if (petsWithoutPath.length > 0) {
+                console.warn('⚠️ Pets without path:', petsWithoutPath.map(p => `${p.name} (${p.id})`));
+            }
+        }
+
+        function findParachuteAssets() {
+            // Comprehensive parachute asset list
+            const parachutes = [];
+
+            // Base single-color parachutes
+            const baseParachutes = [
+                { id: 'chute_default', name: 'Default Chute', theme: 'Base', path: 'default/chute.png' },
+                { id: 'chute_black', name: 'Black Chute', theme: 'Base', path: 'game-parachute/chute_black.png' },
+                { id: 'chute_blue', name: 'Blue Chute', theme: 'Base', path: 'game-parachute/chute_blue.png' },
+                { id: 'chute_green', name: 'Green Chute', theme: 'Base', path: 'game-parachute/chute_green.png' },
+                { id: 'chute_pink', name: 'Pink Chute', theme: 'Base', path: 'game-parachute/chute_pink.png' },
+                { id: 'chute_purple', name: 'Purple Chute', theme: 'Base', path: 'game-parachute/chute_purple.png' },
+                { id: 'chute_yellow', name: 'Yellow Chute', theme: 'Base', path: 'game-parachute/chute_yellow.png' },
+                { id: 'chute_retro', name: 'Retro Chute', theme: 'Retro', path: 'game-parachute/chute_retro.png' }
+            ];
+
+            // Multi-color parachutes
+            const multiParachutes = [
+                { id: 'chute_black_blue', name: 'Black Blue', theme: 'Multi', path: 'game-parachute/chute_black_blue.png' },
+                { id: 'chute_black_green', name: 'Black Green', theme: 'Multi', path: 'game-parachute/chute_black_green.png' },
+                { id: 'chute_black_orange', name: 'Black Orange', theme: 'Multi', path: 'game-parachute/chute_black_orange.png' },
+                { id: 'chute_black_pink', name: 'Black Pink', theme: 'Multi', path: 'game-parachute/chute_black_pink.png' },
+                { id: 'chute_black_purple', name: 'Black Purple', theme: 'Multi', path: 'game-parachute/chute_black_purple.png' },
+                { id: 'chute_black_red', name: 'Black Red', theme: 'Multi', path: 'game-parachute/chute_black_red.png' },
+                { id: 'chute_black_white', name: 'Black White', theme: 'Multi', path: 'game-parachute/chute_black_white.png' },
+                { id: 'chute_black_yellow', name: 'Black Yellow', theme: 'Multi', path: 'game-parachute/chute_black_yellow.png' },
+                { id: 'chute_blue_green', name: 'Blue Green', theme: 'Multi', path: 'game-parachute/chute_blue_green.png' },
+                { id: 'chute_blue_purple', name: 'Blue Purple', theme: 'Multi', path: 'game-parachute/chute_blue_purple.png' },
+                { id: 'chute_blue_yellow', name: 'Blue Yellow', theme: 'Multi', path: 'game-parachute/chute_blue_yellow.png' },
+                { id: 'chute_pink_blue', name: 'Pink Blue', theme: 'Multi', path: 'game-parachute/chute_pink_blue.png' },
+                { id: 'chute_pink_purple', name: 'Pink Purple', theme: 'Multi', path: 'game-parachute/chute_pink_purple.png' },
+                { id: 'chute_purple_blue', name: 'Purple Blue', theme: 'Multi', path: 'game-parachute/chute_purple_blue.png' },
+                { id: 'chute_red_purple', name: 'Red Purple', theme: 'Multi', path: 'game-parachute/chute_red_purple.png' },
+                { id: 'chute_white_blue', name: 'White Blue', theme: 'Multi', path: 'game-parachute/chute_white_blue.png' },
+                { id: 'chute_white_green', name: 'White Green', theme: 'Multi', path: 'game-parachute/chute_white_green.png' },
+                { id: 'chute_white_pink', name: 'White Pink', theme: 'Multi', path: 'game-parachute/chute_white_pink.png' },
+                { id: 'chute_white_purple', name: 'White Purple', theme: 'Multi', path: 'game-parachute/chute_white_purple.png' },
+                { id: 'chute_white_red', name: 'White Red', theme: 'Multi', path: 'game-parachute/chute_white_red.png' },
+                { id: 'chute_white_turquoise', name: 'White Turquoise', theme: 'Multi', path: 'game-parachute/chute_white_turquoise.png' },
+                { id: 'chute_white_yellow', name: 'White Yellow', theme: 'Multi', path: 'game-parachute/chute_white_yellow.png' }
+            ];
+
+            // Autumn theme parachutes
+            const autumnParachutes = [
+                { id: 'chute_brown1', name: 'Brown Autumn 1', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_brown1.png' },
+                { id: 'chute_brown2', name: 'Brown Autumn 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_brown2.png' },
+                { id: 'chute_green1', name: 'Green Autumn 1', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_green1.png' },
+                { id: 'chute_green2', name: 'Green Autumn 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_green2.png' },
+                { id: 'chute_orange1', name: 'Orange Autumn 1', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_orange1.png' },
+                { id: 'chute_orange2', name: 'Orange Autumn 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_orange2.png' },
+                { id: 'chute_red1', name: 'Red Autumn 1', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_red1.png' },
+                { id: 'chute_red2', name: 'Red Autumn 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_red2.png' },
+                { id: 'chute_yellow1', name: 'Yellow Autumn 1', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_yellow1.png' },
+                { id: 'chute_yellow2', name: 'Yellow Autumn 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/chute_yellow2.png' }
+            ];
+
+            // Christmas theme parachutes
+            const christmasParachutes = [
+                { id: 'chute_snowflake', name: 'Snowflake Chute', theme: 'Christmas', path: 'game-parachute/christmas_theme/chute_snowflake.png' },
+                { id: 'chute_ribbon_blue', name: 'Blue Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_blue.png' },
+                { id: 'chute_ribbon_darkpurple', name: 'Dark Purple Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_darkpurple.png' },
+                { id: 'chute_ribbon_green', name: 'Green Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_green.png' },
+                { id: 'chute_ribbon_orange', name: 'Orange Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_orange.png' },
+                { id: 'chute_ribbon_pink', name: 'Pink Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_pink.png' },
+                { id: 'chute_ribbon_purple', name: 'Purple Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_purple.png' },
+                { id: 'chute_ribbon_red', name: 'Red Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_red.png' },
+                { id: 'chute_ribbon_yellow', name: 'Yellow Ribbon', theme: 'Christmas', path: 'game-parachute/christmas_eve/chute_ribbon_yellow.png' }
+            ];
+
+            // Winter theme parachutes
+            const winterParachutes = [
+                { id: 'chute_snowflake_winter', name: 'Winter Snowflake', theme: 'Winter', path: 'game-parachute/winter_theme/chute_snowflake.png' },
+                { id: 'chute_snowflake1', name: 'Snowflake 1', theme: 'Winter', path: 'game-parachute/winter_theme/chute_snowflake1.png' },
+                { id: 'chute_snowflake2', name: 'Snowflake 2', theme: 'Winter', path: 'game-parachute/winter_theme/chute_snowflake2.png' },
+                { id: 'parachute_snow', name: 'Snow Parachute', theme: 'Winter', path: 'game-parachute/winter_theme/parachute_snow.png' }
+            ];
+
+            // Spring theme parachutes
+            const springParachutes = [
+                { id: 'hot_air_balloon_orange', name: 'Orange Hot Air Balloon', theme: 'Spring', path: 'game-parachute/spring_theme/hot_air_balloon_orange.png' },
+                { id: 'hot_air_balloon_pink', name: 'Pink Hot Air Balloon', theme: 'Spring', path: 'game-parachute/spring_theme/hot_air_balloon_pink.png' },
+                { id: 'hot_air_balloon_pink2', name: 'Pink Hot Air Balloon 2', theme: 'Spring', path: 'game-parachute/spring_theme/hot_air_balloon_pink2.png' },
+                { id: 'hot_air_balloon_purple', name: 'Purple Hot Air Balloon', theme: 'Spring', path: 'game-parachute/spring_theme/hot_air_balloon_purple.png' },
+                { id: 'para_balloon_peach', name: 'Peach Balloon', theme: 'Spring', path: 'game-parachute/spring_theme/para_balloon_peach.png' },
+                { id: 'para_balloon_pink', name: 'Pink Balloon', theme: 'Spring', path: 'game-parachute/spring_theme/para_balloon_pink.png' },
+                { id: 'para_balloon_pink2', name: 'Pink Balloon 2', theme: 'Spring', path: 'game-parachute/spring_theme/para_balloon_pink2.png' },
+                { id: 'para_balloon_purple', name: 'Purple Balloon', theme: 'Spring', path: 'game-parachute/spring_theme/para_balloon_purple.png' }
+            ];
+
+            // Valentine theme parachutes
+            const valentineParachutes = [
+                { id: 'balloon_heart_brown', name: 'Brown Heart Balloon', theme: 'Valentine', path: 'game-parachute/valentines/balloon_heart_brown.png' },
+                { id: 'balloon_heart_gold', name: 'Gold Heart Balloon', theme: 'Valentine', path: 'game-parachute/valentines/balloon_heart_gold.png' },
+                { id: 'balloon_heart_pink', name: 'Pink Heart Balloon', theme: 'Valentine', path: 'game-parachute/valentines/balloon_heart_pink.png' },
+                { id: 'balloon_heart_red', name: 'Red Heart Balloon', theme: 'Valentine', path: 'game-parachute/valentines/balloon_heart_red.png' },
+                { id: 'balloon_heart_white', name: 'White Heart Balloon', theme: 'Valentine', path: 'game-parachute/valentines/balloon_heart_white.png' }
+            ];
+
+            // Pride theme parachutes
+            const prideParachutes = [
+                { id: 'chute_rainbow', name: 'Rainbow Chute', theme: 'Pride', path: 'game-parachute/pride_theme/chute_rainbow.png' },
+                { id: 'chute_plane_asexual', name: 'Asexual Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_asexual.png' },
+                { id: 'chute_plane_bisexual', name: 'Bisexual Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_bisexual.png' },
+                { id: 'chute_plane_gay', name: 'Gay Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_gay.png' },
+                { id: 'chute_plane_genderfluid', name: 'Genderfluid Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_genderfluid.png' },
+                { id: 'chute_plane_intersex', name: 'Intersex Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_intersex.png' },
+                { id: 'chute_plane_lesbian', name: 'Lesbian Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_lesbian.png' },
+                { id: 'chute_plane_nonbinary', name: 'Non-binary Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_nonbinary.png' },
+                { id: 'chute_plane_pansexual', name: 'Pansexual Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_pansexual.png' },
+                { id: 'chute_plane_transgender', name: 'Transgender Flag', theme: 'Pride', path: 'game-parachute/pride_theme/chute_plane_transgender.png' }
+            ];
+
+            // Camp Chaos theme parachutes
+            const campParachutes = [
+                { id: 'chute_artin_blue_green', name: 'Artin Blue Green', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_blue_green.png' },
+                { id: 'chute_artin_blue_orange', name: 'Artin Blue Orange', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_blue_orange.png' },
+                { id: 'chute_artin_blue_pink', name: 'Artin Blue Pink', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_blue_pink.png' },
+                { id: 'chute_artin_blue_yellow', name: 'Artin Blue Yellow', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_blue_yellow.png' },
+                { id: 'chute_artin_green_pink', name: 'Artin Green Pink', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_green_pink.png' },
+                { id: 'chute_artin_purple_green', name: 'Artin Purple Green', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_purple_green.png' },
+                { id: 'chute_artin_purple_orange', name: 'Artin Purple Orange', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_purple_orange.png' },
+                { id: 'chute_artin_yellow_pink', name: 'Artin Yellow Pink', theme: 'Camp', path: 'game-parachute/camp_chaos/chute_artin_yellow_pink.png' }
+            ];
+
+            return [...baseParachutes, ...multiParachutes, ...autumnParachutes, ...christmasParachutes, ...winterParachutes, ...springParachutes, ...valentineParachutes, ...prideParachutes, ...campParachutes];
+        }
+
+        function findPoolAssets() {
+            // Comprehensive pool/target asset list
+            const pools = [];
+
+            // Base targets
+            const baseTargets = [
+                { id: 'target_default', name: 'Default Target', theme: 'Base', path: 'default/pad.png' },
+                { id: 'target_main', name: 'Main Target', theme: 'Base', path: 'game-parachute/target.png' },
+                { id: 'target_big', name: 'Big Target', theme: 'Base', path: 'game-parachute/target_big.png' },
+                { id: 'target_flat', name: 'Flat Target', theme: 'Base', path: 'game-parachute/target_flat.png' },
+                { id: 'target_original', name: 'Original Target', theme: 'Base', path: 'game-parachute/target_original.png' },
+                { id: 'target_night', name: 'Night Target', theme: 'Night', path: 'game-parachute/target_night.png' },
+                { id: 'target_night_flat', name: 'Night Flat Target', theme: 'Night', path: 'game-parachute/target_night_flat.png' }
+            ];
+
+            // Pool targets
+            const poolTargets = [
+                { id: 'target_pool_blue', name: 'Blue Pool', theme: 'Pool', path: 'game-parachute/target_pool_blue.png' },
+                { id: 'target_pool_red', name: 'Red Pool', theme: 'Pool', path: 'game-parachute/target_pool_red.png' },
+                { id: 'target_pool_blue_new', name: 'Blue Pool New', theme: 'Pool', path: 'game-parachute/target_pool_blue_new.png' },
+                { id: 'target_pool_red_new', name: 'Red Pool New', theme: 'Pool', path: 'game-parachute/target_pool_red_new.png' }
+            ];
+
+            // Retro targets
+            const retroTargets = [
+                { id: 'target_retro1', name: 'Retro Target 1', theme: 'Retro', path: 'game-parachute/target_retro1.png' },
+                { id: 'target_retro2', name: 'Retro Target 2', theme: 'Retro', path: 'game-parachute/target_retro2.png' },
+                { id: 'target_retro3', name: 'Retro Target 3', theme: 'Retro', path: 'game-parachute/target_retro3.png' }
+            ];
+
+            // Light targets
+            const lightTargets = [
+                { id: 'target_light1', name: 'Light Target 1', theme: 'Light', path: 'game-parachute/target_light-export.png' },
+                { id: 'target_light2', name: 'Light Target 2', theme: 'Light', path: 'game-parachute/target_light-export2.png' },
+                { id: 'target_light3', name: 'Light Target 3', theme: 'Light', path: 'game-parachute/target_light-export3.png' },
+                { id: 'target_light4', name: 'Light Target 4', theme: 'Light', path: 'game-parachute/target_light-export4.png' }
+            ];
+
+            // Easter targets
+            const easterTargets = [
+                { id: 'target_easter1', name: 'Easter Target 1', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter1.png' },
+                { id: 'target_easter2', name: 'Easter Target 2', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter2.png' },
+                { id: 'target_easter3', name: 'Easter Target 3', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter3.png' },
+                { id: 'target_easter4', name: 'Easter Target 4', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter4.png' },
+                { id: 'target_easter5', name: 'Easter Target 5', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter5.png' },
+                { id: 'target_easter6', name: 'Easter Target 6', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter6.png' },
+                { id: 'target_easter7', name: 'Easter Target 7', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter7.png' },
+                { id: 'target_easter_front', name: 'Easter Front', theme: 'Easter', path: 'game-parachute/easter_theme/target_easter_front.png' }
+            ];
+
+            // Spring targets
+            const springTargets = [
+                { id: 'target_spring', name: 'Spring Target', theme: 'Spring', path: 'game-parachute/spring_theme/target.png' },
+                { id: 'target_spring_front', name: 'Spring Front', theme: 'Spring', path: 'game-parachute/spring_theme/target_spring_front.png' }
+            ];
+
+            // Christmas targets
+            const christmasTargets = [
+                { id: 'target_christmas', name: 'Christmas Target', theme: 'Christmas', path: 'game-parachute/christmas_theme/target_christmas.png' },
+                { id: 'target_christmas_front', name: 'Christmas Front', theme: 'Christmas', path: 'game-parachute/christmas_theme/target_christmas_front.png' }
+            ];
+
+            // Winter targets
+            const winterTargets = [
+                { id: 'target_winter', name: 'Winter Target', theme: 'Winter', path: 'game-parachute/winter_theme/target_winter.png' },
+                { id: 'target_winter_front', name: 'Winter Front', theme: 'Winter', path: 'game-parachute/winter_theme/target_winter_front.png' }
+            ];
+
+            // Autumn targets
+            const autumnTargets = [
+                { id: 'target_leaves', name: 'Leaves Target', theme: 'Autumn', path: 'game-parachute/autumn_theme/target_leaves.png' },
+                { id: 'target_leaves2', name: 'Leaves Target 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/target_leaves2.png' },
+                { id: 'target_leaves_front2', name: 'Leaves Front 2', theme: 'Autumn', path: 'game-parachute/autumn_theme/target_leaves_front2.png' }
+            ];
+
+            // Valentine targets
+            const valentineTargets = [
+                { id: 'valentines_target_brown_gold', name: 'Brown Gold Valentine', theme: 'Valentine', path: 'game-parachute/valentines/valentines_target_brown_gold_nocredit.png' },
+                { id: 'valentines_target_brown_pink', name: 'Brown Pink Valentine', theme: 'Valentine', path: 'game-parachute/valentines/valentines_target_brown_pink_nocredit.png' },
+                { id: 'valentines_target_brown_red', name: 'Brown Red Valentine', theme: 'Valentine', path: 'game-parachute/valentines/valentines_target_brown_red_nocredit.png' },
+                { id: 'valentines_target_white_gold', name: 'White Gold Valentine', theme: 'Valentine', path: 'game-parachute/valentines/valentines_target_white_gold_nocredit.png' },
+                { id: 'valentines_target_white_pink', name: 'White Pink Valentine', theme: 'Valentine', path: 'game-parachute/valentines/valentines_target_white_pink_nocredit.png' },
+                { id: 'valentines_target_white_red', name: 'White Red Valentine', theme: 'Valentine', path: 'game-parachute/valentines/valentines_target_white_red_nocredit.png' }
+            ];
+
+            // Camp Chaos targets
+            const campTargets = [
+                { id: 'camp_target', name: 'Camp Target', theme: 'Camp', path: 'game-parachute/camp_chaos/camp_target.png' },
+                { id: 'camp_target_credit', name: 'Camp Target Credit', theme: 'Camp', path: 'game-parachute/camp_chaos/camp_target_credit.png' }
+            ];
+
+            return [...baseTargets, ...poolTargets, ...retroTargets, ...lightTargets, ...easterTargets, ...springTargets, ...christmasTargets, ...winterTargets, ...autumnTargets, ...valentineTargets, ...campTargets];
+        }
+
+        function findEffectAssets() {
+            // Find effect assets
+            const effects = [];
+            const knownEffects = [
+                { id: 'droplet', name: 'Droplet Effect', theme: 'Base', path: 'default/droplet.png' },
+                { id: 'fog', name: 'Fog Effect', theme: 'Effects', path: 'effects/fog.png' },
+                { id: 'fog_green', name: 'Green Fog', theme: 'Effects', path: 'effects/fog_green.png' },
+                { id: 'light_glow', name: 'Light Glow', theme: 'Effects', path: 'effects/light_glow.png' },
+                { id: 'footstep', name: 'Footstep', theme: 'Effects', path: 'effects/footstep.png' }
+            ];
+            
+            return knownEffects;
+        }
+
+        function renderInterface() {
+            // Update counts
+            document.getElementById('charactersCount').textContent = `${window.characters.length} items`;
+            document.getElementById('parachutesCount').textContent = `${window.parachutes.length} items`;
+            document.getElementById('poolsCount').textContent = `${window.pools.length} items`;
+            document.getElementById('petsCount').textContent = `${window.pets.length} items`;
+            document.getElementById('effectsCount').textContent = `${window.effects.length} items`;
+
+            // Render theme tabs
+            renderThemeTabs('characters', window.characters, 'characterThemes');
+            renderThemeTabs('parachutes', window.parachutes, 'parachuteThemes');
+            renderThemeTabs('pools', window.pools, 'poolThemes');
+            renderThemeTabs('pets', window.pets, 'petThemes');
+
+            // Render asset grids
+            renderAssetGrid('characters', window.characters, 'charactersGrid');
+            renderAssetGrid('parachutes', window.parachutes, 'parachutesGrid');
+            renderAssetGrid('pools', window.pools, 'poolsGrid');
+            renderAssetGrid('pets', window.pets, 'petsGrid');
+            renderAssetGrid('effects', window.effects, 'effectsGrid');
+
+            updateGlobalStats();
+        }
+
+        function renderThemeTabs(category, assets, containerId) {
+            const themes = ['All', ...new Set(assets.map(asset => asset.theme))];
+            const container = document.getElementById(containerId);
+
+            container.innerHTML = themes.map(theme => `
+                <button class="theme-tab ${theme === currentFilters[category] ? 'active' : ''}"
+                        onclick="filterByTheme('${category}', '${theme}')">
+                    ${theme}
+                </button>
+            `).join('');
+        }
+
+        function renderAssetGrid(category, assets, containerId) {
+            const container = document.getElementById(containerId);
+            const filteredAssets = currentFilters[category] === 'All'
+                ? assets
+                : assets.filter(asset => asset.theme === currentFilters[category]);
+
+            container.innerHTML = filteredAssets.map(asset => {
+                const assetPath = getAssetPath(asset, category);
+                return `
+                    <div class="asset-card" data-asset-id="${asset.id}">
+                        <div class="asset-image">
+                            <div class="loading">Loading...</div>
+                        </div>
+                        <div class="asset-name">${asset.name}</div>
+                        <div class="asset-info">${asset.theme} • ${category}</div>
+                        <div class="asset-status status-loading">Testing...</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getAssetPath(asset, category) {
+            const baseUrl = './pixelplush/';
+
+            // Path güvenlik kontrolü
+            if (!asset.path) {
+                console.warn(`❌ Asset path missing for ${asset.name} (${asset.id})`);
+                return null;
+            }
+
+            switch(category) {
+                case 'characters':
+                    // Character path mapping - catalog path to actual folder name
+                    const characterPathMap = {
+                        'bear': 'boybear',
+                        'beargirl': 'girlbear',
+                        'evil_bear': 'evilbear',
+                        'insta': 'instafluff',
+                        'mushroom_man_pink': 'lotus',
+                        'mushroom_man_green': 'tori',
+                        'mushroom_man_purple': 'nova',
+                        'fairy_girl': 'koral',
+                        'fairy_boy': 'kiro',
+                        'avelana': 'avellana'
+                    };
+                    const actualPath = characterPathMap[asset.path] || asset.path;
+                    return `${baseUrl}characters/${actualPath}/${asset.path}_front/${asset.path}_front1.png`;
+                case 'parachutes':
+                    return asset.path.startsWith('default/') ? `./${asset.path}` : `${baseUrl}${asset.path}`;
+                case 'pools':
+                    return asset.path.startsWith('default/') ? `./${asset.path}` : `${baseUrl}${asset.path}`;
+                case 'pets':
+                    // Pet'ler de karakterler gibi klasör yapısında
+                    return `${baseUrl}pets/${asset.path}/${asset.path}_front/${asset.path}_front1.png`;
+                case 'effects':
+                    return asset.path.startsWith('default/') ? `./${asset.path}` : `${baseUrl}${asset.path}`;
+                default:
+                    return `${baseUrl}${asset.path}`;
+            }
+        }
+
+        async function testAllAssets() {
+            const allAssets = [
+                ...window.characters.map(a => ({...a, category: 'characters'})),
+                ...window.parachutes.map(a => ({...a, category: 'parachutes'})),
+                ...window.pools.map(a => ({...a, category: 'pools'})),
+                ...window.pets.map(a => ({...a, category: 'pets'})),
+                ...window.effects.map(a => ({...a, category: 'effects'}))
+            ];
+
+            const promises = allAssets.map(asset => testAsset(asset));
+            await Promise.all(promises);
+
+            updateGlobalStats();
+        }
+
+        async function testAsset(asset) {
+            const assetPath = getAssetPath(asset, asset.category);
+            const card = document.querySelector(`[data-asset-id="${asset.id}"]`);
+
+            if (!card) return;
+
+            // Path null kontrolü
+            if (!assetPath) {
+                const imageContainer = card.querySelector('.asset-image');
+                const statusElement = card.querySelector('.asset-status');
+                imageContainer.innerHTML = '<div class="error">❌</div>';
+                statusElement.textContent = 'No Path';
+                statusElement.className = 'asset-status status-error';
+                assetStats.errors++;
+                return;
+            }
+
+            const imageContainer = card.querySelector('.asset-image');
+            const statusElement = card.querySelector('.asset-status');
+
+            try {
+                const img = new Image();
+
+                const loadPromise = new Promise((resolve, reject) => {
+                    img.onload = () => {
+                        // Success
+                        imageContainer.innerHTML = `<img src="${assetPath}" alt="${asset.name}">`;
+                        statusElement.textContent = 'Loaded';
+                        statusElement.className = 'asset-status status-success';
+                        assetStats.loaded++;
+                        resolve();
+                    };
+
+                    img.onerror = () => {
+                        // Error
+                        imageContainer.innerHTML = '<div class="error">❌</div>';
+                        statusElement.textContent = 'Failed';
+                        statusElement.className = 'asset-status status-error';
+                        assetStats.errors++;
+                        reject(new Error(`Failed to load ${assetPath}`));
+                    };
+                });
+
+                img.src = assetPath;
+                await loadPromise;
+
+            } catch (error) {
+                console.warn(`❌ Failed to load asset: ${asset.name} (${assetPath})`);
+            }
+        }
+
+        function updateGlobalStats() {
+            document.getElementById('totalAssets').textContent = assetStats.total;
+            document.getElementById('loadedAssets').textContent = assetStats.loaded;
+            document.getElementById('errorAssets').textContent = assetStats.errors;
+
+            const successRate = assetStats.total > 0
+                ? Math.round((assetStats.loaded / assetStats.total) * 100)
+                : 0;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+        }
+
+        function filterByTheme(category, theme) {
+            currentFilters[category] = theme;
+
+            // Update active tab
+            const container = document.getElementById(`${category}Themes`);
+            if (container) {
+                container.querySelectorAll('.theme-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                    if (tab.textContent === theme) {
+                        tab.classList.add('active');
+                    }
+                });
+            }
+
+            // Re-render grid
+            const assets = window[category];
+            if (assets) {
+                renderAssetGrid(category, assets, `${category}Grid`);
+
+                // Re-test filtered assets
+                setTimeout(() => {
+                    const filteredAssets = theme === 'All'
+                        ? assets
+                        : assets.filter(asset => asset.theme === theme);
+
+                    filteredAssets.forEach(asset => {
+                        testAsset({...asset, category});
+                    });
+                }, 100);
+            }
+        }
+
+        function refreshAll() {
+            assetStats = { total: assetStats.total, loaded: 0, errors: 0 };
+            updateGlobalStats();
+            testAllAssets();
+        }
+
+        function showOnlyErrors() {
+            document.querySelectorAll('.asset-card').forEach(card => {
+                const status = card.querySelector('.asset-status');
+                if (status.classList.contains('status-error')) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function showAll() {
+            document.querySelectorAll('.asset-card').forEach(card => {
+                card.style.display = 'block';
+            });
+        }
+
+        function exportReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                stats: assetStats,
+                successRate: Math.round((assetStats.loaded / assetStats.total) * 100),
+                categories: {
+                    characters: window.characters.length,
+                    parachutes: window.parachutes.length,
+                    pools: window.pools.length,
+                    pets: window.pets.length,
+                    effects: window.effects.length
+                },
+                errors: []
+            };
+
+            // Collect error details
+            document.querySelectorAll('.status-error').forEach(errorElement => {
+                const card = errorElement.closest('.asset-card');
+                const name = card.querySelector('.asset-name').textContent;
+                const info = card.querySelector('.asset-info').textContent;
+                report.errors.push({ name, info });
+            });
+
+            // Download as JSON
+            const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `pixelplush-test-report-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Environment Variables</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .debug-info {
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success { background: #2d5a2d; }
+        .error { background: #5a2d2d; }
+        .warning { background: #5a5a2d; }
+        pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+  <script type="module" crossorigin src="/assets/debug-eacf6556.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-3cfb730f.js">
+  <link rel="modulepreload" crossorigin href="/assets/central-config-a0a861d2.js">
+</head>
+<body>
+    <h1>🔍 Debug - Environment Variables</h1>
+    
+    <div class="debug-info">
+        <h2>Environment Variables Check</h2>
+        <div id="env-check"></div>
+    </div>
+    
+    <div class="debug-info">
+        <h2>OAuth Configuration</h2>
+        <div id="oauth-config"></div>
+    </div>
+    
+    <div class="debug-info">
+        <h2>All Import Meta Env</h2>
+        <pre id="all-env"></pre>
+    </div>
+    
+    
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>Kick Drop Game - Interactive Multiplayer Experience</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="Interactive drop game with Kick.com integration and real-time multiplayer features" />
+		<meta name="theme-color" content="#9146ff" />
+		
+		<!-- Preload critical resources -->
+		
+		<link rel="preload" href="/assets/index-c4ea25ee.ts" as="script" />
+		
+		<!-- Favicon -->
+		<link rel="icon" href="data:image/gif;base64,R0lGODlhYABgAPZKAFUAg1YAhFgAhloAiFwAil4AjGIAj2MAkGYAk2cAlGoAl2sAl2sAmG8Am3AAnHIAnXQAn3YAoXkAo3oApH0Apn4AqIMAq4MArIYArogAr4sAso0As48AtZIAt5MAuJcAu5sAvp0Av54AwKIAw6MAxKcAx6gAx6sAyq0Ay68AzLIAz7YA0bgA07oA1LwA1b8A2MAA18IA2cQA2sYA3MgA3cwA38sA4M4A4dAA4tIA5NQA5dgA59oA6dwA6uAA7eQA7+cA8OkA8usA8+0A9PEA9/MA+PQA+PgA+/oA/PwA/QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAUKAEoALAAAAABgAGAAAAf/gEqCg4SFhoeIhUmLjI2OiZCRkpOUiUiXmJmam0iVnp+ghEejpKWmp6ihqquGRq6vsLGys7GstpVFtLm7vL2+v0W3wohExcbHyMnKy8jDzkpD0dLT1NXW19fPrNjc3d7U2qpB4+RC5efo6err4+Gf7PDx8uXulED3+Pn6+/z9/vz1Iv0YSLCgwYMIEypUGJCYj4cQF0acSLGixYsNW13cyLGjx4yEeogcSbKkyZMoU6ocCVLQypcwY6JsyaOmzZs4c+rcybMnTpA7ggodSrSo0aNIkxLNqKOp06dQo0qdSrVqVKZWs2rdmqOr1685GoIdi6OsWbJn06pFu7at2LZw/+PKnXujrt27N97i3cu3r9+/gO/qDUy4MI3DiBMrVjx4sePHkCNLdtx4suUZlzFr3sxZc+XOoEOLHi2jtOnTqGV8Ts26tesYsGPLnk1btt7auHPr3s0b9u3ewIO/cDG8eG6xxJMrX868ufPn0Jsjj069unXo01to3869u/fv4MOL556dhfnz6NOrX8++/Qr35jO+n0+/vv37+PPrtw9yv///AOrXnwoEFmjggQgmqOCCDBrYUoMQRijhgg+mYOGFGGao4YYcdoiChym0pMSHJJZo4okopqjiCSuSKOKILMYo44w01mhjjIXcKOOLOkaiowkz+ljjizCWYOSRlByp5P+SJVTCJJFFIukkk0t6UiWRV05JwpZPWjkCl1B+KeYnYpZZJihjhpkmmWaeyeYIUEYZigh01hnCnSKgSWecReoJwp944uknn4D6CeihIAwaZ6FvIsqoln+q+cEHjU5qqaWVSkrplJd2iimnn4Lk6aaSeDCqIKdOYuqqHrTUwauwvqpqrLASQqusPt7agau67ooIB8DeakivHPzaK6/BJqvssswOy+yz0BYr6gbUVmvttdhe62y23HaLrAbghivuuOSCa2y56KL7bbrshntuu+2KCG8G9NZrL72J3Kvvvvq+iMG/AAcs8MAA50vwwQf7i/DCAUPCMMNQXiDxxBRXbIH/xRY4fPHGHHfcMZ+oeiyyyBqPPDLItpqscskqV+CyyygP8vLMNNcMs8E2U0CBEjr3vHPMgvisc9BCTyC0zCkXbfQERPcMtMxLGw111FRXbTXVU0v9NM9YN331119nLcHWXEtgttliR3D22my3vbbXaJOt9twRpE333XjjnTbZZc9td96A37233A8Ubvjfhieu+OJwF8734g8gDvnkjk/+OOSNU6555JYT3sDnoDfQd+ikl2766aJ7jvrqrLd+OetEu/451wowULvtuDPAN8+399570AoQ8rvMvhd/++68G/+78cAr73zwyCcg/fTUV2/99dhXj3zzCHTv/ffghy/+jPgIbD8I+einT7755x/g/vvwxy///PSzL7wB+Oev//7898+//YXwnwAH2D8ABrAACEygAhfIwAYm0ICGIIAEJ0jBClrwggSAICIwyMEOajARAwihCEdIwhKO8IOREIAKV8jCFrpQACiUxAtn2MIYTiIAOMyhDneYQxtWAgBADKIQh+hDTwzxiACAUiAAADs=" />
+		
+		<!-- Styles -->
+		
+		
+		<!-- Critical inline CSS for game container -->
+		<style>
+			body {
+				margin: 0;
+				padding: 0;
+				background: #000;
+				overflow: hidden;
+				font-family: system-ui, -apple-system, sans-serif;
+			}
+			#game-container {
+				width: 100vw;
+				height: 100vh;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.loading {
+				color: #9146ff;
+				font-size: 18px;
+				text-align: center;
+			}
+		</style>
+		
+		<!-- Loading indicator and main script -->
+		
+		<script type="module" crossorigin src="/assets/main-80dadfe2.js"></script>
+		<link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-3cfb730f.js">
+		<link rel="modulepreload" crossorigin href="/assets/preload-helper-cf010ec4.js">
+		<link rel="stylesheet" href="/assets/index-7324b8c3.css">
+	</head>
+	<body></body>
+</html>
