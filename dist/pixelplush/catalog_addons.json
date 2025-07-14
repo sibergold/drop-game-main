@@ -1,0 +1,327 @@
+[
+	{
+		"id": "addon_maze_campchaos",
+		"group": "Maze",
+		"name": "Camp Chaos (Maze)",
+		"theme": "Special",
+		"type": "add-on",
+		"path": "icon_camp_chaos_maze.png",
+		"cost": 40,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_campchaos",
+		"group": "Parachute Drop",
+		"name": "Camp Chaos (Parachute Drop)",
+		"theme": "Special",
+		"type": "add-on",
+		"path": "icon_camp_chaos_chutes.png",
+		"cost": 40,
+		"hidden": true
+	},
+	{
+		"id": "addon_giveaway_autumn",
+		"group": "Giveaway",
+		"name": "Autumn (Giveaway)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "giveaway_autumn.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolfrog",
+		"group": "Parachute Drop",
+		"name": "Frog Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_frog.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolmelon",
+		"group": "Parachute Drop",
+		"name": "Watermelon Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_melon.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolrainbow",
+		"group": "Parachute Drop",
+		"name": "Rainbow Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_rainbow.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_pooldots",
+		"group": "Parachute Drop",
+		"name": "Rainbow Dots Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_rainbowdots.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolsparklypink",
+		"group": "Parachute Drop",
+		"name": "Sparkly Pink Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_pink.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolsparklypurple",
+		"group": "Parachute Drop",
+		"name": "Sparkly Purple Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_purple.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolred",
+		"group": "Parachute Drop",
+		"name": "Party Red Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_red.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolblue",
+		"group": "Parachute Drop",
+		"name": "Party Blue Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_blue.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_poolyellow",
+		"group": "Parachute Drop",
+		"name": "Party Yellow Pool (Parachute Drop)",
+		"theme": "Summer",
+		"type": "add-on",
+		"path": "pool_icon_market_yellow.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_giveaway_blossoms",
+		"group": "Giveaway",
+		"name": "Blossoms (Giveaway)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "giveaway_blossoms.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_easter",
+		"group": "Parachute Drop",
+		"name": "Easter (Parachute Drop)",
+		"theme": "Easter",
+		"type": "add-on",
+		"path": "icon_easter.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_valentines",
+		"group": "Parachute Drop",
+		"name": "Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "icon_valentines.png",
+		"cost": 40
+	},
+	{
+		"id": "addon_parachute_christmaseve",
+		"group": "Parachute Drop",
+		"name": "Christmas Eve (Parachute Drop)",
+		"theme": "Christmas",
+		"type": "add-on",
+		"path": "parachutes_christmas_eve.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_plinko_halloween",
+		"group": "Plinko Bounce",
+		"name": "Halloween Theme (Plinko Bounce)",
+		"theme": "Halloween",
+		"type": "add-on",
+		"path": "plinko_halloween3.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_cauldron",
+		"group": "Parachute Drop",
+		"name": "Cauldron Theme (Parachute Drop)",
+		"theme": "Halloween",
+		"type": "add-on",
+		"path": "icon_cauldron.gif",
+		"cost": 40
+	},
+	{
+		"id": "addon_chatflakes",
+		"group": "Chat Flakes",
+		"name": "Chat Flakes",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "icon_chatflakes.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_chatflakes_leaf",
+		"group": "Chat Flakes",
+		"name": "Leaves (Chat Flakes)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "chatflakes_leaf.png",
+		"cost": 5,
+		"hidden": true
+	},
+	{
+		"id": "addon_chatflakes_snow",
+		"group": "Chat Flakes",
+		"name": "Snow (Chat Flakes)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "chatflakes_snow.png",
+		"cost": 5,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_cakeplush",
+		"group": "Parachute Drop",
+		"name": "PixelPlush Cake Theme (Parachute Drop)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "icon_cake_pixelplush.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_parachute_cakerainbow",
+		"group": "Parachute Drop",
+		"name": "Rainbow Cake Theme (Parachute Drop)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "icon_cake_rainbow.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_parachute_cakefruit",
+		"group": "Parachute Drop",
+		"name": "Fruit Cake Theme (Parachute Drop)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "icon_cake_fruit.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_parachute_cakechoco",
+		"group": "Parachute Drop",
+		"name": "Chocolate Cake Theme (Parachute Drop)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "icon_cake_choco2.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_pixelconfetti",
+		"group": "Pixel Confetti",
+		"name": "Pixel Confetti",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "confetti_icon.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_rainbow",
+		"group": "Parachute Drop",
+		"name": "Rainbow Theme (Parachute Drop)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "rainbow.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_streamweather",
+		"group": "Stream Weather",
+		"name": "Stream Weather",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "icon_weather.png",
+		"cost": 20
+	},
+	{
+		"id": "addon_parachute_blossoms",
+		"group": "Parachute Drop",
+		"name": "Spring Blossoms Theme (Parachute Drop)",
+		"theme": "PixelPlush",
+		"type": "add-on",
+		"path": "parachutedrop_spring.png",
+		"cost": 10
+	},
+	{
+		"id": "addon_parachute_valentines_brown_gold",
+		"group": "Parachute Drop",
+		"name": "Brown Gold Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "bunny_brown_gold.png",
+		"cost": 10,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_valentines_brown_pink",
+		"group": "Parachute Drop",
+		"name": "Brown Pink Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "bunny_brown_pink.png",
+		"cost": 10,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_valentines_brown_red",
+		"group": "Parachute Drop",
+		"name": "Brown Red Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "bunny_brown_red.png",
+		"cost": 10,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_valentines_white_gold",
+		"group": "Parachute Drop",
+		"name": "White Gold Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "bunny_white_gold.png",
+		"cost": 10,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_valentines_white_pink",
+		"group": "Parachute Drop",
+		"name": "White Pink Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "bunny_white_pink.png",
+		"cost": 10,
+		"hidden": true
+	},
+	{
+		"id": "addon_parachute_valentines_white_red",
+		"group": "Parachute Drop",
+		"name": "White Red Valentine (Parachute Drop)",
+		"theme": "Valentine",
+		"type": "add-on",
+		"path": "bunny_white_red.png",
+		"cost": 10,
+		"hidden": true
+	}
+]

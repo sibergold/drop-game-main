@@ -144,7 +144,17 @@ class StreamlinedKickOAuth {
 
 	private buildOverlayUrl(accessToken: string, channel: string, chatroomId: string): string {
 		let url = `${window.location.origin}/index.html#access_token=${accessToken}&channel=${channel}&chatroomId=${chatroomId}`;
-		
+
+		// Add theme parameter from localStorage (tema seçim sayfasından)
+		const selectedTheme = localStorage.getItem('selectedTheme');
+		if (selectedTheme) {
+			url += `&theme=${encodeURIComponent(selectedTheme)}`;
+			console.log(`🎨 Adding theme to overlay URL: ${selectedTheme}`);
+		}
+
+		// PixelPlush'ı varsayılan olarak etkinleştir
+		url += `&pixelplush=true`;
+
 		// Add game options if specified
 		["gravity", "gravity_chute", "max_velocity", "wait"].forEach((option) => {
 			const input = document.getElementById(option) as HTMLInputElement;

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelPlush Assets Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .character-card {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .character-image {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 10px;
+            background: #4a4a4a;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .character-image img {
+            max-width: 100%;
+            max-height: 100%;
+            image-rendering: pixelated;
+        }
+        .character-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .character-theme {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .stat-card {
+            background: #3a3a3a;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #aaa;
+        }
+        .error {
+            color: #ff6b6b;
+            background: #4a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #51cf66;
+            background: #2a4a2a;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 PixelPlush Assets Test</h1>
+        
+        <div class="test-section">
+            <h2>📊 Asset Statistics</h2>
+            <div id="stats" class="stats">
+                <div class="loading">Loading stats...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎭 Available Characters</h2>
+            <div id="characters" class="character-grid">
+                <div class="loading">Loading characters...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🎨 Characters by Theme</h2>
+            <div id="themes">
+                <div class="loading">Loading themes...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔧 Debug Console</h2>
+            <div id="console" style="background: #1a1a1a; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;">
+                <div class="loading">Initializing...</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Console logger
+        const consoleDiv = document.getElementById('console');
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+
+        function addToConsole(message, type = 'log') {
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? '#ff6b6b' : type === 'warn' ? '#ffd43b' : '#51cf66';
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(div);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+
+        console.log = (...args) => {
+            originalLog(...args);
+            addToConsole(args.join(' '), 'log');
+        };
+
+        console.error = (...args) => {
+            originalError(...args);
+            addToConsole(args.join(' '), 'error');
+        };
+
+        console.warn = (...args) => {
+            originalWarn(...args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        // Clear initial loading
+        consoleDiv.innerHTML = '';
+        console.log('🚀 PixelPlush Test initialized');
+
+        // Test catalog loading
+        async function testCatalog() {
+            try {
+                console.log('📦 Loading catalog...');
+                const response = await fetch('./pixelplush/catalog.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const catalog = await response.json();
+                console.log(`✅ Catalog loaded: ${catalog.length} items`);
+                
+                // Update stats
+                const characters = catalog.filter(item => item.type === 'character' && !item.hidden);
+                const themes = [...new Set(characters.map(char => char.theme))];
+                
+                document.getElementById('stats').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-number">${catalog.length}</div>
+                        <div class="stat-label">Total Items</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${characters.length}</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${themes.length}</div>
+                        <div class="stat-label">Themes</div>
+                    </div>
+                `;
+
+                // Display characters
+                const charactersDiv = document.getElementById('characters');
+                charactersDiv.innerHTML = characters.slice(0, 20).map(char => `
+                    <div class="character-card">
+                        <div class="character-image">
+                            <img src="./pixelplush/characters/${char.path}/${char.path}_front.png" 
+                                 alt="${char.name}"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <div style="display:none; color:#ff6b6b;">❌</div>
+                        </div>
+                        <div class="character-name">${char.name}</div>
+                        <div class="character-theme">${char.theme}</div>
+                    </div>
+                `).join('');
+
+                // Display themes
+                const themesDiv = document.getElementById('themes');
+                themesDiv.innerHTML = themes.map(theme => {
+                    const themeChars = characters.filter(char => char.theme === theme);
+                    return `
+                        <div class="test-section" style="margin: 10px 0;">
+                            <h3>${theme} (${themeChars.length} characters)</h3>
+                            <div class="character-grid">
+                                ${themeChars.slice(0, 6).map(char => `
+                                    <div class="character-card">
+                                        <div class="character-image">
+                                            <img src="./pixelplush/characters/${char.path}/${char.path}_front.png" 
+                                                 alt="${char.name}"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                            <div style="display:none; color:#ff6b6b;">❌</div>
+                                        </div>
+                                        <div class="character-name">${char.name}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                console.log(`🎭 Displayed ${characters.length} characters across ${themes.length} themes`);
+                
+            } catch (error) {
+                console.error('❌ Failed to load catalog:', error);
+                document.getElementById('stats').innerHTML = '<div class="error">Failed to load catalog</div>';
+                document.getElementById('characters').innerHTML = '<div class="error">Failed to load characters</div>';
+                document.getElementById('themes').innerHTML = '<div class="error">Failed to load themes</div>';
+            }
+        }
+
+        // Start test
+        testCatalog();
+    </script>
+</body>
+</html>

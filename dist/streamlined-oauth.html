@@ -58,8 +58,31 @@
 				background: rgba(255,255,255,0.1);
 				border-radius: 8px;
 			}
+			.theme-button {
+				background: rgba(255,255,255,0.1);
+				border: 2px solid rgba(255,255,255,0.2);
+				color: white;
+				padding: 0.8rem 0.5rem;
+				border-radius: 10px;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				text-align: center;
+				font-size: 0.85rem;
+				font-weight: bold;
+			}
+			.theme-button:hover {
+				background: rgba(0,255,136,0.2);
+				border-color: #00ff88;
+				transform: translateY(-2px);
+			}
+			.theme-button.selected {
+				background: #00ff88;
+				color: #000;
+				border-color: #00ff88;
+				box-shadow: 0 4px 15px rgba(0,255,136,0.4);
+			}
 		</style>
-		<script type="module" crossorigin src="/assets/streamlined-d1c2b1eb.js"></script>
+		<script type="module" crossorigin src="/assets/streamlined-764ce449.js"></script>
 		<link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-3cfb730f.js">
 		<link rel="modulepreload" crossorigin href="/assets/preload-helper-cf010ec4.js">
 	</head>
@@ -79,6 +102,15 @@
 			<div id="success-message" class="success" style="display: none;"></div>
 			
 			<div id="setup-section">
+				<div id="theme-section" style="margin-bottom: 1rem; padding: 1rem; background: rgba(0,255,136,0.2); border-radius: 10px;">
+					<h3>🎨 Select Theme</h3>
+					<p style="font-size: 0.9rem; margin-bottom: 1rem; opacity: 0.8;">Choose your game theme (characters, parachutes, and targets will match your selection)</p>
+					<div id="theme-selector" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 1rem 0;">
+						<!-- Themes will be populated by JavaScript -->
+					</div>
+					<p id="theme-display" style="margin-top: 1rem; font-weight: bold; color: #00ff88;">🎨 Base Theme</p>
+				</div>
+
 				<p>Ready to start streaming with Kick Drop Game?</p>
 				<button type="button" id="quick-authorize-btn" class="big-button">
 					🚀 Start with Kick Authorization
@@ -113,6 +145,7 @@
 				<div id="overlay-url" style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px; word-break: break-all; margin: 1rem 0;"></div>
 				<button type="button" id="copy-url-btn" class="big-button">📋 Copy URL</button>
 				<button type="button" id="open-obs-btn" class="big-button">🎥 Open in OBS</button>
+				<a href="./theme-selector.html" class="big-button" style="text-decoration: none;">🎭 Choose Theme</a>
 
 				<div style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 10px; text-align: left;">
 					<h4>🎮 How to Use Parachute Drop Game</h4>
@@ -144,7 +177,72 @@
 				</div>
 			</div>
 		</div>
-		
+
+		<script>
+			// Tema seçim sistemi
+			let selectedTheme = 'base';
+
+			const themes = [
+				{ id: 'base', name: 'Base', emoji: '🎮', description: 'Classic game style' },
+				{ id: 'spring', name: 'Spring', emoji: '🌸', description: 'Flowers & balloons' },
+				{ id: 'easter', name: 'Easter', emoji: '🐰', description: 'Bunnies & eggs' },
+				{ id: 'summer', name: 'Summer', emoji: '☀️', description: 'Sunny & bright' },
+				{ id: 'autumn', name: 'Autumn', emoji: '🍂', description: 'Leaves & harvest' },
+				{ id: 'winter', name: 'Winter', emoji: '❄️', description: 'Snow & ice' },
+				{ id: 'christmas', name: 'Christmas', emoji: '🎄', description: 'Holiday spirit' },
+				{ id: 'valentine', name: 'Valentine', emoji: '💝', description: 'Love & hearts' },
+				{ id: 'halloween', name: 'Halloween', emoji: '🎃', description: 'Spooky fun' },
+				{ id: 'pride', name: 'Pride', emoji: '🏳️‍🌈', description: 'Rainbow colors' }
+			];
+
+			document.addEventListener('DOMContentLoaded', function() {
+				initializeThemes();
+			});
+
+			function initializeThemes() {
+				// LocalStorage'dan tema oku
+				const savedTheme = localStorage.getItem('selectedTheme') || 'base';
+				selectedTheme = savedTheme;
+
+				// Tema butonlarını oluştur
+				const themeSelector = document.getElementById('theme-selector');
+				themeSelector.innerHTML = themes.map(theme => `
+					<button class="theme-button ${theme.id === selectedTheme ? 'selected' : ''}"
+							onclick="selectTheme('${theme.id}')"
+							title="${theme.description}">
+						<div style="font-size: 1.5rem; margin-bottom: 0.3rem;">${theme.emoji}</div>
+						<div>${theme.name}</div>
+					</button>
+				`).join('');
+
+				// Tema display'ini güncelle
+				updateThemeDisplay();
+
+				console.log(`🎨 Theme initialized: ${selectedTheme}`);
+			}
+
+			function selectTheme(themeId) {
+				selectedTheme = themeId;
+				localStorage.setItem('selectedTheme', themeId);
+
+				// Buton görünümlerini güncelle
+				document.querySelectorAll('.theme-button').forEach(btn => {
+					btn.classList.remove('selected');
+				});
+				event.target.closest('.theme-button').classList.add('selected');
+
+				// Display'i güncelle
+				updateThemeDisplay();
+
+				console.log(`🎨 Theme selected: ${themeId}`);
+			}
+
+			function updateThemeDisplay() {
+				const theme = themes.find(t => t.id === selectedTheme);
+				const themeDisplay = document.getElementById('theme-display');
+				themeDisplay.textContent = `${theme.emoji} ${theme.name} Theme - ${theme.description}`;
+			}
+		</script>
 
 	</body>
 </html>

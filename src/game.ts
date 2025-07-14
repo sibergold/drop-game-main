@@ -1,5 +1,7 @@
 import Phaser, { Tilemaps } from "phaser";
 import Avatar from "./avatar";
+import AssetManager from "./asset-manager";
+import CharacterSelector from "./character-selector";
 import constants from "./constants";
 import emitter from "./emitter";
 import kick from "./kick";
@@ -11,6 +13,8 @@ import WebFontFile from "./webfontfile";
 /** main game scene */
 export default class Game extends Phaser.Scene {
 	active: boolean;
+	assetManager: AssetManager;
+	characterSelector: CharacterSelector | null = null;
 	dropGroup: Phaser.Physics.Arcade.Group | null;
 	droplets!: Phaser.GameObjects.Particles.ParticleEmitter;
 	droppers: Map<string, Avatar>;
@@ -21,11 +25,14 @@ export default class Game extends Phaser.Scene {
 	pad: Phaser.Physics.Arcade.Image | null = null;
 	rect: Phaser.GameObjects.Rectangle | null = null;
 	queue: boolean;
+	selectedTheme: string = 'base';
+	themeListContainer: Phaser.GameObjects.Container | null = null;
 	winner: Avatar | null;
 
 	constructor() {
 		super();
 		this.active = false;
+		this.assetManager = new AssetManager(this);
 		this.dropGroup = null;
 		this.droppers = new Map<string, Avatar>();
 		this.droppersArray = [];
@@ -33,6 +40,9 @@ export default class Game extends Phaser.Scene {
 		this.endWait = parseInt(hs.wait || constants.WAIT_FOR_RESET) * 1000;
 		this.queue = false;
 		this.winner = null;
+
+		// URL parametresinden tema oku
+		this.selectedTheme = this.getThemeFromUrl();
 
 		emitter.on("drop", this.onDrop, this);
 		emitter.on("droplow", this.onDropLow, this);
@@ -56,28 +66,46 @@ export default class Game extends Phaser.Scene {
 
 	preload() {
 		this.load.addFile(new WebFontFile(this.load, constants.FONT_FAMILY));
+
+		// Default assets'ları yükle
 		this.load.setBaseURL("./default");
 		this.load.audio("drop", "drop.mp3");
 		this.load.audio("land", "land.mp3");
 		this.load.audio("win", "win.mp3");
-		this.load.image("chute", "chute.png");
 		this.load.image("drop1", "drop1.png");
 		this.load.image("drop2", "drop2.png");
 		this.load.image("drop3", "drop3.png");
 		this.load.image("drop4", "drop4.png");
 		this.load.image("drop5", "drop5.png");
-		this.load.image("pad", "pad.png");
+
+		// Default paraşüt ve havuz
+		this.load.image("chute_default", "chute.png");
+		this.load.image("pad_default", "pad.png");
+
+		// Tema bazlı paraşüt ve havuz yükle
+		this.loadThemeAssets();
 		this.load.spritesheet("droplet", "droplet.png", {
 			frameHeight: 82,
 			frameWidth: 82,
 		});
+
+		// Base URL'i sıfırla (PixelPlush assets için)
+		this.load.setBaseURL("");
 	}
 
-	create() {
+	async create() {
 		this.physics.world
 			.setBounds(0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
 			.setBoundsCollision(true, true, false, true);
-		this.pad = this.physics.add.image(0, 0, "pad");
+
+		// Asset fallback kontrolü
+		let padTexture = "pad";
+		if (!this.textures.exists("pad")) {
+			console.warn("⚠️ Theme pad not found, using default");
+			padTexture = this.textures.exists("pad_default") ? "pad_default" : "pad";
+		}
+
+		this.pad = this.physics.add.image(0, 0, padTexture);
 		this.pad
 			.setMaxVelocity(0, 0)
 			.setOrigin(0.5, 1)
@@ -93,7 +121,206 @@ export default class Game extends Phaser.Scene {
 				speed: { random: [50, 150] },
 			})
 			.setDepth(1);
+
+		// PixelPlush asset catalog'unu yükle
+		await this.assetManager.loadCatalog();
+		console.log('🎮 PixelPlush assets loaded:', this.assetManager.getStats());
+
+		// Karakter seçici oluştur
+		this.characterSelector = new CharacterSelector(this, this.assetManager, {
+			x: constants.SCREEN_WIDTH / 2,
+			y: constants.SCREEN_HEIGHT / 2,
+			width: 500,
+			height: 350,
+			visible: false
+		}, this.selectedTheme);
+
+		// URL parametresinden tema kontrolü
+		const urlParams = new URLSearchParams(window.location.search);
+		const themeParam = urlParams.get('theme');
+		if (themeParam && themeParam !== 'all') {
+			// Belirli bir tema seçilmişse, o temadan rastgele karakter seç
+			const themeCharacters = this.assetManager.getCharactersByTheme(this.capitalizeTheme(themeParam));
+			if (themeCharacters.length > 0) {
+				const randomChar = themeCharacters[Math.floor(Math.random() * themeCharacters.length)];
+				localStorage.setItem('selectedPixelPlushCharacter', randomChar.id);
+				localStorage.setItem('selectedTheme', themeParam);
+				console.log(`🎨 Theme from URL: ${themeParam}, selected character: ${randomChar.name}`);
+			}
+		}
+
+		// Karakter seçimi callback'i
+		this.characterSelector.setOnCharacterSelected((character) => {
+			console.log(`🎭 Character selected for next drop: ${character.name}`);
+			// Seçilen karakteri localStorage'a kaydet
+			localStorage.setItem('selectedPixelPlushCharacter', character.id);
+		});
+
+		// Klavye kontrolleri ekle
+		this.input.keyboard?.on('keydown-C', () => {
+			if (this.characterSelector) {
+				this.characterSelector.toggle();
+			}
+		});
+
+		// T tuşu ile tema listesi göster/gizle
+		this.input.keyboard?.on('keydown-T', () => {
+			if (this.themeListContainer) {
+				this.themeListContainer.destroy();
+				this.themeListContainer = null;
+			} else {
+				const themes = this.assetManager.getAvailableThemes();
+				console.log('🎨 Available themes:', themes);
+				this.showThemeList(themes);
+			}
+		});
+
 		this.ready();
+	}
+
+	private capitalizeTheme(theme: string): string {
+		// URL'den gelen tema adını catalog'daki formata çevir
+		const themeMap: { [key: string]: string } = {
+			'halloween': 'Halloween',
+			'christmas': 'Christmas',
+			'easter': 'Easter',
+			'valentine': 'Valentine',
+			'spring': 'Spring',
+			'summer': 'Summer',
+			'fairy': 'Fairy',
+			'magic': 'Magic',
+			'cute': 'Cute',
+			'streamer': 'Streamer',
+			'base': 'Base',
+			'special': 'Special'
+		};
+
+		return themeMap[theme.toLowerCase()] || theme.charAt(0).toUpperCase() + theme.slice(1);
+	}
+
+	private getThemeFromUrl(): string {
+		// Hash parametrelerini oku (OAuth URL formatı: #access_token=...&theme=...)
+		const hashParams = new URLSearchParams(window.location.hash.substring(1));
+		const themeFromHash = hashParams.get('theme');
+
+		if (themeFromHash) {
+			// Tema değerini temizle (pixelplush=true gibi eklentileri kaldır)
+			const cleanTheme = themeFromHash.split('&')[0].split('=')[0].trim();
+			console.log(`🎨 Theme from hash: ${cleanTheme} (raw: ${themeFromHash})`);
+			return cleanTheme.toLowerCase();
+		}
+
+		// Query parametrelerini oku (fallback: ?theme=...)
+		const urlParams = new URLSearchParams(window.location.search);
+		const themeFromQuery = urlParams.get('theme');
+
+		if (themeFromQuery) {
+			const cleanTheme = themeFromQuery.split('&')[0].split('=')[0].trim();
+			console.log(`🎨 Theme from query: ${cleanTheme} (raw: ${themeFromQuery})`);
+			return cleanTheme.toLowerCase();
+		}
+
+		// LocalStorage'dan tema oku (tema seçim sayfasından)
+		const savedTheme = localStorage.getItem('selectedTheme');
+		if (savedTheme) {
+			console.log(`🎨 Theme from localStorage: ${savedTheme}`);
+			return savedTheme.toLowerCase();
+		}
+
+		console.log('🎨 Using default theme: base');
+		return 'base';
+	}
+
+	private loadThemeAssets(): void {
+		console.log(`🎨 Loading assets for theme: ${this.selectedTheme}`);
+
+		// Tema bazlı paraşüt yükle
+		const parachuteAsset = this.assetManager.getRandomParachuteByTheme(this.selectedTheme);
+		const parachuteUrl = `./pixelplush/game-parachute/${parachuteAsset}`;
+		console.log(`🪂 Loading parachute from: ${parachuteUrl}`);
+
+		this.load.image("chute", parachuteUrl);
+
+		// Tema bazlı havuz/target yükle
+		const poolAsset = this.assetManager.getRandomPoolByTheme(this.selectedTheme);
+		const poolUrl = `./pixelplush/game-parachute/${poolAsset}`;
+		console.log(`🎯 Loading target from: ${poolUrl}`);
+
+		this.load.image("pad", poolUrl);
+
+		// Error handling - create fonksiyonunda yapılacak
+		this.load.on('filecomplete', (key: string) => {
+			if (key === 'chute') {
+				console.log(`✅ Theme parachute loaded: ${parachuteAsset}`);
+			} else if (key === 'pad') {
+				console.log(`✅ Theme target loaded: ${poolAsset}`);
+			}
+		});
+
+		this.load.on('loaderror', (file: any) => {
+			if (file.key === 'chute') {
+				console.warn(`⚠️ Failed to load theme parachute: ${parachuteAsset}, will use default`);
+			} else if (file.key === 'pad') {
+				console.warn(`⚠️ Failed to load theme target: ${poolAsset}, will use default`);
+			}
+		});
+	}
+
+	private showThemeList(themes: string[]): void {
+		// Mevcut tema listesi varsa kaldır
+		if (this.themeListContainer) {
+			this.themeListContainer.destroy();
+		}
+
+		// Tema listesi container'ı oluştur
+		this.themeListContainer = this.add.container(constants.SCREEN_WIDTH / 2, constants.SCREEN_HEIGHT / 2);
+		this.themeListContainer.setDepth(2000);
+
+		// Arka plan
+		const bg = this.add.rectangle(0, 0, 300, 200, 0x000000, 0.8);
+		bg.setStrokeStyle(2, 0x00ff88);
+		this.themeListContainer.add(bg);
+
+		// Başlık
+		const title = this.add.text(0, -80, '🎨 Available Themes', {
+			fontSize: '16px',
+			fontFamily: 'Arial',
+			color: '#00ff88',
+			align: 'center'
+		});
+		title.setOrigin(0.5, 0.5);
+		this.themeListContainer.add(title);
+
+		// Tema listesi
+		themes.forEach((theme, index) => {
+			const y = -50 + (index * 20);
+			const themeText = this.add.text(0, y, `• ${theme}`, {
+				fontSize: '12px',
+				fontFamily: 'Arial',
+				color: '#ffffff',
+				align: 'center'
+			});
+			themeText.setOrigin(0.5, 0.5);
+			this.themeListContainer.add(themeText);
+		});
+
+		// Kapatma butonu
+		const closeBtn = this.add.text(0, 70, 'Press T to close', {
+			fontSize: '10px',
+			fontFamily: 'Arial',
+			color: '#aaaaaa',
+			align: 'center'
+		});
+		closeBtn.setOrigin(0.5, 0.5);
+		this.themeListContainer.add(closeBtn);
+
+		// 3 saniye sonra otomatik kapat
+		setTimeout(() => {
+			if (this.themeListContainer) {
+				this.themeListContainer.destroy();
+				this.themeListContainer = null;
+			}
+		}, 3000);
 	}
 
 	ready(): void {
@@ -337,7 +564,7 @@ export default class Game extends Phaser.Scene {
 		clearTimeout(this.endTimer);
 
 		const finish = () => {
-			const avatar = new Avatar(username, this, emote);
+			const avatar = new Avatar(username, this, emote, this.selectedTheme);
 			this.droppers.set(username, avatar);
 			this.droppersArray.push(avatar);
 			this.dropGroup!.add(avatar.container);
@@ -451,7 +678,7 @@ export default class Game extends Phaser.Scene {
 			.image(textureKey, proxiedUrl)
 			.on(`filecomplete-image-${textureKey}`, () => {
 				console.log(`✅ Kick emote loaded via proxy: ${emoteName}`);
-				const avatar = new Avatar(username, this, textureKey);
+				const avatar = new Avatar(username, this, textureKey, this.selectedTheme);
 				this.droppers.set(username, avatar);
 				this.droppersArray.push(avatar);
 				this.dropGroup!.add(avatar.container);
@@ -555,7 +782,7 @@ export default class Game extends Phaser.Scene {
 			.image(textureKey, emoteUrl)
 			.on(`filecomplete-image-${textureKey}`, () => {
 				console.log(`✅ Default emote avatar loaded: ${textureKey}`);
-				const avatar = new Avatar(username, this, textureKey);
+				const avatar = new Avatar(username, this, textureKey, this.selectedTheme);
 				this.droppers.set(username, avatar);
 				this.droppersArray.push(avatar);
 				this.dropGroup!.add(avatar.container);
@@ -568,7 +795,7 @@ export default class Game extends Phaser.Scene {
 			})
 			.on(`loaderror-image-${textureKey}`, () => {
 				console.log(`⚠️ Failed to load default avatar, using finish()`);
-				const avatar = new Avatar(username, this);
+				const avatar = new Avatar(username, this, undefined, this.selectedTheme);
 				this.droppers.set(username, avatar);
 				this.droppersArray.push(avatar);
 				this.dropGroup!.add(avatar.container);

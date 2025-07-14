@@ -1,4 +1,5 @@
 import { Tweens } from "phaser";
+import AssetManager from "./asset-manager";
 import constants from "./constants";
 import { hs } from "./util";
 
@@ -16,18 +17,29 @@ export default class Avatar {
 	swayTween: Tweens.Tween | null = null;
 	username: string;
 
-	constructor(username: string, game: Phaser.Scene, emote?: string) {
+	constructor(username: string, game: Phaser.Scene, emote?: string, theme: string = 'base') {
 		this.username = username;
+
+		// Paraşüt texture fallback kontrolü
+		let chuteTexture = "chute";
+		if (!game.textures.exists("chute")) {
+			console.warn("⚠️ Theme chute not found, using default");
+			chuteTexture = game.textures.exists("chute_default") ? "chute_default" : "chute";
+		}
+
 		this.chute = game.add
-			.image(0, 0, "chute")
+			.image(0, 0, chuteTexture)
 			.setOrigin(0.5, 1)
 			.setVisible(false);
 		this.chuteGravity = parseInt(hs.gravity_chute || constants.GRAVITY_CHUTE);
 
+		// PixelPlush karakter kullanımını kontrol et
+		const selectedCharacterId = localStorage.getItem('selectedPixelPlushCharacter');
+		const usePixelPlush = hs.pixelplush === 'true' || selectedCharacterId || Math.random() < 0.3; // %30 şans ile PixelPlush karakter
+
 		if (emote) {
 			console.log(`🎭 Creating avatar with emote: ${emote} for user: ${username}`);
 			console.log(`🔍 Texture exists in game: ${game.textures.exists(emote)}`);
-			console.log(`🔍 Available textures in avatar:`, Object.keys(game.textures.list));
 
 			this.customImage = true;
 
@@ -38,12 +50,14 @@ export default class Avatar {
 				console.log(`✅ Avatar sprite created successfully with texture key: ${emote}`);
 			} catch (error) {
 				console.log(`❌ Failed to create sprite with texture ${emote}:`, error);
-				// Fallback to default
-				const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
-				this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
-				console.log(`🔄 Fallback to default sprite: drop${spriteNumber}`);
+				// Fallback to default or PixelPlush
+				this.createFallbackSprite(game, usePixelPlush);
 			}
+		} else if (usePixelPlush) {
+			// PixelPlush karakter kullan
+			this.createPixelPlushSprite(game, theme);
 		} else {
+			// Default sprite kullan
 			const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
 			this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
 			console.log(`🎭 Avatar created with default sprite: drop${spriteNumber}`);
@@ -83,6 +97,81 @@ export default class Avatar {
 		}
 
 		setTimeout(this.ready.bind(this), 100);
+	}
+
+	private createPixelPlushSprite(game: Phaser.Scene, theme: string = 'base'): void {
+		// Game scene'den AssetManager'a erişim
+		const gameScene = game as any;
+		if (!gameScene.assetManager) {
+			console.warn('⚠️ AssetManager not available, using default sprite');
+			this.createFallbackSprite(game, false);
+			return;
+		}
+
+		const assetManager = gameScene.assetManager as AssetManager;
+
+		// Önce seçilen karakteri kontrol et
+		const selectedCharacterId = localStorage.getItem('selectedPixelPlushCharacter');
+		let selectedCharacter = null;
+
+		// Tema bazlı karakter seçimi - her zaman tema uyumlu karakter seç
+		const currentTheme = theme.toLowerCase();
+		console.log(`🎨 Avatar theme parameter: ${currentTheme}`);
+
+		// Tema karakteri seç (localStorage'ı görmezden gel)
+		selectedCharacter = assetManager.getRandomCharacterByTheme(currentTheme);
+
+		if (selectedCharacter) {
+			console.log(`🎨 Selected theme character: ${selectedCharacter.name} (${selectedCharacter.theme})`);
+		} else {
+			console.log(`⚠️ No characters found for theme: ${currentTheme}, trying fallback`);
+			// Tema karakteri yoksa genel rastgele seç
+			selectedCharacter = assetManager.getRandomCharacter();
+			console.log(`🎲 Fallback to random character: ${selectedCharacter?.name || 'none available'}`);
+		}
+
+		if (!selectedCharacter) {
+			console.warn('⚠️ No PixelPlush characters available, using default sprite');
+			this.createFallbackSprite(game, false);
+			return;
+		}
+
+		console.log(`🎨 Attempting to load PixelPlush character: ${selectedCharacter.name}`);
+
+		// Karakteri asenkron olarak yükle
+		assetManager.loadCharacterTexture(selectedCharacter.id)
+			.then(textureKey => {
+				if (textureKey && game.textures.exists(textureKey)) {
+					// Mevcut sprite'ı güncelle
+					this.sprite.setTexture(textureKey);
+					this.sprite.setDisplaySize(64, 64);
+					this.customImage = true;
+					this.chute.setOrigin(0.5, 0.75);
+					console.log(`✅ PixelPlush character loaded: ${selectedCharacter.name}`);
+				} else {
+					console.warn('⚠️ Failed to load PixelPlush character texture');
+					this.createFallbackSprite(game, false);
+				}
+			})
+			.catch(error => {
+				console.error('❌ Error loading PixelPlush character:', error);
+				this.createFallbackSprite(game, false);
+			});
+
+		// Geçici olarak default sprite ile başla
+		const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
+		this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
+		console.log(`🔄 Temporary sprite while loading PixelPlush: drop${spriteNumber}`);
+	}
+
+	private createFallbackSprite(game: Phaser.Scene, tryPixelPlush: boolean): void {
+		if (tryPixelPlush) {
+			this.createPixelPlushSprite(game);
+		} else {
+			const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
+			this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
+			console.log(`🔄 Fallback to default sprite: drop${spriteNumber}`);
+		}
 	}
 
 	ready(): void {

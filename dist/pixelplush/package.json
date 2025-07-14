@@ -1,0 +1,28 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "PixelPlush Assets",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node generateCatalog.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixelplush/assets.git"
+  },
+  "keywords": [
+    "PixelPlush"
+  ],
+  "author": "PixelPlush",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/pixelplush/assets/issues"
+  },
+  "homepage": "https://github.com/pixelplush/assets#readme",
+  "dependencies": {
+    "comfysheets": "^1.0.3",
+    "node-fetch": "^3.2.10",
+    "webwebweb": "^1.4.10"
+  }
+}

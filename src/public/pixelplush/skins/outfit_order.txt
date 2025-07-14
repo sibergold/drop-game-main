@@ -1,0 +1,76 @@
+STANDING CHARACTER
+FRONT
+hat/headphones
+dress/onesie
+shirt
+pants
+gloves/mittens
+glasses
+hair
+facemask/mask
+face expression
+facial hair
+skin
+
+LEFT/RIGHT
+hat/headphones
+dress/onesie
+shirt
+pants
+gloves/mittens
+hair
+facemask/mask
+glasses
+face expression
+facial hair
+skin
+
+BACK
+hat/headphones
+hair
+dress/onesie
+shirt
+pants
+gloves/mittens
+skin
+
+
+
+WHEELCHAIR CHARACTER
+FRONT
+hat/headphones
+dress/onesie
+shirt
+pants
+gloves/mittens
+glasses
+hair
+facemask/mask
+face expression
+facial hair
+skin
+wheelchair
+
+LEFT/RIGHT
+wheelchair
+hat/headphones
+dress/onesie
+shirt
+pants
+gloves/mittens
+hair
+facemask/mask
+glasses
+face expression
+facial hair
+skin
+
+BACK
+wheelchair
+hat/headphones
+hair
+dress/onesie
+shirt
+pants
+gloves/mittens
+skin
