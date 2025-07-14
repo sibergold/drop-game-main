@@ -150,9 +150,7 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 		code_verifier: codeVerifier
 	};
 
-	const proxyEndpoint = window.location.hostname === 'localhost'
-		? `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth/exchange`
-		: `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth-exchange`;
+	const proxyEndpoint = `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth/exchange`
 
 	console.log('Proxy request body:', requestBody);
 	console.log('Proxy endpoint:', proxyEndpoint);
