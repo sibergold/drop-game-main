@@ -40,7 +40,7 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ws-us2.pusher.com https://sockjs-us2.pusher.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://ws-us2.pusher.com https://sockjs-us2.pusher.com wss://ws-us2.pusher.com https://kick.com; img-src 'self' data: https:; media-src 'self';"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://ws-us2.pusher.com https://sockjs-us2.pusher.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://ws-us2.pusher.com https://sockjs-us2.pusher.com wss://ws-us2.pusher.com https://kick.com https://drop-game-proxy.onrender.com https://id.kick.com; img-src 'self' data: https:; media-src 'self';"
 
 # Cache static assets
 [[headers]]
