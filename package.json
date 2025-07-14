@@ -46,6 +46,7 @@
 	},
 	"version": "2.9.0",
 	"dependencies": {
+		"@netlify/functions": "^4.1.10",
 		"dotenv": "^17.2.0",
 		"pusher-js": "^8.4.0-rc2",
 		"webfontloader": "^1.6.28"
