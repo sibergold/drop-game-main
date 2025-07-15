@@ -3,6 +3,7 @@ import AssetManager from "./asset-manager";
 import Avatar from "./avatar";
 import CharacterSelector from "./character-selector";
 import constants from "./constants";
+import EffectManager from "./effects";
 import emitter from "./emitter";
 import kick from "./kick";
 import Score from "./score";
@@ -15,11 +16,13 @@ export default class Game extends Phaser.Scene {
 	active: boolean;
 	assetManager: AssetManager;
 	characterSelector: CharacterSelector | null = null;
+	currentPoolAsset: string = "";
 	dropGroup: Phaser.Physics.Arcade.Group | null;
 	droplets!: Phaser.GameObjects.Particles.ParticleEmitter;
 	droppers: Map<string, Avatar>;
 	droppersArray: Array<Avatar>;
 	droppersQueue: Set<string>;
+	effectManager!: EffectManager;
 	endTimer?: NodeJS.Timeout;
 	endWait: integer;
 	pad: Phaser.Physics.Arcade.Image | null = null;
@@ -88,6 +91,10 @@ export default class Game extends Phaser.Scene {
 			frameHeight: 82,
 			frameWidth: 82,
 		});
+
+		// ✨ Load water effect assets
+		this.effectManager = new EffectManager(this);
+		this.effectManager.preloadAssets();
 
 		// Base URL'i sıfırla (PixelPlush assets için)
 		this.load.setBaseURL("");
@@ -259,6 +266,7 @@ export default class Game extends Phaser.Scene {
 
 		// Tema bazlı havuz/target yükle
 		const poolAsset = this.assetManager.getRandomPoolByTheme(this.selectedTheme);
+		this.currentPoolAsset = poolAsset; // Store for collision detection
 		const poolUrl = `./pixelplush/game-parachute/${poolAsset}`;
 		console.log(`🎯 Loading target from: ${poolUrl}`);
 
@@ -491,16 +499,75 @@ export default class Game extends Phaser.Scene {
 		if (!pad.body!.touching.up) return;
 
 		const avatar = drop.getData("avatar") as Avatar;
+
+		// ✅ CRITICAL FIX: Prevent multiple scoring for the same character
+		if (avatar.isLanded) {
+			return;
+		}
+
+		// ✅ Get pool collision data for current pool type
+		const poolCollisionData = this.assetManager.getPoolCollisionData(this.currentPoolAsset);
+		console.log(`🎯 Pool collision data:`, poolCollisionData);
+
+		// ✅ CRITICAL FIX: Check if character has actually landed on the ground
+		// This prevents scoring while the character is still in the air
+		const groundLevel = constants.SCREEN_HEIGHT - this.pad!.body!.height;
+		const characterBottomY = avatar.container.y + (avatar.sprite.height / 2);
+		const landingThreshold = groundLevel - constants.LANDING_THRESHOLD;
+
+		// ✅ Pool-specific landing detection based on parachute-master logic
+		const basicLandingCondition = characterBottomY >= landingThreshold;
+
+		let poolSpecificLandingCondition = false;
+		if (poolCollisionData.targetWalls && poolCollisionData.targetCollideLand !== undefined) {
+			// For pools with walls (rectangular/round pools)
+			const wallLandingThreshold = groundLevel - (poolCollisionData.targetCollideLand || 0);
+			const horizontalDistance = Math.abs(avatar.container.x - this.pad!.x);
+			const poolHalfWidth = this.pad!.body!.halfWidth;
+
+			poolSpecificLandingCondition =
+				characterBottomY >= wallLandingThreshold &&
+				horizontalDistance <= (poolHalfWidth - 20); // 20px buffer like in parachute-master
+		}
+
+		const shouldLand = basicLandingCondition || poolSpecificLandingCondition;
+
+		// Only allow scoring if character has reached the landing area
+		if (!shouldLand) {
+			// Character is still in the air, handle bouncing for walled pools
+			if (poolCollisionData.targetWalls &&
+				avatar.container.x >= this.pad!.x - this.pad!.body!.halfWidth &&
+				avatar.container.x <= this.pad!.x + this.pad!.body!.halfWidth) {
+				// Bounce off the pool walls
+				drop.body.velocity.x *= -1;
+				console.log(`🏀 Character bounced off ${poolCollisionData.poolType} pool walls`);
+			}
+			return;
+		}
+
 		const pos = Math.abs(avatar.container.x - this.pad!.x);
-		const halfWidth =
-			this.pad!.body!.halfWidth + Math.round(avatar.container!.width / 2);
-		const score = ((halfWidth - pos) / halfWidth) * 100;
+		const halfWidth = this.pad!.body!.halfWidth + Math.round(avatar.container!.width / 2);
+
+		// ✅ Pool-specific scoring calculation based on parachute-master logic
+		let score: number;
+		if (poolCollisionData.targetWalls) {
+			// For pools with walls, use adjusted scoring like in parachute-master
+			const adjustedHalfWidth = halfWidth - 35; // 35px adjustment for walled pools
+			score = ((Math.max(0, adjustedHalfWidth - pos)) / adjustedHalfWidth) * 100;
+		} else {
+			// For pile-type pools, use standard scoring
+			score = ((halfWidth - pos) / halfWidth) * 100;
+		}
 
 		// horizontal overlap mid-frame but not a landing; bounce off
 		if (score < 0) {
 			drop.body.velocity.x *= -1;
+			console.log(`🏀 Character bounced off due to negative score: ${score}`);
 			return;
 		}
+
+		console.log(`🎯 Landing score: ${score.toFixed(1)} (pool type: ${poolCollisionData.poolType})`);
+
 
 		this.droplets.emitParticleAt(
 			avatar.container.x,
@@ -511,6 +578,27 @@ export default class Game extends Phaser.Scene {
 		avatar.swayTween?.stop();
 		avatar.swayTween = null;
 		avatar.score = score;
+		avatar.isLanded = true; // ✅ Mark character as landed to prevent multiple scoring
+
+		// ✨ Create spectacular water landing effects!
+		const effectX = avatar.container.x;
+		const effectY = this.pad!.y - this.pad!.body!.height / 2;
+
+		// Create water splash and bubble effects
+		this.effectManager.createWaterLandingEffect({
+			x: effectX,
+			y: effectY,
+			scale: 1 + (score / 100) * 0.5, // Bigger effects for better scores
+			duration: 1000 + (score / 100) * 500 // Longer effects for better scores
+		});
+
+		// Create ripple effect on water surface
+		this.effectManager.createWaterRipple({
+			x: effectX,
+			y: effectY,
+			scale: 1 + (score / 100) * 0.3
+		});
+
 		avatar.container.setY(
 			this.game.scale.gameSize.height -
 				this.pad!.body!.height -

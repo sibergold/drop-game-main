@@ -11,6 +11,8 @@ const constants = {
 	GRAVITY_CHUTE: 30,
 	/** username label font size */
 	LABEL_SIZE: 20,
+	/** landing detection threshold (pixels from ground) */
+	LANDING_THRESHOLD: 20,
 	/** maximum wait (in ms) between queued drops */
 	MAX_QUEUE_BUFFER: 300,
 	/** maximum angle of sway */
@@ -55,6 +57,15 @@ const constants = {
 			`&scope=chat:read%20chat:write`
 		);
 	},
+/** water effect settings */
+WATER_EFFECTS: {
+	BUBBLE_COUNT_MIN: 8,
+	BUBBLE_COUNT_MAX: 12,
+	DROPLET_COUNT_MIN: 6,
+	DROPLET_COUNT_MAX: 9,
+	EFFECT_VOLUME: 0.3,
+	RIPPLE_MAX_RADIUS: 80
+},
 };
 
 export default constants;

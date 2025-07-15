@@ -9,6 +9,7 @@ export default class Avatar {
 	chuteGravity: integer;
 	container: Phaser.GameObjects.Container;
 	customImage = false;
+	isLanded: boolean = false;
 	label: Phaser.GameObjects.Text | null;
 	rect?: Phaser.GameObjects.Rectangle | null;
 	score: integer;

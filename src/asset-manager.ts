@@ -31,15 +31,23 @@ export interface CharacterAsset {
 	hidden: boolean;
 }
 
+export interface PoolCollisionData {
+	targetWalls?: number;
+	targetCollideLand?: number;
+	poolType: 'rectangular' | 'round' | 'pile';
+}
+
 export class AssetManager {
 	private catalog: AssetItem[] = [];
 	private characters: Map<string, CharacterAsset> = new Map();
 	private loadedTextures: Set<string> = new Set();
 	private scene: Phaser.Scene;
 	private baseUrl = './pixelplush/';
+	private poolCollisionData: Map<string, PoolCollisionData> = new Map();
 
 	constructor(scene: Phaser.Scene) {
 		this.scene = scene;
+		this.initializePoolCollisionData();
 	}
 
 	async loadCatalog(): Promise<void> {
@@ -274,6 +282,191 @@ export class AssetManager {
 			themes: this.getAvailableThemes().length,
 			loadedTextures: this.loadedTextures.size
 		};
+	}
+
+	private initializePoolCollisionData(): void {
+		// Pool havuzları (köşeli) - target_walls: 28, target_collide_land: 30
+		this.poolCollisionData.set('target_pool_blue.png', {
+			targetWalls: 28,
+			targetCollideLand: 30,
+			poolType: 'rectangular'
+		});
+		this.poolCollisionData.set('target_pool_red.png', {
+			targetWalls: 28,
+			targetCollideLand: 30,
+			poolType: 'rectangular'
+		});
+		this.poolCollisionData.set('target_pool_blue_new.png', {
+			targetWalls: 28,
+			targetCollideLand: 30,
+			poolType: 'rectangular'
+		});
+		this.poolCollisionData.set('target_pool_red_new.png', {
+			targetWalls: 28,
+			targetCollideLand: 30,
+			poolType: 'rectangular'
+		});
+
+		// Cauldron havuzları (yuvarlak) - target_walls: 70, target_collide_land: 20
+		this.poolCollisionData.set('target_cauldron_blue.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+		this.poolCollisionData.set('target_cauldron_green.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+		this.poolCollisionData.set('target_cauldron_orange.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+		this.poolCollisionData.set('target_cauldron_pink.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+		this.poolCollisionData.set('target_cauldron_purple.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+		this.poolCollisionData.set('target_cauldron_red.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+		this.poolCollisionData.set('target_cauldron_yellow.png', {
+			targetWalls: 70,
+			targetCollideLand: 20,
+			poolType: 'round'
+		});
+
+		// Cake havuzları (yığın) - target_walls: 50, target_collide_land: 0
+		this.poolCollisionData.set('target_cake_chocolate.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_cake_fruit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_cake_rainbow.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+
+		// Winter/Default havuzları (yığın) - target_walls yok
+		this.poolCollisionData.set('target_winter.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('pad_default', {
+			poolType: 'pile'
+		});
+
+		// Christmas havuzları (yığın) - target_walls yok
+		this.poolCollisionData.set('target_christmas.png', {
+			poolType: 'pile'
+		});
+
+		// Spring havuzları (yığın) - target_walls yok
+		this.poolCollisionData.set('target.png', {
+			poolType: 'pile'
+		});
+
+		// Easter havuzları (yığın) - target_walls yok
+		this.poolCollisionData.set('target_easter1.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_easter2.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_easter3.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_easter4.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_easter5.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_easter6.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_easter7.png', {
+			poolType: 'pile'
+		});
+
+		// Autumn havuzları (yığın) - target_walls yok
+		this.poolCollisionData.set('target_leaves.png', {
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('target_leaves2.png', {
+			poolType: 'pile'
+		});
+
+		// Valentines havuzları (yığın) - target_walls: 50, target_collide_land: 0
+		this.poolCollisionData.set('valentines_target_brown_gold_credit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('valentines_target_brown_pink_credit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('valentines_target_brown_red_credit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('valentines_target_white_gold_credit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('valentines_target_white_pink_credit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+		this.poolCollisionData.set('valentines_target_white_red_credit.png', {
+			targetWalls: 50,
+			targetCollideLand: 0,
+			poolType: 'pile'
+		});
+
+		// Camp Chaos havuzları (yuvarlak) - target_walls: 70, target_collide_land: 30
+		this.poolCollisionData.set('camp_target.png', {
+			targetWalls: 70,
+			targetCollideLand: 30,
+			poolType: 'round'
+		});
+	}
+
+	getPoolCollisionData(poolAsset: string): PoolCollisionData {
+		// Asset path'inden dosya adını çıkar
+		const fileName = poolAsset.split('/').pop() || poolAsset;
+
+		// Collision data'sını bul
+		const collisionData = this.poolCollisionData.get(fileName);
+
+		if (collisionData) {
+			return collisionData;
+		}
+
+		// Default olarak pile type döndür (winter theme gibi)
+		console.log(`⚠️ No collision data found for pool: ${fileName}, using default pile type`);
+		return { poolType: 'pile' };
 	}
 }
 
