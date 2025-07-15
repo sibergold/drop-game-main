@@ -11,9 +11,9 @@ export interface CharacterSelectorConfig {
 export class CharacterSelector {
 	private scene: Phaser.Scene;
 	private assetManager: AssetManager;
-	private container: Phaser.GameObjects.Container;
-	private background: Phaser.GameObjects.Rectangle;
-	private titleText: Phaser.GameObjects.Text;
+	private container!: Phaser.GameObjects.Container;
+	private background!: Phaser.GameObjects.Rectangle;
+	private titleText!: Phaser.GameObjects.Text;
 	private themeButtons: Phaser.GameObjects.Container[] = [];
 	private characterCards: Phaser.GameObjects.Container[] = [];
 	private selectedCharacter: CharacterAsset | null = null;

@@ -13,7 +13,7 @@ export default class Avatar {
 	rect?: Phaser.GameObjects.Rectangle | null;
 	score: integer;
 	scoreLabel: Phaser.GameObjects.Text | null;
-	sprite: Phaser.GameObjects.Image;
+	sprite!: Phaser.GameObjects.Image;
 	swayTween: Tweens.Tween | null = null;
 	username: string;
 
@@ -30,7 +30,7 @@ export default class Avatar {
 		this.chute = game.add
 			.image(0, 0, chuteTexture)
 			.setOrigin(0.5, 1)
-			.setVisible(false);
+			.setVisible(false);			
 		this.chuteGravity = parseInt(hs.gravity_chute || constants.GRAVITY_CHUTE);
 
 		// PixelPlush karakter kullanımını kontrol et
@@ -51,7 +51,7 @@ export default class Avatar {
 			} catch (error) {
 				console.log(`❌ Failed to create sprite with texture ${emote}:`, error);
 				// Fallback to default or PixelPlush
-				this.createFallbackSprite(game, usePixelPlush);
+				this.createFallbackSprite(game, usePixelPlush===true);
 			}
 		} else if (usePixelPlush) {
 			// PixelPlush karakter kullan

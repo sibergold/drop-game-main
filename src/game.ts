@@ -1,6 +1,6 @@
 import Phaser, { Tilemaps } from "phaser";
-import Avatar from "./avatar";
 import AssetManager from "./asset-manager";
+import Avatar from "./avatar";
 import CharacterSelector from "./character-selector";
 import constants from "./constants";
 import emitter from "./emitter";
@@ -25,7 +25,7 @@ export default class Game extends Phaser.Scene {
 	pad: Phaser.Physics.Arcade.Image | null = null;
 	rect: Phaser.GameObjects.Rectangle | null = null;
 	queue: boolean;
-	selectedTheme: string = 'base';
+	selectedTheme: string = "base";
 	themeListContainer: Phaser.GameObjects.Container | null = null;
 	winner: Avatar | null;
 
@@ -124,28 +124,39 @@ export default class Game extends Phaser.Scene {
 
 		// PixelPlush asset catalog'unu yükle
 		await this.assetManager.loadCatalog();
-		console.log('🎮 PixelPlush assets loaded:', this.assetManager.getStats());
+		console.log("🎮 PixelPlush assets loaded:", this.assetManager.getStats());
 
 		// Karakter seçici oluştur
-		this.characterSelector = new CharacterSelector(this, this.assetManager, {
-			x: constants.SCREEN_WIDTH / 2,
-			y: constants.SCREEN_HEIGHT / 2,
-			width: 500,
-			height: 350,
-			visible: false
-		}, this.selectedTheme);
+		this.characterSelector = new CharacterSelector(
+			this,
+			this.assetManager,
+			{
+				x: constants.SCREEN_WIDTH / 2,
+				y: constants.SCREEN_HEIGHT / 2,
+				width: 500,
+				height: 350,
+				visible: false,
+			},
+			this.selectedTheme,
+		);
 
 		// URL parametresinden tema kontrolü
 		const urlParams = new URLSearchParams(window.location.search);
-		const themeParam = urlParams.get('theme');
-		if (themeParam && themeParam !== 'all') {
+		const themeParam = urlParams.get("theme");
+		if (themeParam && themeParam !== "all") {
 			// Belirli bir tema seçilmişse, o temadan rastgele karakter seç
-			const themeCharacters = this.assetManager.getCharactersByTheme(this.capitalizeTheme(themeParam));
+			const themeCharacters = this.assetManager.getCharactersByTheme(
+				this.capitalizeTheme(themeParam),
+			);
 			if (themeCharacters.length > 0) {
-				const randomChar = themeCharacters[Math.floor(Math.random() * themeCharacters.length)];
-				localStorage.setItem('selectedPixelPlushCharacter', randomChar.id);
-				localStorage.setItem('selectedTheme', themeParam);
-				console.log(`🎨 Theme from URL: ${themeParam}, selected character: ${randomChar.name}`);
+				const randomChar = themeCharacters[
+					Math.floor(Math.random() * themeCharacters.length)
+				];
+				localStorage.setItem("selectedPixelPlushCharacter", randomChar.id);
+				localStorage.setItem("selectedTheme", themeParam);
+				console.log(
+					`🎨 Theme from URL: ${themeParam}, selected character: ${randomChar.name}`,
+				);
 			}
 		}
 
@@ -153,24 +164,24 @@ export default class Game extends Phaser.Scene {
 		this.characterSelector.setOnCharacterSelected((character) => {
 			console.log(`🎭 Character selected for next drop: ${character.name}`);
 			// Seçilen karakteri localStorage'a kaydet
-			localStorage.setItem('selectedPixelPlushCharacter', character.id);
+			localStorage.setItem("selectedPixelPlushCharacter", character.id);
 		});
 
 		// Klavye kontrolleri ekle
-		this.input.keyboard?.on('keydown-C', () => {
+		this.input.keyboard?.on("keydown-C", () => {
 			if (this.characterSelector) {
 				this.characterSelector.toggle();
 			}
 		});
 
 		// T tuşu ile tema listesi göster/gizle
-		this.input.keyboard?.on('keydown-T', () => {
+		this.input.keyboard?.on("keydown-T", () => {
 			if (this.themeListContainer) {
 				this.themeListContainer.destroy();
 				this.themeListContainer = null;
 			} else {
 				const themes = this.assetManager.getAvailableThemes();
-				console.log('🎨 Available themes:', themes);
+				console.log("🎨 Available themes:", themes);
 				this.showThemeList(themes);
 			}
 		});
@@ -181,54 +192,59 @@ export default class Game extends Phaser.Scene {
 	private capitalizeTheme(theme: string): string {
 		// URL'den gelen tema adını catalog'daki formata çevir
 		const themeMap: { [key: string]: string } = {
-			'halloween': 'Halloween',
-			'christmas': 'Christmas',
-			'easter': 'Easter',
-			'valentine': 'Valentine',
-			'spring': 'Spring',
-			'summer': 'Summer',
-			'fairy': 'Fairy',
-			'magic': 'Magic',
-			'cute': 'Cute',
-			'streamer': 'Streamer',
-			'base': 'Base',
-			'special': 'Special'
+			halloween: "Halloween",
+			christmas: "Christmas",
+			easter: "Easter",
+			valentine: "Valentine",
+			spring: "Spring",
+			summer: "Summer",
+			fairy: "Fairy",
+			magic: "Magic",
+			cute: "Cute",
+			streamer: "Streamer",
+			base: "Base",
+			special: "Special",
 		};
 
-		return themeMap[theme.toLowerCase()] || theme.charAt(0).toUpperCase() + theme.slice(1);
+		return (
+			themeMap[theme.toLowerCase()] ||
+			theme.charAt(0).toUpperCase() + theme.slice(1)
+		);
 	}
 
 	private getThemeFromUrl(): string {
 		// Hash parametrelerini oku (OAuth URL formatı: #access_token=...&theme=...)
 		const hashParams = new URLSearchParams(window.location.hash.substring(1));
-		const themeFromHash = hashParams.get('theme');
+		const themeFromHash = hashParams.get("theme");
 
 		if (themeFromHash) {
 			// Tema değerini temizle (pixelplush=true gibi eklentileri kaldır)
-			const cleanTheme = themeFromHash.split('&')[0].split('=')[0].trim();
+			const cleanTheme = themeFromHash.split("&")[0].split("=")[0].trim();
 			console.log(`🎨 Theme from hash: ${cleanTheme} (raw: ${themeFromHash})`);
 			return cleanTheme.toLowerCase();
 		}
 
 		// Query parametrelerini oku (fallback: ?theme=...)
 		const urlParams = new URLSearchParams(window.location.search);
-		const themeFromQuery = urlParams.get('theme');
+		const themeFromQuery = urlParams.get("theme");
 
 		if (themeFromQuery) {
-			const cleanTheme = themeFromQuery.split('&')[0].split('=')[0].trim();
-			console.log(`🎨 Theme from query: ${cleanTheme} (raw: ${themeFromQuery})`);
+			const cleanTheme = themeFromQuery.split("&")[0].split("=")[0].trim();
+			console.log(
+				`🎨 Theme from query: ${cleanTheme} (raw: ${themeFromQuery})`,
+			);
 			return cleanTheme.toLowerCase();
 		}
 
 		// LocalStorage'dan tema oku (tema seçim sayfasından)
-		const savedTheme = localStorage.getItem('selectedTheme');
+		const savedTheme = localStorage.getItem("selectedTheme");
 		if (savedTheme) {
 			console.log(`🎨 Theme from localStorage: ${savedTheme}`);
 			return savedTheme.toLowerCase();
 		}
 
-		console.log('🎨 Using default theme: base');
-		return 'base';
+		console.log("🎨 Using default theme: base");
+		return "base";
 	}
 
 	private loadThemeAssets(): void {
@@ -301,7 +317,7 @@ export default class Game extends Phaser.Scene {
 				align: 'center'
 			});
 			themeText.setOrigin(0.5, 0.5);
-			this.themeListContainer.add(themeText);
+			this.themeListContainer?.add(themeText);
 		});
 
 		// Kapatma butonu
