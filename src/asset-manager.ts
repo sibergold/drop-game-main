@@ -248,21 +248,22 @@ export class AssetManager {
 	// Tema bazında rastgele havuz/target seç
 	getRandomPoolByTheme(theme: string): string {
 		const poolMap: { [key: string]: string[] } = {
-			'base': ['target_pool_red.png', 'target_pool_blue.png'],
-			'pool': ['target_pool_blue.png', 'target_pool_red.png'],
-			'retro': ['target_pool_red.png', 'target_pool_blue.png'],
-			'night': ['target_pool_red.png', 'target_pool_blue.png'],
-			'light': ['target_pool_red.png', 'target_pool_blue.png'],
-			'easter': ['easter_theme/target_easter1.png', 'easter_theme/target_easter2.png', 'easter_theme/target_easter3.png', 'easter_theme/target_easter4.png', 'easter_theme/target_easter5.png'],
-			'spring': ['spring_theme/target.png', 'spring_theme/target_spring_front.png'],
-			'christmas': ['christmas_theme/target_christmas.png', 'christmas_theme/target_christmas_front.png'],
-			'winter': ['winter_theme/target_winter.png', 'winter_theme/target_winter_front.png'],
-			'autumn': ['autumn_theme/target_leaves.png', 'autumn_theme/target_leaves2.png'],
-			'valentine': ['valentines/valentines_target_brown_red_nocredit.png', 'valentines/valentines_target_white_pink_nocredit.png', 'valentines/valentines_target_brown_gold_nocredit.png', 'valentines/valentines_target_white_gold_nocredit.png'],
-			'halloween': ['cauldron/cauldron1.png'],
-			'pride': ['target_pool_red.png', 'target_pool_blue.png'],
-			'summer': ['target_pool_blue.png', 'target_pool_red.png',],
-			'multi': ['chute_black_blue.png', 'chute_black_green.png', 'chute_blue_green.png']
+			base: ["target_pool_red.png", "target_pool_blue.png"],
+			pool: ["target_pool_blue.png", "target_pool_red.png"],
+			retro: ["target_pool_red.png", "target_pool_blue.png"],
+			night: ["target_pool_red.png", "target_pool_blue.png"],
+			light: ["target_pool_red.png", "target_pool_blue.png"],
+			easter: ["easter_theme/target_easter4.png"],
+			spring: ["spring_theme/target.png"],
+			christmas: ["christmas_theme/target_christmas.png"],
+			winter: ["winter_theme/target_winter.png"],
+			autumn: ["autumn_theme/target_leaves.png"],
+			valentine: ["valentines/valentines_target_brown_red_nocredit.png","valentines/valentines_target_white_pink_nocredit.png",
+			"valentines/valentines_target_brown_gold_nocredit.png","valentines/valentines_target_white_gold_nocredit.png",],
+			halloween: ["cauldron/cauldron1.png"],
+			pride: ["target_pool_red.png", "target_pool_blue.png"],
+			summer: ["target_pool_blue.png", "target_pool_red.png"],
+			multi: ["target_pool_blue.png",	"target_pool_red.png"],
 		};
 
 		const themePools = poolMap[theme.toLowerCase()] || poolMap['base'];
