@@ -377,11 +377,9 @@ export default class Game extends Phaser.Scene {
 
 		this.pad.body.immovable = true;
 		this.pad.body.setSize(this.pad.width, this.pad.height - 10, true);
-		this.physics.add.collider(
-			this.pad,
-			this.dropGroup,
-			this.landOnPad.bind(this),
-		);
+
+		// ✅ Setup collision based on pool type
+		this.setupPoolCollision();
 
 		if (hs.debug)
 			this.rect = this.add
@@ -546,10 +544,6 @@ export default class Game extends Phaser.Scene {
 		}
 
 		const shouldLand = basicLandingCondition || poolSpecificLandingCondition;
-
-		// Debug landing conditions
-		console.log(`🔍 Landing check - Basic: ${basicLandingCondition}, Pool-specific: ${poolSpecificLandingCondition}, Should land: ${shouldLand}`);
-		console.log(`📍 Character Y: ${characterBottomY.toFixed(1)}, Ground: ${groundLevel.toFixed(1)}, Threshold: ${landingThreshold.toFixed(1)}`);
 
 		// Only allow scoring if character has reached the landing area
 		if (!shouldLand) {
@@ -1081,5 +1075,29 @@ export default class Game extends Phaser.Scene {
 		if (!this.queue) return;
 
 		await this.resolveQueue();
+	}
+
+	private setupPoolCollision(): void {
+		// Get current pool collision data
+		const poolCollisionData = this.assetManager.getPoolCollisionData(this.currentPoolAsset);
+		console.log(`🎯 Setting up collision for pool type: ${poolCollisionData.poolType}`);
+
+		if (poolCollisionData.poolType === 'pile') {
+			// For pile pools, use overlap (no bouncing)
+			this.physics.add.overlap(
+				this.pad,
+				this.dropGroup,
+				this.landOnPad.bind(this),
+			);
+			console.log(`🏔️ Pile pool: Using overlap (no bouncing)`);
+		} else {
+			// For walled pools, use collider (with bouncing)
+			this.physics.add.collider(
+				this.pad,
+				this.dropGroup,
+				this.landOnPad.bind(this),
+			);
+			console.log(`🏊 Walled pool: Using collider (with bouncing)`);
+		}
 	}
 }
