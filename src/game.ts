@@ -555,15 +555,22 @@ export default class Game extends Phaser.Scene {
 			const adjustedHalfWidth = halfWidth - 35; // 35px adjustment for walled pools
 			score = ((Math.max(0, adjustedHalfWidth - pos)) / adjustedHalfWidth) * 100;
 		} else {
-			// For pile-type pools, use standard scoring
-			score = ((halfWidth - pos) / halfWidth) * 100;
+			// For pile-type pools, use standard scoring but ensure minimum score of 1
+			score = Math.max(1, ((halfWidth - pos) / halfWidth) * 100);
 		}
 
-		// horizontal overlap mid-frame but not a landing; bounce off
+		// horizontal overlap mid-frame but not a landing; bounce off (only for walled pools)
 		if (score < 0) {
-			drop.body.velocity.x *= -1;
-			console.log(`🏀 Character bounced off due to negative score: ${score}`);
-			return;
+			// Only bounce for pools with walls (rectangular/round), not for pile pools
+			if (poolCollisionData.targetWalls) {
+				drop.body.velocity.x *= -1;
+				console.log(`🏀 Character bounced off ${poolCollisionData.poolType} pool walls (negative score: ${score.toFixed(1)})`);
+				return;
+			} else {
+				// For pile pools, allow landing even with negative score (like winter theme)
+				console.log(`🏔️ Pile pool allows landing even with negative score: ${score.toFixed(1)}`);
+				// Don't return, continue with landing
+			}
 		}
 
 		console.log(`🎯 Landing score: ${score.toFixed(1)} (pool type: ${poolCollisionData.poolType})`);
