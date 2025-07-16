@@ -505,6 +505,13 @@ export default class Game extends Phaser.Scene {
 			return;
 		}
 
+		// ✅ Throttle landing checks to prevent infinite loops
+		const now = Date.now();
+		if (avatar.lastLandingCheck && (now - avatar.lastLandingCheck) < 100) {
+			return; // Skip if checked within last 100ms
+		}
+		avatar.lastLandingCheck = now;
+
 		// ✅ Get pool collision data for current pool type
 		const poolCollisionData = this.assetManager.getPoolCollisionData(this.currentPoolAsset);
 		console.log(`🎯 Pool collision data:`, poolCollisionData);
@@ -528,9 +535,21 @@ export default class Game extends Phaser.Scene {
 			poolSpecificLandingCondition =
 				characterBottomY >= wallLandingThreshold &&
 				horizontalDistance <= (poolHalfWidth - 20); // 20px buffer like in parachute-master
+		} else if (poolCollisionData.poolType === 'pile') {
+			// For pile pools (winter, christmas, etc.), allow landing when touching the pad
+			const horizontalDistance = Math.abs(avatar.container.x - this.pad!.x);
+			const poolHalfWidth = this.pad!.body!.halfWidth;
+
+			poolSpecificLandingCondition =
+				characterBottomY >= (groundLevel - 40) && // More lenient threshold for pile pools
+				horizontalDistance <= poolHalfWidth; // Allow landing anywhere on the pile
 		}
 
 		const shouldLand = basicLandingCondition || poolSpecificLandingCondition;
+
+		// Debug landing conditions
+		console.log(`🔍 Landing check - Basic: ${basicLandingCondition}, Pool-specific: ${poolSpecificLandingCondition}, Should land: ${shouldLand}`);
+		console.log(`📍 Character Y: ${characterBottomY.toFixed(1)}, Ground: ${groundLevel.toFixed(1)}, Threshold: ${landingThreshold.toFixed(1)}`);
 
 		// Only allow scoring if character has reached the landing area
 		if (!shouldLand) {

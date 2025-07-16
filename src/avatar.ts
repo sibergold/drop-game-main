@@ -11,6 +11,7 @@ export default class Avatar {
 	customImage = false;
 	isLanded: boolean = false;
 	label: Phaser.GameObjects.Text | null;
+	lastLandingCheck?: number;
 	rect?: Phaser.GameObjects.Rectangle | null;
 	score: integer;
 	scoreLabel: Phaser.GameObjects.Text | null;
