@@ -1,6 +1,6 @@
 
 node_modules/
-dist
+/dist/
 # Environment variables (contains sensitive information)
 .env
 .env.local
