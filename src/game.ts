@@ -488,13 +488,13 @@ export default class Game extends Phaser.Scene {
 	}
 
 	landOnPad(
-		padObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Tilemaps.Tile,
+		_padObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Tilemaps.Tile,
 		dropObj: Phaser.Types.Physics.Arcade.GameObjectWithBody | Tilemaps.Tile,
 	) {
-		const pad = padObj as Phaser.Types.Physics.Arcade.GameObjectWithBody;
 		const drop = dropObj as Phaser.Types.Physics.Arcade.GameObjectWithBody;
 
-		if (!pad.body!.touching.up) return;
+		// ✅ REMOVED: The touching.up check was causing premature scoring
+		// The detailed landing detection below is more accurate
 
 		const avatar = drop.getData("avatar") as Avatar;
 
