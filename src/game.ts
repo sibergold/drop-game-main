@@ -1078,6 +1078,12 @@ export default class Game extends Phaser.Scene {
 	}
 
 	private setupPoolCollision(): void {
+		// Ensure pad and dropGroup are available
+		if (!this.pad || !this.dropGroup) {
+			console.warn('⚠️ Cannot setup pool collision: pad or dropGroup not available');
+			return;
+		}
+
 		// Get current pool collision data
 		const poolCollisionData = this.assetManager.getPoolCollisionData(this.currentPoolAsset);
 		console.log(`🎯 Setting up collision for pool type: ${poolCollisionData.poolType}`);

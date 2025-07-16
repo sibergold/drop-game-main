@@ -2,7 +2,7 @@ import compression from "compression";
 import cors from "cors";
 import express from "express";
 import { createHttpTerminator } from "http-terminator";
-import { join } from "path";
+
 
 const host = process.env.SERVER_HOST ?? process.env.host ?? "localhost";
 const port = parseInt(process.env.SERVER_PORT ?? process.env.port ?? "3000");
