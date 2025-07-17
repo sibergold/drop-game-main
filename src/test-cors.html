@@ -1,26 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>CORS Test</title>
+    <title>CORS Test - Parachute Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        body { font-family: Arial, sans-serif; margin: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        button { padding: 12px 24px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background 0.3s; }
         button:hover { background: #0056b3; }
         #result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
-        .success { border-color: #28a745; background: #d4edda; }
-        .error { border-color: #dc3545; background: #f8d7da; }
-        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .success { border-color: #28a745; background: #d4edda; color: #155724; }
+        .error { border-color: #dc3545; background: #f8d7da; color: #721c24; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; font-size: 12px; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <h1>Railway Proxy CORS Test</h1>
-    <p>Bu sayfa Railway proxy sunucunuzun CORS ayarlarını test eder.</p>
-    
-    <button onclick="testCORS()">🧪 Test CORS Endpoint</button>
-    <button onclick="testOAuth()">🔐 Test OAuth Endpoint</button>
-    <button onclick="testHealth()">❤️ Test Health Endpoint</button>
-    
-    <div id="result"></div>
+    <div class="container">
+        <h1>🚀 Railway Proxy CORS Test</h1>
+
+        <div class="info">
+            <strong>ℹ️ Bilgi:</strong> Bu sayfa Railway proxy sunucunuzun CORS ayarlarını test eder.
+            Netlify'de yayınlandığında otomatik olarak proxy bağlantısını kontrol eder.
+        </div>
+
+        <div style="text-align: center;">
+            <button onclick="testCORS()">🧪 Test CORS Endpoint</button>
+            <button onclick="testOAuth()">🔐 Test OAuth Endpoint</button>
+            <button onclick="testHealth()">❤️ Test Health Endpoint</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
 
     <script>
         const PROXY_URL = 'https://render-proxy-production-9134.up.railway.app';

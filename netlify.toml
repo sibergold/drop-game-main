@@ -26,6 +26,12 @@
   to = "/streamlined-oauth.html"
   status = 200
 
+# Handle test pages
+[[redirects]]
+  from = "/test-cors"
+  to = "/test-cors.html"
+  status = 200
+
 # Default SPA fallback (should be last)
 [[redirects]]
   from = "/*"

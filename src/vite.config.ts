@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => {
 					main: resolve(currentDir, "index.html"),
 					streamlined: resolve(currentDir, "streamlined-oauth.html"),
 					debug: resolve(currentDir, "debug.html"),
+					testcors: resolve(currentDir, "test-cors.html"),
 				},
 				output: {
 					entryFileNames: 'assets/[name]-[hash].js',
