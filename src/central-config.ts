@@ -22,7 +22,7 @@ export const CENTRAL_OAUTH_CONFIG = {
 				return import.meta.env.VITE_OAUTH_PROXY_URL_DEV || 'http://localhost:3001';
 			} else {
 				// Use Netlify functions for deployed environment
-				return import.meta.env.VITE_OAUTH_PROXY_URL_PROD || 'https://drop-game-proxy.onrender.com'
+				return import.meta.env.VITE_OAUTH_PROXY_URL_PROD || 'https://render-proxy-production-9134.up.railway.app'
 			}
 		})()
 	},

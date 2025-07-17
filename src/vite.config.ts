@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
 			'import.meta.env.VITE_KICK_TOKEN_URL': JSON.stringify(env.VITE_KICK_TOKEN_URL || 'https://id.kick.com/oauth/token'),
 			'import.meta.env.VITE_KICK_API_BASE_URL': JSON.stringify(env.VITE_KICK_API_BASE_URL || 'https://kick.com/api/v2'),
 			'import.meta.env.VITE_OAUTH_PROXY_URL_DEV': JSON.stringify(env.VITE_OAUTH_PROXY_URL_DEV || 'http://localhost:3001'),
-			'import.meta.env.VITE_OAUTH_PROXY_URL_PROD': JSON.stringify(env.VITE_OAUTH_PROXY_URL_PROD || 'https://drop-game-proxy.onrender.com'),
+			'import.meta.env.VITE_OAUTH_PROXY_URL_PROD': JSON.stringify(env.VITE_OAUTH_PROXY_URL_PROD || 'https://render-proxy-production-9134.up.railway.app'),
 		},
 		build: {
 			rollupOptions: {
