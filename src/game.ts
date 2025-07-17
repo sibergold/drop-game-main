@@ -758,7 +758,7 @@ export default class Game extends Phaser.Scene {
 		const isLocalhost = window.location.hostname === 'localhost';
 		const ownProxyUrl = isLocalhost
 			? `http://localhost:3001/proxy/emote/${emoteId}`
-			: `${window.location.origin}/.netlify/functions/emote-proxy?emoteId=${emoteId}`;
+			: `https://render-proxy-production-9134.up.railway.app/proxy/emote/${emoteId}`;
 
 		// List of proxy services to try (our own proxy first, then public ones)
 		const corsProxies = [
