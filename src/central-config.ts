@@ -193,7 +193,7 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 
 		if (!isLocalhost) {
 			// Production: Render proxy fonksiyonu üzerinden fetch
-			const response = await fetch('render-proxy-production-9134.up.railway.app/get-kick-user', {
+			const response = await fetch('https://render-proxy-production-9134.up.railway.app/get-kick-user', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ access_token: accessToken })

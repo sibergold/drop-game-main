@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #result { margin-top: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 5px; background: #f9f9f9; }
+        .success { border-color: #28a745; background: #d4edda; }
+        .error { border-color: #dc3545; background: #f8d7da; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Railway Proxy CORS Test</h1>
+    <p>Bu sayfa Railway proxy sunucunuzun CORS ayarlarını test eder.</p>
+    
+    <button onclick="testCORS()">🧪 Test CORS Endpoint</button>
+    <button onclick="testOAuth()">🔐 Test OAuth Endpoint</button>
+    <button onclick="testHealth()">❤️ Test Health Endpoint</button>
+    
+    <div id="result"></div>
+
+    <script>
+        const PROXY_URL = 'https://render-proxy-production-9134.up.railway.app';
+        
+        async function testCORS() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '🔄 Testing CORS endpoint...';
+            resultDiv.className = '';
+            
+            try {
+                console.log('🧪 Testing CORS endpoint...');
+                
+                const response = await fetch(`${PROXY_URL}/test-cors`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                console.log('✅ CORS Response status:', response.status);
+                console.log('📋 CORS Response headers:', [...response.headers.entries()]);
+                
+                const data = await response.json();
+                console.log('📦 CORS Response data:', data);
+                
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `
+                    <h3>✅ CORS Test Success!</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Message:</strong> ${data.message}</p>
+                    <p><strong>Origin:</strong> ${data.origin}</p>
+                    <p><strong>Timestamp:</strong> ${data.timestamp}</p>
+                    <p><strong>Headers:</strong></p>
+                    <pre>${JSON.stringify(data.headers, null, 2)}</pre>
+                    <p><strong>Full Response:</strong></p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('❌ CORS test error:', error);
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `
+                    <h3>❌ CORS Test Error!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Bu hata CORS konfigürasyon sorunu olduğunu gösterir.</p>
+                    <p><strong>Olası çözümler:</strong></p>
+                    <ul>
+                        <li>Proxy sunucusunda CORS header'ları eksik olabilir</li>
+                        <li>/test-cors endpoint'i için OPTIONS method'u desteklenmemiş olabilir</li>
+                        <li>Access-Control-Allow-Origin header'ı yanlış konfigüre edilmiş olabilir</li>
+                    </ul>
+                `;
+            }
+        }
+
+        async function testOAuth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '🔄 Testing OAuth endpoint...';
+            resultDiv.className = '';
+            
+            try {
+                console.log('🔐 Testing OAuth endpoint...');
+                
+                const response = await fetch(`${PROXY_URL}/oauth/exchange`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        test: 'true'
+                    })
+                });
+                
+                console.log('✅ OAuth Response status:', response.status);
+                console.log('📋 OAuth Response headers:', [...response.headers.entries()]);
+                
+                const data = await response.json();
+                console.log('📦 OAuth Response data:', data);
+                
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `
+                    <h3>✅ OAuth Test Success!</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Response:</strong></p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p>OAuth endpoint'i çalışıyor ve CORS ayarları doğru!</p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ OAuth test error:', error);
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `
+                    <h3>❌ OAuth Test Error!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Bu hata OAuth endpoint'inde CORS sorunu olduğunu gösterir.</p>
+                    <p><strong>Çözüm:</strong> OAuth endpoint'i için de CORS header'ları eklenmeli.</p>
+                `;
+            }
+        }
+
+        async function testHealth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '🔄 Testing Health endpoint...';
+            resultDiv.className = '';
+            
+            try {
+                console.log('❤️ Testing Health endpoint...');
+                
+                const response = await fetch(`${PROXY_URL}/health`, {
+                    method: 'GET'
+                });
+                
+                console.log('✅ Health Response status:', response.status);
+                console.log('📋 Health Response headers:', [...response.headers.entries()]);
+                
+                const data = await response.json();
+                console.log('📦 Health Response data:', data);
+                
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Health Test Success!</h3>
+                    <p><strong>Status:</strong> ${response.status}</p>
+                    <p><strong>Server Status:</strong> ${data.status}</p>
+                    <p><strong>Timestamp:</strong> ${data.timestamp}</p>
+                    <p><strong>Client ID Configured:</strong> ${data.client_id_configured}</p>
+                    <p><strong>Client Secret Configured:</strong> ${data.client_secret_configured}</p>
+                    <p><strong>Config Valid:</strong> ${data.config_valid}</p>
+                    <p>Proxy sunucusu sağlıklı çalışıyor!</p>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Health test error:', error);
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Health Test Error!</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p>Proxy sunucusuna bağlanılamıyor.</p>
+                `;
+            }
+        }
+
+        // Sayfa yüklendiğinde otomatik olarak health check yap
+        window.onload = function() {
+            console.log('🚀 Sayfa yüklendi, otomatik health check yapılıyor...');
+            testHealth();
+        };
+    </script>
+</body>
+</html>
