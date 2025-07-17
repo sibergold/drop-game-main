@@ -815,6 +815,7 @@ export default class Game extends Phaser.Scene {
 			})
 			.on(`loaderror-image-${textureKey}`, () => {
 				console.log(`⚠️ Failed to load emote with proxy ${currentProxy}, trying next proxy`);
+				console.log(`❌ Failed URL: ${proxiedUrl}`);
 				this.tryLoadEmoteWithProxies(username, emoteName, emoteId, originalUrl, textureKey, proxies, proxyIndex + 1);
 			})
 			.start();

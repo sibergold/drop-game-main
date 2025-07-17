@@ -176,10 +176,14 @@ export class AssetManager {
 		}
 
 		try {
+			console.log(`🔄 Loading character texture: ${character.name}`);
+			console.log(`📁 Texture path: ${character.frontSprite}`);
+			console.log(`🔑 Texture key: ${textureKey}`);
+
 			// Phaser'a texture'ı yükle
 			return new Promise((resolve, reject) => {
 				this.scene.load.image(textureKey, character.frontSprite);
-				
+
 				this.scene.load.once(`filecomplete-image-${textureKey}`, () => {
 					this.loadedTextures.add(textureKey);
 					console.log(`✅ Loaded character texture: ${character.name}`);
@@ -188,6 +192,7 @@ export class AssetManager {
 
 				this.scene.load.once(`loaderror-image-${textureKey}`, () => {
 					console.error(`❌ Failed to load character texture: ${character.name}`);
+					console.error(`❌ Failed path: ${character.frontSprite}`);
 					reject(new Error(`Failed to load texture for ${characterId}`));
 				});
 
