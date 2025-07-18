@@ -131,7 +131,7 @@ export default class Game extends Phaser.Scene {
 
 		// PixelPlush asset catalog'unu yükle
 		await this.assetManager.loadCatalog();
-		console.log("🎮 PixelPlush assets loaded:", this.assetManager.getStats());
+		
 
 		// Karakter seçici oluştur
 		this.characterSelector = new CharacterSelector(
@@ -161,15 +161,13 @@ export default class Game extends Phaser.Scene {
 				];
 				localStorage.setItem("selectedPixelPlushCharacter", randomChar.id);
 				localStorage.setItem("selectedTheme", themeParam);
-				console.log(
-					`🎨 Theme from URL: ${themeParam}, selected character: ${randomChar.name}`,
-				);
+				
 			}
 		}
 
 		// Karakter seçimi callback'i
 		this.characterSelector.setOnCharacterSelected((character) => {
-			console.log(`🎭 Character selected for next drop: ${character.name}`);
+			
 			// Seçilen karakteri localStorage'a kaydet
 			localStorage.setItem("selectedPixelPlushCharacter", character.id);
 		});
@@ -188,7 +186,7 @@ export default class Game extends Phaser.Scene {
 				this.themeListContainer = null;
 			} else {
 				const themes = this.assetManager.getAvailableThemes();
-				console.log("🎨 Available themes:", themes);
+				
 				this.showThemeList(themes);
 			}
 		});
@@ -227,7 +225,7 @@ export default class Game extends Phaser.Scene {
 		if (themeFromHash) {
 			// Tema değerini temizle (pixelplush=true gibi eklentileri kaldır)
 			const cleanTheme = themeFromHash.split("&")[0].split("=")[0].trim();
-			console.log(`🎨 Theme from hash: ${cleanTheme} (raw: ${themeFromHash})`);
+			
 			return cleanTheme.toLowerCase();
 		}
 
@@ -237,32 +235,30 @@ export default class Game extends Phaser.Scene {
 
 		if (themeFromQuery) {
 			const cleanTheme = themeFromQuery.split("&")[0].split("=")[0].trim();
-			console.log(
-				`🎨 Theme from query: ${cleanTheme} (raw: ${themeFromQuery})`,
-			);
+			
 			return cleanTheme.toLowerCase();
 		}
 
 		// LocalStorage'dan tema oku (tema seçim sayfasından)
 		const savedTheme = localStorage.getItem("selectedTheme");
 		if (savedTheme) {
-			console.log(`🎨 Theme from localStorage: ${savedTheme}`);
+		
 			return savedTheme.toLowerCase();
 		}
 
-		console.log("🎨 Using default theme: base");
+		
 		return "base";
 	}
 
 	private loadThemeAssets(): void {
-		console.log(`🎨 Loading assets for theme: ${this.selectedTheme}`);
+		
 
 		// Tema bazlı paraşüt yükle (manuel)
 		const parachuteAsset = this.assetManager.getRandomParachuteByTheme(this.selectedTheme);
 		const parachuteUrl = window.location.hostname === 'localhost'
 			? `./pixelplush/game-parachute/${parachuteAsset}`
 			: `${window.location.origin}/pixelplush/game-parachute/${parachuteAsset}`;
-		console.log(`🪂 Loading parachute from: ${parachuteUrl}`);
+		
 
 		this.loadImageManually("chute", parachuteUrl, `Theme parachute: ${parachuteAsset}`);
 
@@ -272,20 +268,20 @@ export default class Game extends Phaser.Scene {
 		const poolUrl = window.location.hostname === 'localhost'
 			? `./pixelplush/game-parachute/${poolAsset}`
 			: `${window.location.origin}/pixelplush/game-parachute/${poolAsset}`;
-		console.log(`🎯 Loading target from: ${poolUrl}`);
+	
 
 		this.loadImageManually("pad", poolUrl, `Theme target: ${poolAsset}`);
 	}
 
 	private loadImageManually(textureKey: string, imageUrl: string, description: string): void {
-		console.log(`🔄 Manual loading: ${description}`);
+		
 
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
 
 		img.onload = () => {
 			try {
-				console.log(`✅ ${description} loaded successfully (${img.width}x${img.height})`);
+				
 
 				// Remove existing texture if it exists
 				if (this.textures.exists(textureKey)) {
@@ -294,7 +290,7 @@ export default class Game extends Phaser.Scene {
 
 				// Add texture to Phaser manually
 				this.textures.addImage(textureKey, img);
-				console.log(`✅ ${description} added to Phaser as: ${textureKey}`);
+				
 			} catch (error) {
 				console.error(`❌ Error adding ${description} to Phaser:`, error);
 				// Fallback to default

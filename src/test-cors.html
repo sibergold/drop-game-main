@@ -44,7 +44,7 @@
             resultDiv.className = '';
             
             try {
-                console.log('🧪 Testing CORS endpoint...');
+                
                 
                 const response = await fetch(`${PROXY_URL}/test-cors`, {
                     method: 'GET',
@@ -53,11 +53,10 @@
                     }
                 });
                 
-                console.log('✅ CORS Response status:', response.status);
-                console.log('📋 CORS Response headers:', [...response.headers.entries()]);
+                
                 
                 const data = await response.json();
-                console.log('📦 CORS Response data:', data);
+                
                 
                 resultDiv.className = 'success';
                 resultDiv.innerHTML = `
@@ -95,7 +94,7 @@
             resultDiv.className = '';
             
             try {
-                console.log('🔐 Testing OAuth endpoint...');
+              
                 
                 const response = await fetch(`${PROXY_URL}/oauth/exchange`, {
                     method: 'POST',
@@ -107,11 +106,10 @@
                     })
                 });
                 
-                console.log('✅ OAuth Response status:', response.status);
-                console.log('📋 OAuth Response headers:', [...response.headers.entries()]);
+                
                 
                 const data = await response.json();
-                console.log('📦 OAuth Response data:', data);
+                
                 
                 resultDiv.className = 'success';
                 resultDiv.innerHTML = `
@@ -140,17 +138,16 @@
             resultDiv.className = '';
             
             try {
-                console.log('❤️ Testing Health endpoint...');
+                
                 
                 const response = await fetch(`${PROXY_URL}/health`, {
                     method: 'GET'
                 });
                 
-                console.log('✅ Health Response status:', response.status);
-                console.log('📋 Health Response headers:', [...response.headers.entries()]);
+              
                 
                 const data = await response.json();
-                console.log('📦 Health Response data:', data);
+                
                 
                 resultDiv.className = 'success';
                 resultDiv.innerHTML = `
@@ -177,7 +174,7 @@
 
         // Sayfa yüklendiğinde otomatik olarak health check yap
         window.onload = function() {
-            console.log('🚀 Sayfa yüklendi, otomatik health check yapılıyor...');
+           
             testHealth();
         };
     </script>

@@ -25,12 +25,9 @@ app.use(express.static("dist"));
 
 app.disable("x-powered-by");
 
-const listener = app.listen(port, host, () =>
-	console.log(`Server listening at http://${host}:${port}`),
-);
+const listener = app.listen(port, host);
 const terminator = createHttpTerminator({ server: listener });
-const shutdown = async () => {
-	console.log("Terminating");
+const shutdown = async () => {	
 	await terminator.terminate();
 	process.exit(0);
 };

@@ -14,7 +14,7 @@ class StreamlinedKickOAuth {
 	private openObsBtn: HTMLButtonElement;
 
 	constructor() {
-		console.log('StreamlinedKickOAuth constructor called');
+		
 		
 		this.errorDiv = document.getElementById('error-message') as HTMLElement;
 		this.successDiv = document.getElementById('success-message') as HTMLElement;
@@ -25,36 +25,25 @@ class StreamlinedKickOAuth {
 		this.copyUrlBtn = document.getElementById('copy-url-btn') as HTMLButtonElement;
 		this.openObsBtn = document.getElementById('open-obs-btn') as HTMLButtonElement;
 		
-		console.log('DOM elements found:', {
-			errorDiv: !!this.errorDiv,
-			successDiv: !!this.successDiv,
-			quickAuthorizeBtn: !!this.quickAuthorizeBtn,
-			setupSection: !!this.setupSection,
-			resultSection: !!this.resultSection,
-			overlayUrlDiv: !!this.overlayUrlDiv,
-			copyUrlBtn: !!this.copyUrlBtn,
-			openObsBtn: !!this.openObsBtn
-		});
+		
 		
 		this.init();
 	}
 
 	private init() {
-		console.log('StreamlinedKickOAuth init() called');
-		console.log('CLIENT_ID:', CENTRAL_OAUTH_CONFIG.CLIENT_ID);
-		console.log('isCentralConfigValid():', isCentralConfigValid());
+	
 		
 		// Check if we're returning from OAuth
 		if (hs.code) {
-			console.log('OAuth return detected:', { code: hs.code, state: hs.state });
+			
 			this.handleOAuthReturn();
 			return;
 		}
 
 		// Setup event listeners
-		console.log('Setting up event listeners');
+		
 		this.quickAuthorizeBtn.addEventListener('click', () => {
-			console.log('Quick authorize button clicked');
+			
 			this.startStreamlinedOAuth();
 		});
 		this.copyUrlBtn.addEventListener('click', () => this.copyOverlayUrl());
@@ -62,23 +51,21 @@ class StreamlinedKickOAuth {
 		
 		// Check if central client ID is configured
 		if (!isCentralConfigValid()) {
-			console.log('Central config is invalid');
+		
 			this.showError(CENTRAL_OAUTH_CONFIG.UI_CONFIG.messages.error_no_client_id);
 			this.quickAuthorizeBtn.disabled = true;
 		} else {
-			console.log('Central config is valid, button should be enabled');
+			
 		}
 	}
 
 	private async handleOAuthReturn() {
 		try {
-			console.log('🔄 Handling OAuth return...');
-			console.log('URL params:', hs);
+			
 
 			// Verify state parameter for security
 			const storedState = sessionStorage.getItem('kick_oauth_state');
-			console.log('Stored state:', storedState);
-			console.log('Received state:', hs.state);
+			
 
 			if (hs.state && storedState && hs.state !== storedState) {
 				throw new Error('Invalid state parameter - possible CSRF attack');
@@ -86,14 +73,14 @@ class StreamlinedKickOAuth {
 
 			// Exchange authorization code for access token via proxy
 			const code = hs.code;
-			console.log('Authorization code:', code ? 'YES' : 'NO');
+			
 
 			if (!code) {
 				throw new Error('No authorization code received');
 			}
 
 			const accessToken = await exchangeCodeForToken(code, window.location.href.split('?')[0]);
-			console.log('Access token received:', accessToken ? 'YES' : 'NO');
+			
 
 			if (!accessToken) {
 				throw new Error('Failed to exchange code for access token');
@@ -120,7 +107,7 @@ class StreamlinedKickOAuth {
 
 			// Clean up URL parameters and redirect back to clean page
 			setTimeout(() => {
-				console.log('🔄 Cleaning up URL and redirecting...');
+				
 				const cleanUrl = window.location.href.split('?')[0];
 				window.history.replaceState({}, document.title, cleanUrl);
 			}, 2000); // Give user time to see the success message
@@ -131,7 +118,7 @@ class StreamlinedKickOAuth {
 
 			// Clean up URL parameters on error too
 			setTimeout(() => {
-				console.log('🔄 Cleaning up URL after error...');
+			
 				const cleanUrl = window.location.href.split('?')[0];
 				window.history.replaceState({}, document.title, cleanUrl);
 			}, 3000);
@@ -149,7 +136,7 @@ class StreamlinedKickOAuth {
 		const selectedTheme = localStorage.getItem('selectedTheme');
 		if (selectedTheme) {
 			url += `&theme=${encodeURIComponent(selectedTheme)}`;
-			console.log(`🎨 Adding theme to overlay URL: ${selectedTheme}`);
+			
 		}
 
 		// PixelPlush'ı varsayılan olarak etkinleştir
@@ -168,29 +155,29 @@ class StreamlinedKickOAuth {
 	}
 
 	private async startStreamlinedOAuth() {
-		console.log('startStreamlinedOAuth() called');
+		
 
 		if (!isCentralConfigValid()) {
-			console.log('Central config invalid in startStreamlinedOAuth');
+			
 			this.showError(CENTRAL_OAUTH_CONFIG.UI_CONFIG.messages.error_no_client_id);
 			return;
 		}
 
 		try {
-			console.log('Building OAuth URL...');
+		
 			// Build OAuth URL using central config (with PKCE)
 			const oauthUrl = await buildCentralOAuthUrl(window.location.href.split('?')[0]);
-			console.log('OAuth URL built:', oauthUrl);
+			
 
 			// Show loading state
 			this.quickAuthorizeBtn.textContent = CENTRAL_OAUTH_CONFIG.UI_CONFIG.messages.loading;
 			this.quickAuthorizeBtn.disabled = true;
 
 			// Redirect to Kick OAuth
-			console.log('Redirecting to OAuth URL...');
+			
 			window.location.href = oauthUrl;
 		} catch (error) {
-			console.error('OAuth start error:', error);
+			
 			this.showError(`Failed to start authorization: ${error instanceof Error ? error.message : 'Unknown error'}`);
 		}
 	}
@@ -257,15 +244,15 @@ class StreamlinedKickOAuth {
 }
 
 // Initialize when DOM is ready
-console.log('Document ready state:', document.readyState);
+
 if (document.readyState === 'loading') {
-	console.log('Document still loading, waiting for DOMContentLoaded');
+	
 	document.addEventListener('DOMContentLoaded', () => {
-		console.log('DOMContentLoaded event fired, initializing StreamlinedKickOAuth');
+		
 		new StreamlinedKickOAuth();
 	});
 } else {
-	console.log('Document already loaded, initializing StreamlinedKickOAuth immediately');
+	
 	new StreamlinedKickOAuth();
 }
 

@@ -30,7 +30,7 @@ class KickClient {
 	private isConnected: boolean = false;
 
 	constructor(config: KickClientConfig) {
-		console.log('🚀 NEW KICK CLIENT VERSION - NO AUTH REQUIRED');
+		
 		this.config = config;
 		this.testAccessToken();
 		this.initializePusher();
@@ -38,7 +38,7 @@ class KickClient {
 
 	private async testAccessToken() {
 		try {
-			console.log('🔍 Testing access token...');
+			
 			const response = await fetch('https://kick.com/api/v1/user', {
 				headers: {
 					'Authorization': `Bearer ${this.config.accessToken}`,
@@ -48,7 +48,7 @@ class KickClient {
 
 			if (response.ok) {
 				const user = await response.json();
-				console.log('✅ Access token is valid. User:', user.username);
+				
 			} else {
 				console.error('❌ Access token test failed:', response.status, response.statusText);
 				const errorText = await response.text();
@@ -56,7 +56,7 @@ class KickClient {
 			}
 
 			// Note: We're not testing WebSocket auth endpoint since we're connecting to public channels
-			console.log('ℹ️ Connecting to public chat channel (no authentication required for reading)');
+			
 		} catch (error) {
 			console.error('❌ Failed to test access token:', error);
 		}
@@ -67,11 +67,7 @@ class KickClient {
 		const pusherKey = import.meta.env?.VITE_KICK_PUSHER_KEY || process.env.KICK_PUSHER_KEY || '32cbd69e4b950bf97679';
 		const pusherCluster = import.meta.env?.VITE_KICK_PUSHER_CLUSTER || process.env.KICK_PUSHER_CLUSTER || 'us2';
 
-		console.log('🔍 Initializing Pusher with new credentials:', {
-			key: pusherKey,
-			cluster: pusherCluster,
-			chatroomId: this.config.chatroomId
-		});
+	
 
 		try {
 			// Clean up previous pusher instance
@@ -90,13 +86,13 @@ class KickClient {
 			// Connection state handlers
 			this.pusher.connection.bind('connected', () => {
 				this.isConnected = true;
-				console.log('✅ Connected to Kick WebSocket with new credentials');
+				
 				this.emit('connected');
 			});
 
 			this.pusher.connection.bind('disconnected', () => {
 				this.isConnected = false;
-				console.log('❌ Disconnected from Kick WebSocket');
+				
 				this.emit('disconnected');
 			});
 
@@ -110,7 +106,7 @@ class KickClient {
 				});
 
 				// Fallback to polling if WebSocket fails
-				console.log('🔄 WebSocket failed, falling back to polling...');
+				
 				this.startPollingFallback();
 				this.emit('error', error);
 			});
@@ -120,28 +116,28 @@ class KickClient {
 
 			// Channel subscription handlers
 			this.channel.bind('pusher:subscription_succeeded', () => {
-				console.log(`✅ Subscribed to chatroom: ${this.config.chatroomId}`);
+				
 			});
 
 			this.channel.bind('pusher:subscription_error', (error: any) => {
 				console.error('🚨 Chatroom subscription error:', error);
-				console.log('🔄 Subscription failed, falling back to polling...');
+				
 				this.startPollingFallback();
 			});
 
 			// Listen for all events to debug what's available
 			this.channel.bind_global((eventName: string, data: any) => {
-				console.log('🔍 Received event:', eventName, data);
+				
 			});
 
 			// Listen for chat messages using various event names
 			this.channel.bind('ChatMessageEvent', (data: any) => {
-				console.log('📨 Received chat message:', data);
+				
 				this.processChatMessage(data);
 			});
 
 			this.channel.bind('App\\Events\\ChatMessageEvent', (data: any) => {
-				console.log('📨 Received chat message (legacy event):', data);
+				
 				this.processChatMessage(data);
 			});
 
@@ -174,8 +170,7 @@ class KickClient {
 private lastMessageId: string | null = null;
 
 private startPollingFallback() {
-	console.log('🔄 Starting polling fallback for chat messages...');
-	console.log('ℹ️ Since WebSocket failed, we\'ll use REST API polling as fallback');
+	
 
 	// Poll for chat messages every 3 seconds as fallback
 	const pollInterval = setInterval(async () => {
@@ -196,7 +191,7 @@ private startPollingFallback() {
 
 private async pollChatMessages() {
 	try {
-		console.log('📡 Polling for chat messages...');
+	
 
 		// Try to get recent chat messages from Kick's API
 		// Note: This might not work due to CORS, but let's try
@@ -209,7 +204,7 @@ private async pollChatMessages() {
 
 		if (response.ok) {
 			const data = await response.json();
-			console.log('📨 Received chat data:', data);
+			
 
 			if (data.data && Array.isArray(data.data)) {
 				// Process new messages
@@ -229,7 +224,7 @@ private async pollChatMessages() {
 							created_at: messageData.created_at,
 						};
 
-						console.log('📨 New chat message:', message);
+					
 						this.emit('message', message.user.username, message.content, message.user);
 					}
 				}
@@ -325,7 +320,7 @@ disconnect() {
 				throw new Error(`Failed to send message: ${response.status} - ${errorText}`);
 			}
 
-			console.log(`💬 Message sent to ${channel}: ${message}`);
+			
 		} catch (error) {
 			console.error('❌ Failed to send message:', error);
 			this.emit('error', error);
@@ -340,13 +335,7 @@ export class KickClientManager {
 	}
 
 	static createFromUrlParams(): KickClient | null {
-		console.log('🔍 Debug URL params:', {
-			access_token: hs.access_token,
-			chatroomId: hs.chatroomId,
-			channel: hs.channel,
-			allParams: hs
-		});
-
+	
 		if (!hs.access_token || !hs.chatroomId) {
 			console.error('❌ Missing required parameters: access_token or chatroomId');
 			console.error('Available parameters:', Object.keys(hs));

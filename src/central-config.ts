@@ -133,12 +133,10 @@ export async function buildCentralOAuthUrl(redirectUri: string): Promise<string>
 
 // Helper function to exchange authorization code for access token via proxy
 export async function exchangeCodeForToken(code: string, redirectUri: string): Promise<string> {
-	console.log('🔄 Starting token exchange via proxy...');
-	console.log('Code:', code);
-	console.log('Redirect URI:', redirectUri);
+	
 
 	const codeVerifier = sessionStorage.getItem('kick_oauth_code_verifier');
-	console.log('Code verifier found:', !!codeVerifier);
+	
 
 	if (!codeVerifier) {
 		throw new Error('Code verifier not found in session storage');
@@ -152,8 +150,7 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 
 	const proxyEndpoint = `${CENTRAL_OAUTH_CONFIG.OAUTH_SETTINGS.proxy_url}/oauth/exchange`
 
-	console.log('Proxy request body:', requestBody);
-	console.log('Proxy endpoint:', proxyEndpoint);
+
 
 	const response = await fetch(proxyEndpoint, {
 		method: 'POST',
@@ -163,7 +160,7 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 		body: JSON.stringify(requestBody)
 	});
 
-	console.log('Proxy response status:', response.status);
+	
 
 	if (!response.ok) {
 		const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -172,7 +169,7 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 	}
 
 	const data = await response.json();
-	console.log('Token exchange successful via proxy');
+	
 
 	// Clean up session storage
 	sessionStorage.removeItem('kick_oauth_code_verifier');
@@ -186,8 +183,7 @@ export async function exchangeCodeForToken(code: string, redirectUri: string): P
 // Helper function to get user info from Kick API
 export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 	try {
-		console.log('🔄 Fetching user info from Kick API...');
-		console.log('Access token:', accessToken ? 'YES' : 'NO');
+		
 
 		const isLocalhost = window.location.hostname === 'localhost';
 
@@ -206,7 +202,7 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 			}
 
 			const userData = await response.json();
-			console.log('User data received from Render function:', userData);
+			
 			return userData;
 		}
 
@@ -240,7 +236,7 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 
 				// Check if response is actually JSON
 				const contentType = response.headers.get('content-type');
-				console.log('Response content-type:', contentType);
+				
 
 				if (!contentType || !contentType.includes('application/json')) {
 					const responseText = await response.text();
@@ -250,14 +246,14 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 				}
 
 				const userData = await response.json();
-				console.log('User data received from', endpoint, ':', userData);
+				
 
 				// Handle new API format vs old API format
 				if (endpoint.includes('api.kick.com/public/v1/users')) {
 					// New API returns data in array format
 					if (userData.data && Array.isArray(userData.data) && userData.data.length > 0) {
 						const user = userData.data[0];
-						console.log('🔄 Getting chatroom ID for user:', user.name);
+						
 
 						// Get chatroom ID from old API
 						let chatroomId = null;
@@ -272,7 +268,7 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 							if (channelResponse.ok) {
 								const channelData = await channelResponse.json();
 								chatroomId = channelData.chatroom?.id;
-								console.log('Chatroom ID found:', chatroomId);
+								
 							}
 						} catch (error) {
 							console.warn('Could not get chatroom ID:', error);

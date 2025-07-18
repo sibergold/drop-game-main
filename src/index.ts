@@ -114,7 +114,7 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 					const emoteId = kickEmoteMatch[1];
 					const emoteName = kickEmoteMatch[2];
 					emote = emoteName; // Use emote name as identifier
-					console.log(`🎭 Detected Kick emote: ${emoteName} (ID: ${emoteId})`);
+					
 
 					// Store emote ID for the game to use real emote images
 					emitter.emit("storeEmoteId", user.username, emoteName, emoteId);
@@ -123,7 +123,7 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 					const textEmoteMatch = args.match(/\b\w+\b/);
 					if (textEmoteMatch) {
 						emote = textEmoteMatch[0];
-						console.log(`🎭 Detected text emote: ${emote}`);
+						
 					}
 				}
 			}

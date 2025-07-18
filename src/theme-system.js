@@ -279,7 +279,7 @@ document.addEventListener('click', function(e) {
             restartGameWithNewTheme();
         }
         
-        console.log(`Tema değiştirildi: ${themeSystem.getCurrentTheme().name}`);
+        
     }
 });
 
