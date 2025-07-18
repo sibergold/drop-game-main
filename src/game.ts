@@ -257,37 +257,71 @@ export default class Game extends Phaser.Scene {
 	private loadThemeAssets(): void {
 		console.log(`🎨 Loading assets for theme: ${this.selectedTheme}`);
 
-		// Tema bazlı paraşüt yükle
+		// Tema bazlı paraşüt yükle (manuel)
 		const parachuteAsset = this.assetManager.getRandomParachuteByTheme(this.selectedTheme);
-		const parachuteUrl = `./pixelplush/game-parachute/${parachuteAsset}`;
+		const parachuteUrl = window.location.hostname === 'localhost'
+			? `./pixelplush/game-parachute/${parachuteAsset}`
+			: `${window.location.origin}/pixelplush/game-parachute/${parachuteAsset}`;
 		console.log(`🪂 Loading parachute from: ${parachuteUrl}`);
 
-		this.load.image("chute", parachuteUrl);
+		this.loadImageManually("chute", parachuteUrl, `Theme parachute: ${parachuteAsset}`);
 
-		// Tema bazlı havuz/target yükle
+		// Tema bazlı havuz/target yükle (manuel)
 		const poolAsset = this.assetManager.getRandomPoolByTheme(this.selectedTheme);
 		this.currentPoolAsset = poolAsset; // Store for collision detection
-		const poolUrl = `./pixelplush/game-parachute/${poolAsset}`;
+		const poolUrl = window.location.hostname === 'localhost'
+			? `./pixelplush/game-parachute/${poolAsset}`
+			: `${window.location.origin}/pixelplush/game-parachute/${poolAsset}`;
 		console.log(`🎯 Loading target from: ${poolUrl}`);
 
-		this.load.image("pad", poolUrl);
+		this.loadImageManually("pad", poolUrl, `Theme target: ${poolAsset}`);
+	}
 
-		// Error handling - create fonksiyonunda yapılacak
-		this.load.on('filecomplete', (key: string) => {
-			if (key === 'chute') {
-				console.log(`✅ Theme parachute loaded: ${parachuteAsset}`);
-			} else if (key === 'pad') {
-				console.log(`✅ Theme target loaded: ${poolAsset}`);
-			}
-		});
+	private loadImageManually(textureKey: string, imageUrl: string, description: string): void {
+		console.log(`🔄 Manual loading: ${description}`);
 
-		this.load.on('loaderror', (file: any) => {
-			if (file.key === 'chute') {
-				console.warn(`⚠️ Failed to load theme parachute: ${parachuteAsset}, will use default`);
-			} else if (file.key === 'pad') {
-				console.warn(`⚠️ Failed to load theme target: ${poolAsset}, will use default`);
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+
+		img.onload = () => {
+			try {
+				console.log(`✅ ${description} loaded successfully (${img.width}x${img.height})`);
+
+				// Remove existing texture if it exists
+				if (this.textures.exists(textureKey)) {
+					this.textures.remove(textureKey);
+				}
+
+				// Add texture to Phaser manually
+				this.textures.addImage(textureKey, img);
+				console.log(`✅ ${description} added to Phaser as: ${textureKey}`);
+			} catch (error) {
+				console.error(`❌ Error adding ${description} to Phaser:`, error);
+				// Fallback to default
+				this.loadDefaultAsset(textureKey);
 			}
-		});
+		};
+
+		img.onerror = () => {
+			console.warn(`⚠️ Failed to load ${description}, using default`);
+			this.loadDefaultAsset(textureKey);
+		};
+
+		img.src = imageUrl;
+	}
+
+	private loadDefaultAsset(textureKey: string): void {
+		if (textureKey === "chute" && this.textures.exists("chute_default")) {
+			console.log(`🔄 Using default parachute`);
+			// Copy default texture with new key
+			const defaultTexture = this.textures.get("chute_default");
+			this.textures.addImage("chute", defaultTexture.source[0].image);
+		} else if (textureKey === "pad" && this.textures.exists("pad_default")) {
+			console.log(`🔄 Using default pool`);
+			// Copy default texture with new key
+			const defaultTexture = this.textures.get("pad_default");
+			this.textures.addImage("pad", defaultTexture.source[0].image);
+		}
 	}
 
 	private showThemeList(themes: string[]): void {
