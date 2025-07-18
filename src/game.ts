@@ -796,12 +796,24 @@ export default class Game extends Phaser.Scene {
 		console.log(`🔄 Trying CORS proxy ${proxyIndex + 1}/${proxies.length}: ${currentProxy}`);
 		console.log(`🔗 Proxied URL: ${proxiedUrl}`);
 
-		// Use Phaser's built-in image loader with proxy
-		this.load.setBaseURL();
-		this.load
-			.image(textureKey, proxiedUrl)
-			.on(`filecomplete-image-${textureKey}`, () => {
+		// Manual image loading for emotes (bypass Phaser loader)
+		console.log(`🔄 Manual emote loading: ${emoteName} from ${proxiedUrl}`);
+
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+
+		img.onload = () => {
+			try {
+				console.log(`✅ Emote image loaded: ${emoteName} (${img.width}x${img.height})`);
+
+				// Add texture to Phaser manually
+				if (this.textures.exists(textureKey)) {
+					this.textures.remove(textureKey);
+				}
+
+				this.textures.addImage(textureKey, img);
 				console.log(`✅ Kick emote loaded via proxy: ${emoteName}`);
+
 				const avatar = new Avatar(username, this, textureKey, this.selectedTheme);
 				this.droppers.set(username, avatar);
 				this.droppersArray.push(avatar);
@@ -812,13 +824,19 @@ export default class Game extends Phaser.Scene {
 				} catch (error) {
 					console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
 				}
-			})
-			.on(`loaderror-image-${textureKey}`, () => {
-				console.log(`⚠️ Failed to load emote with proxy ${currentProxy}, trying next proxy`);
-				console.log(`❌ Failed URL: ${proxiedUrl}`);
+			} catch (error) {
+				console.error(`❌ Error adding emote texture to Phaser:`, error);
 				this.tryLoadEmoteWithProxies(username, emoteName, emoteId, originalUrl, textureKey, proxies, proxyIndex + 1);
-			})
-			.start();
+			}
+		};
+
+		img.onerror = () => {
+			console.log(`⚠️ Failed to load emote with proxy ${currentProxy}, trying next proxy`);
+			console.log(`❌ Failed URL: ${proxiedUrl}`);
+			this.tryLoadEmoteWithProxies(username, emoteName, emoteId, originalUrl, textureKey, proxies, proxyIndex + 1);
+		};
+
+		img.src = proxiedUrl;
 	}
 
 	// Enhanced default avatar mapping for Kick emotes

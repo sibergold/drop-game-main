@@ -42,16 +42,11 @@ export class AssetManager {
 	private characters: Map<string, CharacterAsset> = new Map();
 	private loadedTextures: Set<string> = new Set();
 	private scene: Phaser.Scene;
-	private baseUrl: string;
+	private baseUrl = './pixelplush/';
 	private poolCollisionData: Map<string, PoolCollisionData> = new Map();
 
 	constructor(scene: Phaser.Scene) {
 		this.scene = scene;
-		// Use absolute URL for production, relative for development
-		this.baseUrl = window.location.hostname === 'localhost'
-			? './pixelplush/'
-			: `${window.location.origin}/pixelplush/`;
-		console.log('🔧 AssetManager baseUrl:', this.baseUrl);
 		this.initializePoolCollisionData();
 	}
 
@@ -185,46 +180,41 @@ export class AssetManager {
 			console.log(`📁 Texture path: ${character.frontSprite}`);
 			console.log(`🔑 Texture key: ${textureKey}`);
 
-			// Test if file is accessible via fetch first
-			const testResponse = await fetch(character.frontSprite);
-			console.log(`🌐 Fetch test status: ${testResponse.status}`);
-
-			if (!testResponse.ok) {
-				console.error(`❌ File not accessible via fetch: ${character.frontSprite}`);
-				throw new Error(`File not accessible: ${testResponse.status}`);
-			}
-
-			// Phaser'a texture'ı yükle
+			// Manuel image loading (Phaser loader bypass)
 			return new Promise((resolve, reject) => {
-				// Test if file exists first
-				fetch(character.frontSprite)
-					.then(response => {
-						console.log(`🌐 File fetch test - Status: ${response.status}, OK: ${response.ok}`);
-						if (!response.ok) {
-							throw new Error(`File not accessible: ${response.status}`);
+				console.log(`🔄 Manual image loading for: ${character.name}`);
+
+				const img = new Image();
+				img.crossOrigin = 'anonymous'; // CORS support
+
+				img.onload = () => {
+					try {
+						console.log(`✅ Image loaded successfully: ${character.name}`);
+						console.log(`📏 Image dimensions: ${img.width}x${img.height}`);
+
+						// Manually add texture to Phaser
+						if (this.scene.textures.exists(textureKey)) {
+							this.scene.textures.remove(textureKey);
 						}
 
-						// File exists, proceed with Phaser loading
-						this.scene.load.image(textureKey, character.frontSprite);
+						this.scene.textures.addImage(textureKey, img);
+						this.loadedTextures.add(textureKey);
 
-						this.scene.load.once(`filecomplete-image-${textureKey}`, () => {
-							this.loadedTextures.add(textureKey);
-							console.log(`✅ Loaded character texture: ${character.name}`);
-							resolve(textureKey);
-						});
+						console.log(`✅ Texture added to Phaser: ${textureKey}`);
+						resolve(textureKey);
+					} catch (error) {
+						console.error(`❌ Error adding texture to Phaser:`, error);
+						reject(error);
+					}
+				};
 
-						this.scene.load.once(`loaderror-image-${textureKey}`, () => {
-							console.error(`❌ Failed to load character texture: ${character.name}`);
-							console.error(`❌ Failed path: ${character.frontSprite}`);
-							reject(new Error(`Failed to load texture for ${characterId}`));
-						});
+				img.onerror = (error) => {
+					console.error(`❌ Image load error for ${character.name}:`, error);
+					reject(new Error(`Failed to load image: ${character.frontSprite}`));
+				};
 
-						this.scene.load.start();
-					})
-					.catch(fetchError => {
-						console.error(`❌ File fetch failed: ${character.frontSprite}`, fetchError);
-						reject(new Error(`File not accessible: ${fetchError.message}`));
-					});
+				// Start loading
+				img.src = character.frontSprite;
 			});
 
 		} catch (error) {
