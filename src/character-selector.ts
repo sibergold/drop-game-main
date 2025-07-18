@@ -35,7 +35,6 @@ export class CharacterSelector {
 
 		// Game tema'sını default olarak seç
 		this.selectedTheme = gameTheme.charAt(0).toUpperCase() + gameTheme.slice(1);
-		console.log(`🎭 Character selector initialized with theme: ${this.selectedTheme}`);
 
 		this.createUI();
 		this.createThemeButtons();
@@ -152,7 +151,6 @@ export class CharacterSelector {
 
 	private selectTheme(theme: string): void {
 		this.selectedTheme = theme;
-		console.log(`🎨 Selected theme: ${theme}`);
 
 		// Tema butonlarını güncelle
 		this.updateThemeButtons();
@@ -192,7 +190,7 @@ export class CharacterSelector {
 				characters = this.assetManager.getCharactersByTheme(this.selectedTheme);
 			}
 
-			console.log(`🎭 Loading ${characters.length} characters for theme: ${this.selectedTheme}`);
+
 
 			// Karakterleri grid halinde düzenle
 			const cols = 3;
@@ -216,10 +214,8 @@ export class CharacterSelector {
 				await this.createCharacterCard(character, x, y, cardWidth, cardHeight);
 			}
 
-			console.log(`✅ Created ${this.characterCards.length} character cards for theme: ${this.selectedTheme}`);
-
 		} catch (error) {
-			console.error('❌ Failed to load characters for selector:', error);
+			// Failed to load characters for selector
 		}
 	}
 
@@ -273,7 +269,7 @@ export class CharacterSelector {
 				cardContainer.add(characterImage);
 			}
 		} catch (error) {
-			console.warn(`⚠️ Failed to load texture for ${character.name}`);
+			// Failed to load texture
 		}
 
 		// Tıklama etkileşimi
@@ -296,7 +292,6 @@ export class CharacterSelector {
 
 	private selectCharacter(character: CharacterAsset): void {
 		this.selectedCharacter = character;
-		console.log(`🎭 Selected character: ${character.name}`);
 
 		// Tüm kartların border'ını sıfırla
 		this.characterCards.forEach((card, index) => {

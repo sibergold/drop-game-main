@@ -52,22 +52,18 @@ export class AssetManager {
 
 	async loadCatalog(): Promise<void> {
 		try {
-			console.log('🔄 Loading PixelPlush catalog...');
-			
 			// Catalog'u fetch et
 			const response = await fetch(`${this.baseUrl}catalog.json`);
 			if (!response.ok) {
 				throw new Error(`Failed to load catalog: ${response.status}`);
 			}
-			
+
 			this.catalog = await response.json();
-			console.log(`✅ Loaded ${this.catalog.length} items from catalog`);
-			
+
 			// Karakterleri filtrele ve organize et
 			this.organizeCharacters();
-			
+
 		} catch (error) {
-			console.error('❌ Failed to load PixelPlush catalog:', error);
 			// Fallback: boş catalog ile devam et
 			this.catalog = [];
 		}
@@ -130,8 +126,6 @@ export class AssetManager {
 
 			this.characters.set(item.id, character);
 		}
-
-		console.log(`📦 Organized ${this.characters.size} characters`);
 	}
 
 	getAvailableCharacters(): CharacterAsset[] {
@@ -164,7 +158,6 @@ export class AssetManager {
 	async loadCharacterTexture(characterId: string): Promise<string | null> {
 		const character = this.getCharacter(characterId);
 		if (!character) {
-			console.warn(`⚠️ Character not found: ${characterId}`);
 			return null;
 		}
 
@@ -176,22 +169,13 @@ export class AssetManager {
 		}
 
 		try {
-			console.log(`🔄 Loading character texture: ${character.name}`);
-			console.log(`📁 Texture path: ${character.frontSprite}`);
-			console.log(`🔑 Texture key: ${textureKey}`);
-
 			// Manuel image loading (Phaser loader bypass)
 			return new Promise((resolve, reject) => {
-				console.log(`🔄 Manual image loading for: ${character.name}`);
-
 				const img = new Image();
 				img.crossOrigin = 'anonymous'; // CORS support
 
 				img.onload = () => {
 					try {
-						console.log(`✅ Image loaded successfully: ${character.name}`);
-						console.log(`📏 Image dimensions: ${img.width}x${img.height}`);
-
 						// Manually add texture to Phaser
 						if (this.scene.textures.exists(textureKey)) {
 							this.scene.textures.remove(textureKey);
@@ -200,16 +184,13 @@ export class AssetManager {
 						this.scene.textures.addImage(textureKey, img);
 						this.loadedTextures.add(textureKey);
 
-						console.log(`✅ Texture added to Phaser: ${textureKey}`);
 						resolve(textureKey);
 					} catch (error) {
-						console.error(`❌ Error adding texture to Phaser:`, error);
 						reject(error);
 					}
 				};
 
 				img.onerror = (error) => {
-					console.error(`❌ Image load error for ${character.name}:`, error);
 					reject(new Error(`Failed to load image: ${character.frontSprite}`));
 				};
 
@@ -218,7 +199,6 @@ export class AssetManager {
 			});
 
 		} catch (error) {
-			console.error(`❌ Error loading character texture ${characterId}:`, error);
 			return null;
 		}
 	}
@@ -264,7 +244,6 @@ export class AssetManager {
 		const themeParachutes = parachuteMap[theme.toLowerCase()] || parachuteMap['base'];
 		const randomIndex = Math.floor(Math.random() * themeParachutes.length);
 		const selectedChute = themeParachutes[randomIndex];
-		console.log(`🪂 Selected parachute for theme '${theme}': ${selectedChute}`);
 		return selectedChute;
 	}
 
@@ -292,7 +271,6 @@ export class AssetManager {
 		const themePools = poolMap[theme.toLowerCase()] || poolMap['base'];
 		const randomIndex = Math.floor(Math.random() * themePools.length);
 		const selectedPool = themePools[randomIndex];
-		console.log(`🎯 Selected pool for theme '${theme}': ${selectedPool}`);
 		return selectedPool;
 	}
 
@@ -489,7 +467,6 @@ export class AssetManager {
 		}
 
 		// Default olarak pile type döndür (winter theme gibi)
-		console.log(`⚠️ No collision data found for pool: ${fileName}, using default pile type`);
 		return { poolType: 'pile' };
 	}
 }

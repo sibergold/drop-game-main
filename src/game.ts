@@ -312,12 +312,10 @@ export default class Game extends Phaser.Scene {
 
 	private loadDefaultAsset(textureKey: string): void {
 		if (textureKey === "chute" && this.textures.exists("chute_default")) {
-			console.log(`🔄 Using default parachute`);
 			// Copy default texture with new key
 			const defaultTexture = this.textures.get("chute_default");
 			this.textures.addImage("chute", defaultTexture.source[0].image);
 		} else if (textureKey === "pad" && this.textures.exists("pad_default")) {
-			console.log(`🔄 Using default pool`);
 			// Copy default texture with new key
 			const defaultTexture = this.textures.get("pad_default");
 			this.textures.addImage("pad", defaultTexture.source[0].image);
@@ -441,12 +439,10 @@ export default class Game extends Phaser.Scene {
 	}
 
 	tidyScores() {
-		console.debug("Tidying scores");
 		const expiry = Date.now() - constants.TWENTY_FOUR_HOURS;
 		const scores = this.scores;
 		const update = scores.filter((v: Score) => v.when > expiry);
 		localStorage.setItem("scores", JSON.stringify(update));
-		console.debug("Tidy scores complete");
 	}
 
 	start() {
@@ -469,8 +465,6 @@ export default class Game extends Phaser.Scene {
 		// if (kick && !this.queue) {
 		// 	kick.say(hs.channel, "🪂 Parachute Drop Game is now active! Type !drop to join the fun! 🎯");
 		// }
-
-		console.debug(`Pad X Position: ${this.pad.x}`);
 	}
 
 	end() {
@@ -546,7 +540,6 @@ export default class Game extends Phaser.Scene {
 
 		// ✅ Get pool collision data for current pool type
 		const poolCollisionData = this.assetManager.getPoolCollisionData(this.currentPoolAsset);
-		console.log(`🎯 Pool collision data:`, poolCollisionData);
 
 		// ✅ CRITICAL FIX: Check if character has actually landed on the ground
 		// This prevents scoring while the character is still in the air
@@ -587,7 +580,6 @@ export default class Game extends Phaser.Scene {
 				avatar.container.x <= this.pad!.x + this.pad!.body!.halfWidth) {
 				// Bounce off the pool walls
 				drop.body.velocity.x *= -1;
-				console.log(`🏀 Character bounced off ${poolCollisionData.poolType} pool walls`);
 			}
 			return;
 		}
@@ -611,16 +603,12 @@ export default class Game extends Phaser.Scene {
 			// Only bounce for pools with walls (rectangular/round), not for pile pools
 			if (poolCollisionData.targetWalls) {
 				drop.body.velocity.x *= -1;
-				console.log(`🏀 Character bounced off ${poolCollisionData.poolType} pool walls (negative score: ${score.toFixed(1)})`);
 				return;
 			} else {
 				// For pile pools, allow landing even with negative score (like winter theme)
-				console.log(`🏔️ Pile pool allows landing even with negative score: ${score.toFixed(1)}`);
 				// Don't return, continue with landing
 			}
 		}
-
-		console.log(`🎯 Landing score: ${score.toFixed(1)} (pool type: ${poolCollisionData.poolType})`);
 
 
 		this.droplets.emitParticleAt(
@@ -674,7 +662,7 @@ export default class Game extends Phaser.Scene {
 				this.sound.stopByKey("land");
 				this.sound.play("land");
 			} catch (error) {
-				console.log('🔇 Audio autoplay blocked by browser');
+				// Audio autoplay blocked by browser
 			}
 			return emitter.emit("lose", avatar);
 		}
@@ -688,7 +676,7 @@ export default class Game extends Phaser.Scene {
 			this.sound.stopByKey("win");
 			this.sound.play("win");
 		} catch (error) {
-			console.log('🔇 Audio autoplay blocked by browser');
+			// Audio autoplay blocked by browser
 		}
 		avatar.container.setDepth(1);
 		this.winner = avatar;
@@ -730,22 +718,18 @@ export default class Game extends Phaser.Scene {
 				this.sound.stopByKey("drop");
 				this.sound.play("drop");
 			} catch (error) {
-				console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
+				// Audio autoplay blocked by browser (normal behavior)
 			}
 		};
 
 		if (emote) {
-			console.log(`🎭 Loading emote for ${username}: ${emote}`);
-
 			// Try to get emote ID from recent messages
 			const emoteId = this.getEmoteIdFromMessage(username, emote);
 			if (emoteId) {
-				console.log(`🎭 Found emote ID for ${emote}: ${emoteId}`);
 				// Try to load real Kick emote with CORS proxy
 				this.loadKickEmoteWithUniqueTexture(username, emote, emoteId);
 				return;
 			} else {
-				console.log(`🎭 No emote ID found for ${emote}, using default avatar mapping`);
 				// Fallback to enhanced default avatar mapping
 				this.loadDefaultEmoteAvatar(username, emote);
 				return;
@@ -784,10 +768,6 @@ export default class Game extends Phaser.Scene {
 		const kickEmoteUrl = `https://files.kick.com/emotes/${emoteId}/fullsize`;
 		const uniqueTextureKey = `kickemote_${emoteName}_${emoteId}`;
 
-		console.log(`🎭 Attempting to load real Kick emote: ${emoteName} (ID: ${emoteId})`);
-		console.log(`🎭 Unique texture key: ${uniqueTextureKey}`);
-		console.log(`🎭 Original URL: ${kickEmoteUrl}`);
-
 		// Try our own proxy server first, then fallback to public proxies
 		const isLocalhost = window.location.hostname === 'localhost';
 		const ownProxyUrl = isLocalhost
@@ -810,7 +790,6 @@ export default class Game extends Phaser.Scene {
 	// Try loading emote with different CORS proxies
 	private tryLoadEmoteWithProxies(username: string, emoteName: string, emoteId: string, originalUrl: string, textureKey: string, proxies: string[], proxyIndex: number): void {
 		if (proxyIndex >= proxies.length) {
-			console.log(`⚠️ All CORS proxies failed, falling back to default avatar`);
 			this.loadDefaultEmoteAvatar(username, emoteName);
 			return;
 		}
@@ -827,26 +806,19 @@ export default class Game extends Phaser.Scene {
 			proxiedUrl = currentProxy + encodeURIComponent(originalUrl);
 		}
 
-		console.log(`🔄 Trying CORS proxy ${proxyIndex + 1}/${proxies.length}: ${currentProxy}`);
-		console.log(`🔗 Proxied URL: ${proxiedUrl}`);
-
 		// Manual image loading for emotes (bypass Phaser loader)
-		console.log(`🔄 Manual emote loading: ${emoteName} from ${proxiedUrl}`);
 
 		const img = new Image();
 		img.crossOrigin = 'anonymous';
 
 		img.onload = () => {
 			try {
-				console.log(`✅ Emote image loaded: ${emoteName} (${img.width}x${img.height})`);
-
 				// Add texture to Phaser manually
 				if (this.textures.exists(textureKey)) {
 					this.textures.remove(textureKey);
 				}
 
 				this.textures.addImage(textureKey, img);
-				console.log(`✅ Kick emote loaded via proxy: ${emoteName}`);
 
 				const avatar = new Avatar(username, this, textureKey, this.selectedTheme);
 				this.droppers.set(username, avatar);
@@ -856,17 +828,14 @@ export default class Game extends Phaser.Scene {
 					this.sound.stopByKey("drop");
 					this.sound.play("drop");
 				} catch (error) {
-					console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
+					// Audio autoplay blocked by browser (normal behavior)
 				}
 			} catch (error) {
-				console.error(`❌ Error adding emote texture to Phaser:`, error);
 				this.tryLoadEmoteWithProxies(username, emoteName, emoteId, originalUrl, textureKey, proxies, proxyIndex + 1);
 			}
 		};
 
 		img.onerror = () => {
-			console.log(`⚠️ Failed to load emote with proxy ${currentProxy}, trying next proxy`);
-			console.log(`❌ Failed URL: ${proxiedUrl}`);
 			this.tryLoadEmoteWithProxies(username, emoteName, emoteId, originalUrl, textureKey, proxies, proxyIndex + 1);
 		};
 
@@ -952,13 +921,10 @@ export default class Game extends Phaser.Scene {
 		const emoteUrl = `./default/${avatarImage}`;
 		const textureKey = `emote_${emote}_${avatarImage.replace('.png', '')}`;
 
-		console.log(`🎭 Using smart avatar mapping: ${avatarImage} for emote: ${emote} (${emote in emoteAvatarMap ? 'exact match' : 'pattern match'})`);
-
 		this.load.setBaseURL();
 		this.load
 			.image(textureKey, emoteUrl)
 			.on(`filecomplete-image-${textureKey}`, () => {
-				console.log(`✅ Default emote avatar loaded: ${textureKey}`);
 				const avatar = new Avatar(username, this, textureKey, this.selectedTheme);
 				this.droppers.set(username, avatar);
 				this.droppersArray.push(avatar);
@@ -967,11 +933,10 @@ export default class Game extends Phaser.Scene {
 					this.sound.stopByKey("drop");
 					this.sound.play("drop");
 				} catch (error) {
-					console.log('🔇 Audio autoplay blocked by browser (normal behavior)');
+					// Audio autoplay blocked by browser (normal behavior)
 				}
 			})
 			.on(`loaderror-image-${textureKey}`, () => {
-				console.log(`⚠️ Failed to load default avatar, using finish()`);
 				const avatar = new Avatar(username, this, undefined, this.selectedTheme);
 				this.droppers.set(username, avatar);
 				this.droppersArray.push(avatar);
@@ -1133,13 +1098,11 @@ export default class Game extends Phaser.Scene {
 	private setupPoolCollision(): void {
 		// Ensure pad and dropGroup are available
 		if (!this.pad || !this.dropGroup) {
-			console.warn('⚠️ Cannot setup pool collision: pad or dropGroup not available');
 			return;
 		}
 
 		// Get current pool collision data
 		const poolCollisionData = this.assetManager.getPoolCollisionData(this.currentPoolAsset);
-		console.log(`🎯 Setting up collision for pool type: ${poolCollisionData.poolType}`);
 
 		if (poolCollisionData.poolType === 'pile') {
 			// For pile pools, use overlap (no bouncing)
@@ -1148,7 +1111,6 @@ export default class Game extends Phaser.Scene {
 				this.dropGroup,
 				this.landOnPad.bind(this),
 			);
-			console.log(`🏔️ Pile pool: Using overlap (no bouncing)`);
 		} else {
 			// For walled pools, use collider (with bouncing)
 			this.physics.add.collider(
@@ -1156,7 +1118,6 @@ export default class Game extends Phaser.Scene {
 				this.dropGroup,
 				this.landOnPad.bind(this),
 			);
-			console.log(`🏊 Walled pool: Using collider (with bouncing)`);
 		}
 	}
 }

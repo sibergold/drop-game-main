@@ -191,7 +191,7 @@ export default class EffectManager {
 			const sound = this.scene.sound.add(soundKey, { volume: constants.WATER_EFFECTS.EFFECT_VOLUME });
 			sound.play();
 		} catch (error) {
-			console.log('🔇 Could not play effect sound:', error);
+			// Could not play effect sound
 		}
 	}
 }

@@ -146,14 +146,10 @@ class KickClient {
 			});
 
 			this.channel.bind('App\\Events\\ChatMessageSentEvent', (data: any) => {
-				console.log('📨 Received chat message (sent event):', data);
 				this.processChatMessage(data);
 			});
 
-			console.log(`🔌 Connecting to Kick chatroom: ${this.config.chatroomId}`);
 		} catch (error) {
-			console.error('❌ Failed to initialize Kick client:', error);
-			console.log('🔄 Initialization failed, falling back to polling...');
 			this.startPollingFallback();
 			this.emit('error', error);
 		}
@@ -239,7 +235,6 @@ private async pollChatMessages() {
 				}
 			}
 		} else {
-			console.log('⚠️ Chat API polling failed:', response.status, response.statusText);
 			// Emit a test message to show the system is working
 			if (Math.random() < 0.05) { // 5% chance to emit a test message
 				this.emit('message', 'TestUser', `Test message at ${new Date().toLocaleTimeString()}`, {
@@ -251,7 +246,6 @@ private async pollChatMessages() {
 			}
 		}
 	} catch (error) {
-		console.error('❌ Chat polling error:', error);
 		// Emit a test message to show the system is working
 		if (Math.random() < 0.05) { // 5% chance to emit a test message
 			this.emit('message', 'SystemTest', `Polling active - ${new Date().toLocaleTimeString()}`, {
@@ -372,13 +366,8 @@ let kick: KickClient | null = null;
 
 try {
 	kick = KickClientManager.createFromUrlParams();
-	if (kick) {
-		console.log('🎮 Kick client initialized successfully');
-	} else {
-		console.warn('⚠️ Kick client not initialized - missing parameters');
-	}
 } catch (error) {
-	console.error('❌ Failed to initialize Kick client:', error);
+	// Failed to initialize Kick client
 }
 
 // Helper functions for checking user permissions

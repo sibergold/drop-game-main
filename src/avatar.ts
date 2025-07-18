@@ -25,7 +25,6 @@ export default class Avatar {
 		// Paraşüt texture fallback kontrolü
 		let chuteTexture = "chute";
 		if (!game.textures.exists("chute")) {
-			console.warn("⚠️ Theme chute not found, using default");
 			chuteTexture = game.textures.exists("chute_default") ? "chute_default" : "chute";
 		}
 
@@ -40,18 +39,13 @@ export default class Avatar {
 		const usePixelPlush = hs.pixelplush === 'true' || selectedCharacterId || Math.random() < 0.3; // %30 şans ile PixelPlush karakter
 
 		if (emote) {
-			console.log(`🎭 Creating avatar with emote: ${emote} for user: ${username}`);
-			console.log(`🔍 Texture exists in game: ${game.textures.exists(emote)}`);
-
 			this.customImage = true;
 
 			try {
 				this.sprite = game.add.image(0, 0, emote);
 				this.sprite.setDisplaySize(64, 64);
 				this.chute.setOrigin(0.5, 0.75);
-				console.log(`✅ Avatar sprite created successfully with texture key: ${emote}`);
 			} catch (error) {
-				console.log(`❌ Failed to create sprite with texture ${emote}:`, error);
 				// Fallback to default or PixelPlush
 				this.createFallbackSprite(game, usePixelPlush===true);
 			}
@@ -62,7 +56,6 @@ export default class Avatar {
 			// Default sprite kullan
 			const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
 			this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
-			console.log(`🎭 Avatar created with default sprite: drop${spriteNumber}`);
 		}
 
 		this.sprite.setOrigin(0.5, 0.5).setVisible(false);
@@ -105,7 +98,6 @@ export default class Avatar {
 		// Game scene'den AssetManager'a erişim
 		const gameScene = game as any;
 		if (!gameScene.assetManager) {
-			console.warn('⚠️ AssetManager not available, using default sprite');
 			this.createFallbackSprite(game, false);
 			return;
 		}
@@ -118,27 +110,19 @@ export default class Avatar {
 
 		// Tema bazlı karakter seçimi - her zaman tema uyumlu karakter seç
 		const currentTheme = theme.toLowerCase();
-		console.log(`🎨 Avatar theme parameter: ${currentTheme}`);
 
 		// Tema karakteri seç (localStorage'ı görmezden gel)
 		selectedCharacter = assetManager.getRandomCharacterByTheme(currentTheme);
 
-		if (selectedCharacter) {
-			console.log(`🎨 Selected theme character: ${selectedCharacter.name} (${selectedCharacter.theme})`);
-		} else {
-			console.log(`⚠️ No characters found for theme: ${currentTheme}, trying fallback`);
+		if (!selectedCharacter) {
 			// Tema karakteri yoksa genel rastgele seç
 			selectedCharacter = assetManager.getRandomCharacter();
-			console.log(`🎲 Fallback to random character: ${selectedCharacter?.name || 'none available'}`);
 		}
 
 		if (!selectedCharacter) {
-			console.warn('⚠️ No PixelPlush characters available, using default sprite');
 			this.createFallbackSprite(game, false);
 			return;
 		}
-
-		console.log(`🎨 Attempting to load PixelPlush character: ${selectedCharacter.name}`);
 
 		// Karakteri asenkron olarak yükle
 		assetManager.loadCharacterTexture(selectedCharacter.id)
@@ -149,21 +133,17 @@ export default class Avatar {
 					this.sprite.setDisplaySize(64, 64);
 					this.customImage = true;
 					this.chute.setOrigin(0.5, 0.75);
-					console.log(`✅ PixelPlush character loaded: ${selectedCharacter.name}`);
 				} else {
-					console.warn('⚠️ Failed to load PixelPlush character texture');
 					this.createFallbackSprite(game, false);
 				}
 			})
 			.catch(error => {
-				console.error('❌ Error loading PixelPlush character:', error);
 				this.createFallbackSprite(game, false);
 			});
 
 		// Geçici olarak default sprite ile başla
 		const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
 		this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
-		console.log(`🔄 Temporary sprite while loading PixelPlush: drop${spriteNumber}`);
 	}
 
 	private createFallbackSprite(game: Phaser.Scene, tryPixelPlush: boolean): void {
@@ -172,7 +152,6 @@ export default class Avatar {
 		} else {
 			const spriteNumber = Math.ceil(Math.random() * constants.NUM_SPRITES);
 			this.sprite = game.add.image(0, 0, `drop${spriteNumber}`);
-			console.log(`🔄 Fallback to default sprite: drop${spriteNumber}`);
 		}
 	}
 
@@ -207,9 +186,6 @@ export default class Avatar {
 		this.container.add(this.label!);
 		this.container.add(this.scoreLabel!);
 		this.sprite.visible = true;
-		console.debug(`Dropper: ${this.username}`);
-		console.debug(`X Velocity: ${this.container.body.velocity.x}`);
-		console.debug(`X Position: ${this.container.x}`);
 	}
 
 	update() {

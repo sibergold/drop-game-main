@@ -134,9 +134,6 @@
     <script type="module">
         // Console logger
         const consoleDiv = document.getElementById('console');
-        const originalLog = console.log;
-        const originalError = console.error;
-        const originalWarn = console.warn;
 
         function addToConsole(message, type = 'log') {
             const div = document.createElement('div');
@@ -146,37 +143,22 @@
             consoleDiv.scrollTop = consoleDiv.scrollHeight;
         }
 
-        console.log = (...args) => {
-            originalLog(...args);
-            addToConsole(args.join(' '), 'log');
-        };
-
-        console.error = (...args) => {
-            originalError(...args);
-            addToConsole(args.join(' '), 'error');
-        };
-
-        console.warn = (...args) => {
-            originalWarn(...args);
-            addToConsole(args.join(' '), 'warn');
-        };
-
         // Clear initial loading
         consoleDiv.innerHTML = '';
-        console.log('🚀 PixelPlush Test initialized');
+        addToConsole('🚀 PixelPlush Test initialized');
 
         // Test catalog loading
         async function testCatalog() {
             try {
-                console.log('📦 Loading catalog...');
+                addToConsole('📦 Loading catalog...');
                 const response = await fetch('./pixelplush/catalog.json');
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-                
+
                 const catalog = await response.json();
-                console.log(`✅ Catalog loaded: ${catalog.length} items`);
+                addToConsole(`✅ Catalog loaded: ${catalog.length} items`);
                 
                 // Update stats
                 const characters = catalog.filter(item => item.type === 'character' && !item.hidden);
@@ -236,10 +218,10 @@
                     `;
                 }).join('');
 
-                console.log(`🎭 Displayed ${characters.length} characters across ${themes.length} themes`);
-                
+                addToConsole(`🎭 Displayed ${characters.length} characters across ${themes.length} themes`);
+
             } catch (error) {
-                console.error('❌ Failed to load catalog:', error);
+                addToConsole('❌ Failed to load catalog: ' + error.message, 'error');
                 document.getElementById('stats').innerHTML = '<div class="error">Failed to load catalog</div>';
                 document.getElementById('characters').innerHTML = '<div class="error">Failed to load characters</div>';
                 document.getElementById('themes').innerHTML = '<div class="error">Failed to load themes</div>';

@@ -224,8 +224,6 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 
 		for (const endpoint of endpoints) {
 			try {
-				console.log('Trying API endpoint:', endpoint);
-
 				const response = await fetch(endpoint, {
 					headers: {
 						'Authorization': `Bearer ${accessToken}`,
@@ -234,12 +232,8 @@ export async function fetchKickUserInfo(accessToken: string): Promise<any> {
 					}
 				});
 
-				console.log(`API response status for ${endpoint}:`, response.status);
-				console.log('API response headers:', Object.fromEntries(response.headers.entries()));
-
 				if (!response.ok) {
 					const errorText = await response.text();
-					console.error(`API error response from ${endpoint}:`, errorText);
 					lastError = new Error(`API request failed: ${response.status} - ${errorText}`);
 					continue; // Try next endpoint
 				}

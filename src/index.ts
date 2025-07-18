@@ -181,7 +181,6 @@ if (kick) {
 // Initialize the application
 function initializeApp(): void {
 	if (!kick) {
-		console.error('❌ Kick client not initialized. Please check your OAuth parameters.');
 		// Show error message to user
 		const errorDiv: HTMLDivElement = document.createElement('div');
 		errorDiv.innerHTML = `
@@ -217,25 +216,19 @@ function initializeApp(): void {
 		return;
 	}
 
-	// Log connection info
-	console.log('🎮 Kick Drop Game Starting...');
-	console.log('📺 Channel:', hs.channel);
-	console.log('💬 Chatroom ID:', hs.chatroomId);
-
 	// Set up connection event handlers
 	kick.on('connected', () => {
-		console.log('✅ Successfully connected to Kick chat!');
+		// Successfully connected to Kick chat
 	});
 
 	kick.on('disconnected', () => {
-		console.log('❌ Disconnected from Kick chat');
+		// Disconnected from Kick chat
 	});
 
 	kick.on('error', (error: any) => {
-		console.error('🚨 Kick connection error:', error);
+		// Kick connection error
 	});
 
-	console.log('🔌 Connecting to Kick chat...');
 	// Kick client automatically connects when initialized
 }
 

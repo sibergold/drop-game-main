@@ -432,9 +432,7 @@
                 const response = await fetch('./pixelplush/catalog.json');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 catalog = await response.json();
-                console.log(`📦 Loaded catalog with ${catalog.length} items`);
             } catch (error) {
-                console.error('❌ Failed to load catalog:', error);
                 catalog = [];
             }
         }
@@ -452,29 +450,7 @@
             assetStats.total = window.characters.length + window.parachutes.length +
                               window.pools.length + window.pets.length + window.effects.length;
 
-            console.log('📊 Asset breakdown:', {
-                characters: window.characters.length,
-                parachutes: window.parachutes.length,
-                pools: window.pools.length,
-                pets: window.pets.length,
-                effects: window.effects.length,
-                total: assetStats.total
-            });
-
-            // Karakterlerin detaylarını logla
-            console.log('🎭 Characters found:', window.characters.map(c => `${c.name} (${c.path || 'NO_PATH'})`));
-
-            // Path'i olmayan karakterleri logla
-            const charactersWithoutPath = catalog.filter(item => item.type === 'character' && !item.path);
-            if (charactersWithoutPath.length > 0) {
-                console.warn('⚠️ Characters without path:', charactersWithoutPath.map(c => `${c.name} (${c.id})`));
-            }
-
-            // Path'i olmayan pet'leri logla
-            const petsWithoutPath = catalog.filter(item => item.type === 'pet' && !item.path);
-            if (petsWithoutPath.length > 0) {
-                console.warn('⚠️ Pets without path:', petsWithoutPath.map(p => `${p.name} (${p.id})`));
-            }
+            // Asset processing completed
         }
 
         function findParachuteAssets() {
@@ -774,7 +750,6 @@
 
             // Path güvenlik kontrolü
             if (!asset.path) {
-                console.warn(`❌ Asset path missing for ${asset.name} (${asset.id})`);
                 return null;
             }
 
@@ -871,7 +846,7 @@
                 await loadPromise;
 
             } catch (error) {
-                console.warn(`❌ Failed to load asset: ${asset.name} (${assetPath})`);
+                // Failed to load asset
             }
         }
 
