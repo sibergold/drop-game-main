@@ -42,7 +42,7 @@ export class AssetManager {
 	private characters: Map<string, CharacterAsset> = new Map();
 	private loadedTextures: Set<string> = new Set();
 	private scene: Phaser.Scene;
-	private baseUrl = './pixelplush/';
+	private baseUrl = 'pixelplush/';
 	private poolCollisionData: Map<string, PoolCollisionData> = new Map();
 
 	constructor(scene: Phaser.Scene) {
