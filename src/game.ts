@@ -310,11 +310,11 @@ export default class Game extends Phaser.Scene {
 		if (textureKey === "chute" && this.textures.exists("chute_default")) {
 			// Copy default texture with new key
 			const defaultTexture = this.textures.get("chute_default");
-			this.textures.addImage("chute", defaultTexture.source[0].image);
+			this.textures.addImage("chute", defaultTexture.source[0].image as HTMLImageElement);
 		} else if (textureKey === "pad" && this.textures.exists("pad_default")) {
 			// Copy default texture with new key
 			const defaultTexture = this.textures.get("pad_default");
-			this.textures.addImage("pad", defaultTexture.source[0].image);
+			this.textures.addImage("pad", defaultTexture.source[0].image as HTMLImageElement);
 		}
 	}
 
