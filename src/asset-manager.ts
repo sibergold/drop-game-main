@@ -110,6 +110,21 @@ export class AssetManager {
 			} else if (item.id === 'avellana') {
 				folderName = 'avellana';
 				fileName = 'avelana';
+			} else if (item.id === 'koala') {
+				// Special handling for koala - it's a single JPG file
+				const character: CharacterAsset = {
+					id: item.id,
+					name: item.name,
+					theme: item.theme,
+					frontSprite: `${this.baseUrl}characters/koala.jpg`,
+					backSprite: `${this.baseUrl}characters/koala.jpg`,
+					leftSprite: `${this.baseUrl}characters/koala.jpg`,
+					rightSprite: `${this.baseUrl}characters/koala.jpg`,
+					cost: item.cost,
+					hidden: item.hidden || false
+				};
+				this.characters.set(item.id, character);
+				continue;
 			}
 
 			const character: CharacterAsset = {

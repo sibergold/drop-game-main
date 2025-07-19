@@ -98,7 +98,7 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 			if (kick) {
 				kick.say(
 					hs.channel,
-					`@${user.username} 🎮 Commands: !drop (join game), !join (same as !drop), !droptop (top scores), !droplow (low scores), !droprecent (recent), !dropstats (your stats). Mods: !queuedrop, !startdrop, !resetdrop, !clearscores, !dropgame`,
+					`@${user.username} 🎮 Commands: !drop (join game), !drop koaladuru (koala character), !join (same as !drop), !droptop (top scores), !droplow (low scores), !droprecent (recent), !dropstats (your stats). Mods: !queuedrop, !startdrop, !resetdrop, !clearscores, !dropgame, !testkoala`,
 				);
 			}
 			break;
@@ -108,22 +108,27 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 			let emote: string | undefined = undefined;
 
 			if (args) {
-				// Kick emote format: [emote:ID:name]
-				const kickEmoteMatch = args.match(/\[emote:(\d+):(\w+)\]/);
-				if (kickEmoteMatch) {
-					const emoteId = kickEmoteMatch[1];
-					const emoteName = kickEmoteMatch[2];
-					emote = emoteName; // Use emote name as identifier
-					
-
-					// Store emote ID for the game to use real emote images
-					emitter.emit("storeEmoteId", user.username, emoteName, emoteId);
+				// Check for special koala command
+				if (args.toLowerCase().includes("koaladuru")) {
+					emote = "koala";
 				} else {
-					// Fallback: look for any word (could be text emote)
-					const textEmoteMatch = args.match(/\b\w+\b/);
-					if (textEmoteMatch) {
-						emote = textEmoteMatch[0];
-						
+					// Kick emote format: [emote:ID:name]
+					const kickEmoteMatch = args.match(/\[emote:(\d+):(\w+)\]/);
+					if (kickEmoteMatch) {
+						const emoteId = kickEmoteMatch[1];
+						const emoteName = kickEmoteMatch[2];
+						emote = emoteName; // Use emote name as identifier
+
+
+						// Store emote ID for the game to use real emote images
+						emitter.emit("storeEmoteId", user.username, emoteName, emoteId);
+					} else {
+						// Fallback: look for any word (could be text emote)
+						const textEmoteMatch = args.match(/\b\w+\b/);
+						if (textEmoteMatch) {
+							emote = textEmoteMatch[0];
+
+						}
 					}
 				}
 			}
@@ -166,6 +171,14 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 
 			emitter.emit("startdrop");
 			break;
+		case "testkoala": {
+			// Test command for koala character
+			emitter.emit("drop", user.username, false, "koala");
+			if (kick) {
+				kick.say(hs.channel, `@${user.username} 🐨 Testing koala character!`);
+			}
+			break;
+		}
 	}
 }
 

@@ -38,6 +38,15 @@
 		"cost": 20
 	},
 	{
+		"id": "koala",
+		"group": "Animal",
+		"name": "Koala",
+		"theme": "Animal",
+		"type": "character",
+		"path": "koala",
+		"cost": 0
+	},
+	{
 		"id": "addon_maze_campchaos",
 		"group": "Maze",
 		"name": "Camp Chaos (Maze)",

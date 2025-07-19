@@ -840,6 +840,12 @@ export default class Game extends Phaser.Scene {
 
 	// Enhanced default avatar mapping for Kick emotes
 	private loadDefaultEmoteAvatar(username: string, emote: string): void {
+		// Special handling for koala character
+		if (emote === 'koala') {
+			this.loadKoalaCharacter(username);
+			return;
+		}
+
 		const emoteAvatarMap: { [key: string]: string } = {
 			// Standard emoji-style emotes
 			'emojiBlowKiss': 'drop1.png',
@@ -1115,5 +1121,57 @@ export default class Game extends Phaser.Scene {
 				this.landOnPad.bind(this),
 			);
 		}
+	}
+
+	// Load koala character from PixelPlush assets
+	private loadKoalaCharacter(username: string): void {
+		const koalaUrl = window.location.hostname === 'localhost'
+			? `./pixelplush/characters/koala.jpg`
+			: `${window.location.origin}/pixelplush/characters/koala.jpg`;
+
+		const textureKey = `koala_character`;
+
+		// Manual image loading for koala character
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+
+		img.onload = () => {
+			try {
+				// Add texture to Phaser manually
+				if (this.textures.exists(textureKey)) {
+					this.textures.remove(textureKey);
+				}
+
+				this.textures.addImage(textureKey, img);
+
+				const avatar = new Avatar(username, this, textureKey, this.selectedTheme);
+				this.droppers.set(username, avatar);
+				this.droppersArray.push(avatar);
+				this.dropGroup!.add(avatar.container);
+				try {
+					this.sound.stopByKey("drop");
+					this.sound.play("drop");
+				} catch (error) {
+					// Audio autoplay blocked by browser (normal behavior)
+				}
+			} catch (error) {
+				// Fallback to default avatar if koala loading fails
+				const avatar = new Avatar(username, this, undefined, this.selectedTheme);
+				this.droppers.set(username, avatar);
+				this.droppersArray.push(avatar);
+				this.dropGroup!.add(avatar.container);
+			}
+		};
+
+		img.onerror = () => {
+			// Fallback to default avatar if koala loading fails
+			const avatar = new Avatar(username, this, undefined, this.selectedTheme);
+			this.droppers.set(username, avatar);
+			this.droppersArray.push(avatar);
+			this.dropGroup!.add(avatar.container);
+		};
+
+		// Start loading
+		img.src = koalaUrl;
 	}
 }
