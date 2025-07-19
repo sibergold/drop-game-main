@@ -98,7 +98,7 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 			if (kick) {
 				kick.say(
 					hs.channel,
-					`@${user.username} 🎮 Commands: !drop (join game), !drop koaladuru (koala character), !join (same as !drop), !droptop (top scores), !droplow (low scores), !droprecent (recent), !dropstats (your stats). Mods: !queuedrop, !startdrop, !resetdrop, !clearscores, !dropgame, !testkoala`,
+					`@${user.username} 🎮 Commands: !drop (join game), !drop koala (koala character), !join (same as !drop), !droptop (top scores), !droplow (low scores), !droprecent (recent), !dropstats (your stats). Mods: !queuedrop, !startdrop, !resetdrop, !clearscores, !dropgame, !testkoala`,
 				);
 			}
 			break;
@@ -109,7 +109,7 @@ function handleChatCommand(user: KickUser, message: string, self: boolean) {
 
 			if (args) {
 				// Check for special koala command
-				if (args.toLowerCase().includes("koaladuru")) {
+				if (args.toLowerCase().includes("koala")) {
 					emote = "koala";
 				} else {
 					// Kick emote format: [emote:ID:name]
